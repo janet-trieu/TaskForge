@@ -1,0 +1,14 @@
+Week 1
+
+Group formed. I created my Jira account and joined the group. My role in the group is a developer.
+
+We had an online meeting at Sunday 19th February @ 2PM. Went through: - how to use Jira
+-Confirming our project
+-Discussing system architecture, who is responsible for what
+-Come up with an MVP.
+
+We decided to use Python for backend, React for frontend and SQL for our databases.
+
+An issue raised was that Joseph is the only person who has experience with frontend and that it'll be difficult for one person to work on frontend. It was decided that I will learn frontend during the term to help our frontend additonally with backend.
+
+We gave ourselves the tasks of reading the scope of the project more throughly and maybe look through existing task management softwares. This is due week 2 Wednesday.
