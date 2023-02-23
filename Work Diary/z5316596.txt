@@ -1,0 +1,9 @@
+Week 1
+
+I was absent to the tutorial on Week One but I was already acquainted with two of the group members, Dabin and Janet. Dabin filled me in and communicated on my behalf
+during the tutorial and group formation where I would be joined by Vincent and Joseph. I contributed in choosing the name and Dabin was elected to be scrum master since he has
+experience working with Jira and Kanban.
+
+During the first meeting, we discussed our grievances including: to finalise our choice, questions regarding the specifications of the assignment and possible roles.
+Questions unresolved would be asked to the tutor in Week 2. We planned to read the specifications more after the meeting to familarise ourselves and think of possible features
+to implement in the project, including novel ideas which would be proposed to the tutor.
