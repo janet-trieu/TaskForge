@@ -1,5 +1,14 @@
 === Week 1 ===
 
+General content:
+- group formed, I got assigned as scrum master
+- set up a facebook messenger groupchat
+- I set up a discord server for the team to hold meetings, and have set up structure for team members to put in points to be discussed in a channel called meeting agenda, 
+    as well as a channel colled meeting outcome for the points discussed + responses
+- set up Jira software, confluence (don't know if necessary)
+- set up initial epic for Proposal, and the appropriate subtasks for it => background, user stories & sprints, and technical depth, scale, report formatting
+- ran the first meeting to go over the initial brainstorming of our group, (written under "What as planned")
+
 What was planned for the period since the last work diary entry
 - N/A, this is the first work diary entry but general notes:
 - Group was formed on the first lab day, with premade members: Francis, Joseph, Janet and Vincent
@@ -31,6 +40,12 @@ What is planned for the next period (e.g., next week)
 - Read up on the specifications for the proposal and project 4 - task management system
 
 === Week 2 ===
+
+General content:
+- set up jira x github integration
+- created a basic UML(?) diagram to see the status of our current features
+- delegated tasks for the proposal tasks-to-be-done
+
 What was planned for the period since the last work diary entry
 - Read up on the proposal and project 4 specifications
 
