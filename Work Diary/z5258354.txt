@@ -1,0 +1,58 @@
+=== Week 1 ===
+
+What was planned for the period since the last work diary entry
+- N/A, this is the first work diary entry but general notes:
+- Group was formed on the first lab day, with premade members: Francis, Joseph, Janet and Vincent
+- 3 ways of communication:
+    - discord for online meetings (currently set for sunday afternoons)
+    - Facebook messenger for general discussions/communications
+    - use the time during + after the lab for in-person meetings/discussions
+- Basic brainstorm & discussion towards: 
+    - which project we are going to do => project 4 but not confirmed (task management system)
+    - who is the scrum master => Myself
+    - who is backend => Myself, Francis and Vincent
+    - who is frontend => Joseph
+    - **Janet is to flex around between backend and frontend
+    - system architecture:
+        - Python for backend
+        - React for frontend
+        - SQL for data storage/ database
+
+What was finished
+- N/A, this is the first work diary entry
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- N/A, this is the first work diary entry
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- N/A, this is the first work diary entry
+
+What is planned for the next period (e.g., next week)
+- Read up on the specifications for the proposal and project 4 - task management system
+
+=== Week 2 ===
+What was planned for the period since the last work diary entry
+- Read up on the proposal and project 4 specifications
+
+What was finished
+- Everyone read on the proposal and project 4 speficiations, allowing us to start brainstorming our major features
+- Jira and github setup complete
+- With this in mind, we also started to delegate tasks regarding the proposal
+    - background => Vincent
+    - user stories + sprints => Myself + Francis
+    - technical depth, scale, report formatting => Janet and Joseph
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- for now, it is trying to get concrete times of when we can hold our online meeting, as everyone has different schedules
+- Created a way for everyone to document their N/As => usual weekdays that everyone is busy, and also specific days where they have plans.
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Coming up with all 6 features
+    - this can delay our proposal status
+    + Adjustments: Everyone to brainstorm more features up until our next meeting on Sunday 26th, 2pm
+    + Send our current feature list to our tutor for confirmation/help to see if we can split any existing features into 2
+
+What is planned for the next period (e.g., next week)
+- try to finish all the features
+- try to complete the proposal
+- TBA from Sunday meeting
