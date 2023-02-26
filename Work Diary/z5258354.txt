@@ -45,6 +45,11 @@ General content:
 - set up jira x github integration
 - created a basic UML(?) diagram to see the status of our current features
 - delegated tasks for the proposal tasks-to-be-done
+- came up with sprint dates
+    Sprint 1: 1-14th of March
+    Sprint 2: 15-28th of March
+    Sprint 3: 29th of March - 11th of April (Possible to add 5 days if necessary)
+- created all the user stories for all the features planned so far
 
 What was planned for the period since the last work diary entry
 - Read up on the proposal and project 4 specifications
@@ -68,6 +73,7 @@ What was not finished, why this happened, how this affects the overall project p
     + Send our current feature list to our tutor for confirmation/help to see if we can split any existing features into 2
 
 What is planned for the next period (e.g., next week)
-- try to finish all the features
-- try to complete the proposal
-- TBA from Sunday meeting
+- try to finish coming up with all the features + user stories
+- try to complete the proposal (by mid week 3)
+- discuss the questions sent over to the tutor
+- start working on the project itself
