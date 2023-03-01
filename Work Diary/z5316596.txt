@@ -7,3 +7,12 @@ experience working with Jira and Kanban.
 During the first meeting, we discussed our grievances including: to finalise our choice, questions regarding the specifications of the assignment and possible roles.
 Questions unresolved would be asked to the tutor in Week 2. We planned to read the specifications more after the meeting to familarise ourselves and think of possible features
 to implement in the project, including novel ideas which would be proposed to the tutor.
+
+Week 2
+
+We had our tutorial where we asked numerous questions regarding specifications of the assignment. Afterwards, we had another meeting in which we delegated tasks
+in the proposal. I was tasked User Stories with Dabin. We also brainstormed additional features in which I contributed similar to spotify wrapped but morphed
+into more Steam Achievements. 
+
+After the meeting, I began working on the User stories but found the wording of Functionality/Objectives/Features confusing which would be brought up in the next meeting.
+After finalising our definitons, I helped Dabin and Vincent with the User Stories by essentially translating our preconceived features.
