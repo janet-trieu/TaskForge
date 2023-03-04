@@ -39,3 +39,39 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
   > Through Figma, I will create a low-fidelity prototype. Once done, other members can go through it and see if any changes are required. If sufficent, I can convert the prototype to a storyboard with our user stories.
 - COMP6080 Week 3-9 lectures to learn frontend
   > 6 weeks of content may or may not be doable, the lectures seem short-ish and I can skip through some lectures but we'll see
+
+///////////////////////////////////////////
+
+## Week 3 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Work through delegated proposal task
+- Study frontend
+
+??? What was finished ???
+- Delegated proposal task; I finish creating our interactive prototype and had the team review it.
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Our novel feature idea for Reputation was not complex enough, we either have to add more into it or create another novel idea. We decided to add an additional feature for Reputation by allowing users to examine graphs of a profile's reputation so they can visualise how the user has developed over the time.
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Studying frontend :[, I was too busy with building our interactive prototype so I couldn't focus on studying frontend that much. This is not a major problem as we have yet to start any programming yet and I am free to ask for frontend help :]
+- Adding storyboards to the proposal, this is currently being done by me right now and shouldn't take too long as I have all the wireframes/boards done - just need to link them up with user stories! :]
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish and submit our proposal
+- Get started planning our project design, tasks, database etc.
+
+///////////////////////////////////////////
+
+## Week 4 ##
+
+??? What was planned for the period since the last work diary entry ???
+
+??? What was finished ???
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+
+??? What is planned for the next period (e.g., next week) ???
