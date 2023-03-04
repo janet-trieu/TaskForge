@@ -10,3 +10,25 @@ discussion on what an MVP might look like. Questions for the tutor at next tutor
 Only joseph has had frontend experience, so hes doing frontend, however 1 person is probably not enough, so janet
 volunteered to learn and help him out when the time comes. Things to do before next tut is to properly read the specs
 and come up with ideas for novel features. Dabin already had one in mind, we just need 1 more
+
+============================================================================================================================
+
+Week 2
+
+Worked out majority of our functionalities/features in wednesday meeting and sunday meeting. Came up with reputation and
+achievements/milestones as novelty features. We decided to use react express for frontend, python flask for backend, postgresql
+for the database. I came up with a very rough sql schema for tasks and taskmaskers. Janet made some mockups for the website layout
+and each page. 
+I finished the background portion of the proposal, may need to rewrite as things change. Dabin, Francis and I worked on user stories
+after the sunday meeting, creating them and separating them into sprints.
+Added the tasks on jira
+
+============================================================================================================================
+
+Week 3
+
+We revised our novel functionalities to be more complex, especially the reputation system due to tutor feedback. 
+We decided to use firebase instead of a local postgresql database since it was probably easier, and it could provide
+authentication, so we didnt have to implement it ourselves. 
+I added more to the background portion of the proposal to better engage with the marking critera.
+We also named our project taskForge. I added our sprint 3 user stories into the jira roadmap.
