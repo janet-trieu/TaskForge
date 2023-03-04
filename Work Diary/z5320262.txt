@@ -1,4 +1,4 @@
-Week 1
+## Week 1 ##
 
 Group formed. I created my Jira account and joined the group. My role in the group is a developer.
 
@@ -12,3 +12,30 @@ We decided to use Python for backend, React for frontend and SQL for our databas
 An issue raised was that Joseph is the only person who has experience with frontend and that it'll be difficult for one person to work on frontend. It was decided that I will learn frontend during the term to help our frontend additonally with backend.
 
 We gave ourselves the tasks of reading the scope of the project more throughly and maybe look through existing task management softwares. This is due week 2 Wednesday.
+
+///////////////////////////////////////////
+
+## Week 2 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Understand the spec and requirements more clearly for our project and proposal
+- Study up on frontend with COMP6080 lectures + online resources (week 1-2 content, avaliable on YouTube)
+
+??? What was finished ???
+- Understanding the spec and requirements more deeply
+- Listed out features from spec. and our own ideas
+- Delegated tasks for our proposal
+  > I am working on interface and storyboards with Figma
+- Week 1-2 lectures of COMP6080 to learn frontend
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- NON-TECHNICAL: Needed clarification on what features were specifically, Dab asked on forums and we understand what classifies as a feature better now
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- N/A
+
+??? What is planned for the next period (e.g., next week) ???
+- Work on our delegated proposal tasks
+  > Through Figma, I will create a low-fidelity prototype. Once done, other members can go through it and see if any changes are required. If sufficent, I can convert the prototype to a storyboard with our user stories.
+- COMP6080 Week 3-9 lectures to learn frontend
+  > 6 weeks of content may or may not be doable, the lectures seem short-ish and I can skip through some lectures but we'll see
