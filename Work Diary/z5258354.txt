@@ -77,3 +77,33 @@ What is planned for the next period (e.g., next week)
 - try to complete the proposal (by mid week 3)
 - discuss the questions sent over to the tutor
 - start working on the project itself
+
+=== Week 3 === 
+
+General content:
+- everyone has started to do a lot of work for the proposal
+- for myself:
+    - have finished cleaning up the features/functionalities and user stories
+    - have input the user stories as issues on jira software for sprint 1
+    - have delegated tasks for the other 2 sprints
+- have discovered fireBase as our database and authentication BaaS
+
+What was planned for the period since the last work diary entry
+- Continue working on the proposal 
+
+What was finished
+- proposal background complete by Vincent
+- system architecture in progress by Joseph
+- user storyboards in progress by Janet
+- user stories being worked on by Francis, Vincent and myself
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- N/A, no obstacles for this week
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Completion of the proposal
+    - will be complete by Sunday
+
+What is planned for the next period (e.g., next week)
+- proposal should be complete, start working on the implementaiton itself
+- start looking into integrating fireBase and our project
