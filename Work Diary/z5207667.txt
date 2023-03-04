@@ -22,3 +22,13 @@ and each page.
 I finished the background portion of the proposal, may need to rewrite as things change. Dabin, Francis and I worked on user stories
 after the sunday meeting, creating them and separating them into sprints.
 Added the tasks on jira
+
+============================================================================================================================
+
+Week 3
+
+We revised our novel functionalities to be more complex, especially the reputation system due to tutor feedback. 
+We decided to use firebase instead of a local postgresql database since it was probably easier, and it could provide
+authentication, so we didnt have to implement it ourselves. 
+I added more to the background portion of the proposal to better engage with the marking critera.
+We also named our project taskForge. I added our sprint 3 user stories into the jira roadmap.
