@@ -2,10 +2,12 @@
 Feature: Global ID counters (Project, Epic, Task)
 
 Functionalities:
-    - init_id
-    - get_id
-    - update_id
-    - reset_id
+    - init_?id
+        > Resets ID to 0
+    - get_curr_?id
+        > Returns currrent amount of ID
+    - update_?id
+        > Increments ID
 '''
 import firebase_admin
 from firebase_admin import credentials
@@ -27,11 +29,11 @@ def init_pid():
     
     p_doc.set(data)
 
-def get_pid():
+def get_curr_pid():
     return p_doc.get().get("pid")
 
 def update_pid():
-    value = get_pid() + 1
+    value = get_curr_pid() + 1
 
     p_doc.update({"pid": value})
 
@@ -43,11 +45,11 @@ def init_eid():
     
     e_doc.set(data)
 
-def get_eid():
+def get_curr_eid():
     return e_doc.get().get("eid")
 
 def update_eid():
-    value = get_eid() + 1
+    value = get_curr_eid() + 1
 
     e_doc.update({"eid": value})
 
@@ -59,22 +61,10 @@ def init_tid():
     
     t_doc.set(data)
 
-def get_tid():
+def get_curr_tid():
     return t_doc.get().get("tid")
 
 def update_tid():
-    value = get_tid() + 1
+    value = get_curr_tid() + 1
 
     t_doc.update({"tid": value})
-
-if __name__ == "__main__":
-    print("===== task ID =====")
-    init_tid()
-    print(get_tid()) #0
-    update_tid()
-    print(get_tid()) #1
-    update_tid()
-    update_tid()
-    print(get_tid()) #3
-    init_tid()
-    print(get_tid()) #0
