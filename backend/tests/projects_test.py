@@ -78,36 +78,169 @@ def test_create_project_every_args():
 
 #     assert result == 1
 
-# def test_create_project_invalid_uid():
+def test_create_project_invalid_uid():
 
-#     # test for project creation with invalid input
-#     uid = -1
-#     name = "Project1"
-#     description = "description"
-#     status = "Not Started"
-#     due_date = None
-#     team_strength = None
-#     picture = None
+    # test for project creation with invalid input
+    uid = -1
+    name = "Project1"
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
 
-#     with pytest.raises(ValueError):
-#         create_project(uid, name, description, status, due_date, team_strength, picture)
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
 
-#     # reset database
-#     db.collection("projects_test").document("0").delete()
+def test_create_project_invalid_uid_type():
 
-# def test_create_project_invalid_proj_name():
+    # test for project creation with invalid input
+    uid = "1"
+    name = "Project1"
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
 
-#     # test for project creation with invalid input
-#     uid = 0
-#     name = -1
-#     description = -1
-#     status = -1
-#     due_date = -1
-#     team_strength = -1
-#     picture = -1
+    with pytest.raises(TypeError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
 
-#     with pytest.raises(ValueError):
-#         create_project(uid, name, description, status, due_date, team_strength, picture)
+def test_create_project_invalid_name_type():
 
-#     # reset database
-#     db.collection("projects_test").document("0").delete()
+    # test for project creation with invalid input
+    uid = 0
+    name = 1
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(TypeError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_name():
+
+    # test for project creation with invalid input
+    uid = 0
+    name = ""
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_name_length():
+
+    # test for project creation with invalid input
+    uid = 0
+    name = "A"*51
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_description():
+
+    # test for project creation with invalid input
+    uid = 0
+    name = "Project0"
+    description = ""
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_description_length():
+
+    # test for project creation with invalid input
+    uid = 0
+    name = "Project0"
+    description = "A"*1001
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_description_type():
+
+    # test for project creation with invalid input
+    uid = 0
+    name = "Project0"
+    description = 0
+    status = "Not Started"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(TypeError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_status():
+
+    uid = 0
+    name = "Project 1"
+    description = "description"
+    status = "NotStarted"
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_status_type():
+
+    uid = 0
+    name = "Project1"
+    description = "description"
+    status = 0
+    due_date = None
+    team_strength = None
+    picture = None
+
+    with pytest.raises(TypeError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_team_strength():
+
+    uid = 0
+    name = "Project1"
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = -1
+    picture = None
+
+    with pytest.raises(ValueError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+def test_create_project_invalid_team_strength_type():
+
+    uid = 0
+    name = "Project1"
+    description = "description"
+    status = "Not Started"
+    due_date = None
+    team_strength = "1"
+    picture = None
+
+    with pytest.raises(TypeError):
+        create_project(uid, name, description, status, due_date, team_strength, picture)
+
+# test for invalid picture input
+
