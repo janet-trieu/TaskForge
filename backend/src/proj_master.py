@@ -22,11 +22,12 @@ def revive_completed_project(pid, uid):
     '''
     pass
 
-def remove_project_membner():
+def remove_project_member():
     pass
 
-def requst_leave_project():
-    pass
+# Below shouldnt be in proj_master, but keeping it here till we find somewhere more appropriate
+# def reqeust_leave_project():
+#     pass
 
 def invite_to_project():
     pass
