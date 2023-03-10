@@ -45,9 +45,9 @@ def test_create_project_every_args():
 
     assert result == 0
 
-    # # reset database
-    # db.collection("projects_test").document("0").delete()
-
+'''
+Below is waiting to merge in Janet's changes to global counters
+'''
 # def test_create_multiple_projects():
 
 #     # test for project1 creation
@@ -262,7 +262,13 @@ def test_revive_completed_project():
 
     proj_ref = db.collection("projects_test").document(str(pid))
     assert proj_ref.get().get("status") == "In Progress"
-    
+
+def test_revive_non_completed_projecct():
+    pid = create_project(0, "Project X", "description", "In Progress", None, None, None)
+    pid = 0
+
+    with pytest.raises(ValueError):
+        revive_completed_project(pid, 0, "In Progress")
 
 def test_remove_project_member():
     '''
@@ -286,6 +292,19 @@ def test_remove_project_member():
     project_members = proj_ref.get().get("project_members")
 
     assert project_members == [0, 2, 3]
+
+def test_remove_invalid_project_member():
+    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = 0
+
+    proj_ref = db.collection("projects_test").document(str(pid))
+
+    uid_to_be_removed = 5
+
+    # remove_project_member only returns 0 after successful removal of a project member
+    res = remove_project_member(pid, proj_ref.get().get("uid"), uid_to_be_removed)
+
+    assert not res == 0
 
 
 def test_invite_to_project():
