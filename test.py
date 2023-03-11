@@ -75,14 +75,16 @@ users_ref.document('5').set(e.to_dict())
 users_ref = db.collection('users')
 query = users_ref.where('is_admin', '==', 'True')
 
-docs = db.collection('users').where('is_admin', '==', True).stream()
-for doc in docs:
-    print(f'{doc.id} => {doc.to_dict()}')
+#docs = db.collection('users').where('is_admin', '==', True).stream()
+#for doc in docs:
+#    print(f'{doc.id} => {doc.to_dict()}')
     
 
-docs = db.collection('users').where('uid', '>', 3).stream()
+docs = db.collection('users').where('uid', '>', 2).stream()
+dict_list = []
 for doc in docs:
-    print(f'{doc.id} => {doc.to_dict()}')
+    dict_list.append(doc.to_dict())
+print(dict_list)
 
 
 #ADDING NEW COLLECTION, PROJECTS
