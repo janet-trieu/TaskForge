@@ -7,6 +7,7 @@ Functionalities:
  - invite_to_project()
 '''
 from firebase_admin import firestore
+from src.global_counters import *
 
 db = firestore.client()
 
@@ -25,8 +26,8 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     if picture == None:
         picture = "bleh.png"
 
-    print(f"THIS IS team strength @@@@@@@@@@@@@ {team_strength}")
-    print(f"THIS IS team strength @@@@@@@@@@@@@ {type(team_strength)}")
+    # print(f"THIS IS team strength @@@@@@@@@@@@@ {team_strength}")
+    # print(f"THIS IS team strength @@@@@@@@@@@@@ {type(team_strength)}")
 
     # check for invalid type inputs:
     if not type(uid) == int:
@@ -79,11 +80,21 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         "project_members": [uid]
     }
 
-    pid = 0
+    # get the current pid to return
+    curr_pid = get_curr_pid()
 
-    db.collection("projects_test").document(str(pid)).set(data)
+    db.collection("projects_test").document(str(curr_pid)).set(data)
+
+    data = {
+        "pid": curr_pid
+    }
+    db.collection("counters").document("project").set(data)
     
-    return pid
+    # update the pid after creating a project
+    update_pid()
+    print(f"THIS IS CURR PID {curr_pid}")
+
+    return curr_pid
 
 def add_tm_to_project(pid, new_uid):
     proj_ref = db.collection("projects_test").document(str(pid))
@@ -109,6 +120,9 @@ def revive_completed_project(pid, uid, new_status):
 
     set project's status back into review
     '''
+
+    if pid < 0:
+        return f"ERROR: Invalid project id supplied {pid}"
     
     proj_ref = db.collection("projects_test").document(str(pid))
     if proj_ref == None:
@@ -118,8 +132,8 @@ def revive_completed_project(pid, uid, new_status):
     check if uid exists, assuming exists for now
     '''
 
-    if proj_ref.get().get("status") == "Completed":
-        return ValueError("Cannot revive a project that is not Completed")
+    if not proj_ref.get().get("status") == "Completed":
+        return f"ERROR: Cannot revive a project that is not Completed"
 
     if new_status not in ["Not Started", "In Progress", "In Review", "Blocked"]:
         raise ValueError("Selected Status not available")
@@ -128,10 +142,16 @@ def revive_completed_project(pid, uid, new_status):
         "status": new_status
     })
 
+    return 0
+
 def remove_project_member(pid, uid, uid_to_be_removed):
     '''
     assumption: project already has members
     '''
+
+    if pid < 0:
+        return f"ERROR: Invalid project id supplied {pid}"
+
     proj_ref = db.collection("projects_test").document(str(pid))
     if proj_ref == None:
         return f"ERROR: Failed to get reference for project {pid}"

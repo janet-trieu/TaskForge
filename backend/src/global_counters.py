@@ -9,12 +9,12 @@ Functionalities:
     - update_?id
         > Increments ID
 '''
-import firebase_admin
-from firebase_admin import credentials
+# import firebase_admin
+# from firebase_admin import credentials
 from firebase_admin import firestore
 
-cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c80ed6513a.json')
-app = firebase_admin.initialize_app(cred)
+# cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c80ed6513a.json')
+# app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 p_doc = db.collection("counters").document("project")

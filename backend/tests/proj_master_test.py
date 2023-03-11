@@ -5,18 +5,18 @@ Blackbox testing of Project Master Feature
 import pytest
 from src.projects import *
 from src.proj_master import *
+from test_helpers import *
 
-# def test_user_is_proj_master():
-#     uid0 = 0
-#     uid1 = 1
-
-#     pid = create_project(uid0, "Project 123", "description", "Completed", None, None, None)
-
+############################################################
+#                   Test for create_project                #
+############################################################
 
 def test_create_project_use_default_vals():
 
+    reset_project_count()
+
     # test for project creation
-    uid = 1
+    uid = 0
     name = "Project0"
     description = "Creating Project0 for testing"
     status = None
@@ -27,13 +27,15 @@ def test_create_project_use_default_vals():
 
     assert result == 0
 
-    # # reset database
-    # db.collection("projects_test").document("0").delete()
+    # reset database
+    reset_projects()
 
 def test_create_project_every_args():
 
+    reset_project_count()
+
     # test for project creation
-    uid = 1
+    uid = 0
     name = "Project1"
     description = "Creating Project1 for testing"
     status = "In Progress"
@@ -45,38 +47,44 @@ def test_create_project_every_args():
 
     assert result == 0
 
-'''
-Below is waiting to merge in Janet's changes to global counters
-'''
-# def test_create_multiple_projects():
+    # reset database
+    reset_projects()
 
-#     # test for project1 creation
-#     uid = 0
-#     name = "Project1"
-#     description = "Creating Project1 for testing"
-#     status = None
-#     due_date = None
-#     team_strength = None
-#     picture = None
+def test_create_multiple_projects():
 
-#     result = create_project(uid, name, description, status, due_date, team_strength, picture)
+    reset_project_count()
 
-#     assert result == 0
+    # test for project1 creation
+    uid = 0
+    name = "Project1"
+    description = "Creating Project1 for testing"
+    status = None
+    due_date = None
+    team_strength = None
+    picture = None
 
-#     # test for project2 creation
-#     uid = 0
-#     name = "Project1"
-#     description = "Creating Project1 for testing"
-#     status = None
-#     due_date = None
-#     team_strength = None
-#     picture = None
+    result = create_project(uid, name, description, status, due_date, team_strength, picture)
+    
+    assert result == 0
 
-#     result = create_project(uid, name, description, status, due_date, team_strength, picture)
+    # test for project2 creation
+    uid = 0
+    name = "Project2"
+    description = "Creating Project2 for testing"
+    status = None
+    due_date = None
+    team_strength = None
+    picture = None
 
-#     assert result == 1
+    result = create_project(uid, name, description, status, due_date, team_strength, picture)
+
+    assert result == 1
+
+    reset_projects()
 
 def test_create_project_invalid_uid():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = -1
@@ -90,7 +98,11 @@ def test_create_project_invalid_uid():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_uid_type():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = "1"
@@ -104,7 +116,11 @@ def test_create_project_invalid_uid_type():
     with pytest.raises(TypeError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_name_type():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -118,7 +134,11 @@ def test_create_project_invalid_name_type():
     with pytest.raises(TypeError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_name():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -132,7 +152,11 @@ def test_create_project_invalid_name():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_name_length():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -146,7 +170,11 @@ def test_create_project_invalid_name_length():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_description():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -160,7 +188,11 @@ def test_create_project_invalid_description():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_description_length():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -174,7 +206,11 @@ def test_create_project_invalid_description_length():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_description_type():
+
+    reset_project_count()
 
     # test for project creation with invalid input
     uid = 0
@@ -188,7 +224,11 @@ def test_create_project_invalid_description_type():
     with pytest.raises(TypeError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_status():
+
+    reset_project_count()
 
     uid = 0
     name = "Project 1"
@@ -201,7 +241,11 @@ def test_create_project_invalid_status():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_status_type():
+
+    reset_project_count()
 
     uid = 0
     name = "Project1"
@@ -214,7 +258,11 @@ def test_create_project_invalid_status_type():
     with pytest.raises(TypeError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_team_strength():
+
+    reset_project_count()
 
     uid = 0
     name = "Project1"
@@ -227,7 +275,11 @@ def test_create_project_invalid_team_strength():
     with pytest.raises(ValueError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 def test_create_project_invalid_team_strength_type():
+
+    reset_project_count()
 
     uid = 0
     name = "Project1"
@@ -240,42 +292,95 @@ def test_create_project_invalid_team_strength_type():
     with pytest.raises(TypeError):
         create_project(uid, name, description, status, due_date, team_strength, picture)
 
+    reset_projects()
+
 #TO-DO: test for invalid picture input
 
+############################################################
+#           Test for revive_completed_project              #
+############################################################
+
+def test_revive_completed_project_invalid_pid():
+    reset_project_count()
+
+    pid = -1
+    res = revive_completed_project(pid, 0, "In Progress")
+
+    assert not res == 0
+
+    reset_projects()
+
 def test_revive_completed_project():
-    '''
-    project = create_project(args)  # create_project returns the project id (pid)
 
-    # set project's status to complete
+    reset_project_count()
 
-    revive_completed_project(pid, uid)
-    
-    '''
     pid = create_project(0, "Project 123", "description", "Completed", None, None, None)
 
-    pid = 0
     proj_ref = db.collection("projects_test").document(str(pid))
+    print(f"THIS IS STATUS == {proj_ref.get().get('status')}")
     assert proj_ref.get().get("status") == "Completed"
 
     # revive completed project back into "In Progress"
-    revive_completed_project(pid, proj_ref.get().get("uid"),"In Progress")
+    revive_completed_project(pid, proj_ref.get().get("uid"), "In Progress")
 
     proj_ref = db.collection("projects_test").document(str(pid))
+    print(f"THIS IS STATUS == {proj_ref.get().get('status')}")
     assert proj_ref.get().get("status") == "In Progress"
 
-def test_revive_non_completed_projecct():
-    pid = create_project(0, "Project X", "description", "In Progress", None, None, None)
-    pid = 0
+    reset_projects()
 
-    with pytest.raises(ValueError):
-        revive_completed_project(pid, 0, "In Progress")
+def test_revive_non_completed_project():
+
+    reset_project_count()
+
+    pid = create_project(0, "Project X", "description", "In Progress", None, None, None)
+
+    proj_ref = db.collection("projects_test").document(str(pid))
+
+    proj_status = proj_ref.get().get("status")
+
+    assert proj_status == "In Progress"
+
+    res = revive_completed_project(pid, 0, "In Review")
+
+    assert not res == 0
+
+    reset_projects()
+
+############################################################
+#             Test for remove_project_member               #
+############################################################
+
+def test_remove_project_member_invalid_pid():
+
+    reset_project_count()
+
+    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+
+    proj_ref = db.collection("projects_test").document(str(pid))
+    project_members = proj_ref.get().get("project_members")
+
+    uid_to_be_removed = 1
+
+    add_tm_to_project(pid, 1)
+    add_tm_to_project(pid, 2)
+    add_tm_to_project(pid, 3)
+
+    invalid_pid = -1
+    res = remove_project_member(invalid_pid, proj_ref.get().get("uid"), uid_to_be_removed)
+
+    assert not res == 0
+
+    reset_projects()
 
 def test_remove_project_member():
     '''
     Assumption: project already has members
     '''
+
+    reset_project_count()
+
     pid = create_project(0, "Project X", "description", "Completed", None, None, None)
-    pid = 0
 
     proj_ref = db.collection("projects_test").document(str(pid))
     project_members = proj_ref.get().get("project_members")
@@ -293,9 +398,13 @@ def test_remove_project_member():
 
     assert project_members == [0, 2, 3]
 
+    reset_projects()
+
 def test_remove_invalid_project_member():
+
+    reset_project_count()
+
     pid = create_project(0, "Project X", "description", "Completed", None, None, None)
-    pid = 0
 
     proj_ref = db.collection("projects_test").document(str(pid))
 
@@ -306,7 +415,11 @@ def test_remove_invalid_project_member():
 
     assert not res == 0
 
+    reset_projects()
 
+############################################################
+#               Test for invite_to_project                 #
+############################################################
 def test_invite_to_project():
     
     pass
