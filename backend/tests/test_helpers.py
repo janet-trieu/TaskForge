@@ -18,5 +18,13 @@ def reset_project_count():
 
     counter_ref.update({"pid": 0})
 
-def is_user_project_master(uid):
-    pass
+def add_tm_to_project(pid, new_uid):
+    proj_ref = db.collection("projects_test").document(str(pid))
+    project_members = proj_ref.get().get("project_members")
+
+    if not new_uid in project_members:
+        project_members.append(new_uid)
+
+    proj_ref.update({
+        "project_members": project_members
+    })

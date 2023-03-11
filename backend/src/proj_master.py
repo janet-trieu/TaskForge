@@ -11,9 +11,12 @@ from src.global_counters import *
 
 db = firestore.client()
 
-def check_uid_is_proj_master(pid, uid):
-    pass
-
+'''
+Create a project with supplied arguments
+Returns:
+ - pid of newly generated project if successful
+ - error if failed to create project
+'''
 def create_project(uid, name, description, status, due_date, team_strength, picture):
 
     # setting default values 
@@ -25,9 +28,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         team_strength = None
     if picture == None:
         picture = "bleh.png"
-
-    # print(f"THIS IS team strength @@@@@@@@@@@@@ {team_strength}")
-    # print(f"THIS IS team strength @@@@@@@@@@@@@ {type(team_strength)}")
 
     # check for invalid type inputs:
     if not type(uid) == int:
@@ -62,9 +62,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     
     if not status in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
         raise ValueError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
-    # check for due date being less than 1 day away from today
-    # if due_date <= date.today().strftime('%Y-%m-%d') or due_date <:
-    #     raise ValueError("Project due date cannot be less than 1 day away")
+    # TO-DO: check for due date being less than 1 day away from today
     if not team_strength == None:
         if team_strength < 0:
             raise ValueError("Team strength cannot be less than 0!!!")
@@ -96,16 +94,21 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
 
     return curr_pid
 
-def add_tm_to_project(pid, new_uid):
+'''
+Checks whether the uid given is the project master id of the specified project
+Returns:
+ - 0 if True
+ - error if False
+'''
+def is_user_project_master(uid, pid):
+
     proj_ref = db.collection("projects_test").document(str(pid))
-    project_members = proj_ref.get().get("project_members")
+    proj_master_id = proj_ref.get().get("uid")
 
-    if not new_uid in project_members:
-        project_members.append(new_uid)
-
-    proj_ref.update({
-        "project_members": project_members
-    })
+    if uid == proj_master_id:
+        return 0
+    else:
+        return f"ERROR: Supplied user id:{uid} is not the project master of project:{pid}"
 
 '''
 Revives a project where its status has been set to complete,
@@ -114,12 +117,11 @@ pid = project id
 uid = user id
 '''
 def revive_completed_project(pid, uid, new_status):
-    '''
-    check whether supplied pid exists
-    check whether supplied uid exists
 
-    set project's status back into review
-    '''
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        return f"ERROR: Supplied uid is not the project master of project:{pid}" 
 
     if pid < 0:
         return f"ERROR: Invalid project id supplied {pid}"
@@ -144,10 +146,21 @@ def revive_completed_project(pid, uid, new_status):
 
     return 0
 
+'''
+Remove a specific member within the project
+Returns:
+ - 0 for successful remove
+ - Error for failed removal
+'''
 def remove_project_member(pid, uid, uid_to_be_removed):
     '''
     assumption: project already has members
     '''
+
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        return f"ERROR: Supplied uid is not the project master of project:{pid}" 
 
     if pid < 0:
         return f"ERROR: Invalid project id supplied {pid}"
