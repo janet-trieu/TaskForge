@@ -1,5 +1,5 @@
 '''
-Feature: Global ID counters (Project, Epic, Task)
+Feature: Global ID counters (Project, Epic, Task, Total User)
 
 Functionalities:
     - init_?id
