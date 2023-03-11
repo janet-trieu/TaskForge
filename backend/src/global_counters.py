@@ -20,6 +20,7 @@ db = firestore.client()
 p_doc = db.collection("counters").document("project")
 e_doc = db.collection("counters").document("epic")
 t_doc = db.collection("counters").document("task")
+tu_doc = db.collection("counters").document("toal_user")
 
 ### ========= Project ID ========= ###
 def init_pid():
@@ -68,3 +69,20 @@ def update_tid():
     value = get_curr_tid() + 1
 
     t_doc.update({"tid": value})
+
+
+### ========= Total User ID ========= ###
+def init_tuid():
+    data = {
+        "tuid": 0
+    }
+    
+    tu_doc.set(data)
+
+def get_curr_tuid():
+    return tu_doc.get().get("tuid")
+
+def update_tuid():
+    value = get_curr_tuid() + 1
+
+    tu_doc.update({"tuid": value})
