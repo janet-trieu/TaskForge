@@ -16,8 +16,6 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from datetime import datetime
 
-cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c80ed6513a.json')
-app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 # ============ HELPERS to move ============ #
@@ -229,7 +227,7 @@ def notification_comment(uid, uid_sender, pid, tid):
     notification = {
         nid : {
             "has_read": False,
-            "notification_msg": f"{sender_name} has commented in {task_name} in {project_name}",
+            "notification_msg": f"{sender_name} has commented in {task_name} in {project_name}.",
             "pid": pid,
             "tid": tid,
             "time_sent": datetime.now(),
