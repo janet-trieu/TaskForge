@@ -80,11 +80,14 @@ query = users_ref.where('is_admin', '==', 'True')
 #    print(f'{doc.id} => {doc.to_dict()}')
     
 
-docs = db.collection('users').where('uid', '>', 2).stream()
+docs = db.collection('users').where('uid', '>', 6).stream()
 dict_list = []
 for doc in docs:
-    dict_list.append(doc.to_dict())
-print(dict_list)
+    #dict_list.append(doc.to_dict())
+    result = doc.to_dict()
+    if (result == {}) : print("none")
+    print(result)
+#print(result.get('display_name'))
 
 
 #ADDING NEW COLLECTION, PROJECTS
