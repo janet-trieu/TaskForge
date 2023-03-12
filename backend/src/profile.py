@@ -29,6 +29,12 @@ def create_user_email(email, password, display_name):
         update_tuid()
         print('Sucessfully created new user: {0}'.format(user.uid))
 
+def delete_user(uid):
+    try:
+        auth.delete_user(uid)
+
+    except:
+        print("uid does not correspond to a current user")
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
     try:
@@ -71,24 +77,20 @@ def get_email(uid):
     return auth.get_user(uid).email
 
 ### ========= Get Projects ========= ###
-def get_projects(uid):
-    user_ref = db.collection("users").document(uid)
-    return user_ref.get().get("projects")
+def get_projects(uid):    
+    return get_user_ref(uid).get("projects")
 
-### ========= Get Projects ========= ###
+### ========= Get Tasks ========= ###
 def get_tasks(uid):
-    user_ref = db.collection("users").document(uid)
-    return user_ref.get().get("tasks")
+    return get_user_ref(uid).get("tasks")
 
 ### ========= is admin ========= ###
 def is_admin(uid):
-    user_ref = db.collection("users").document(uid)
-    return user_ref.get().get("is_admin")
+    return get_user_ref(uid).get("is_admin")
 
 ### ========= is banned ========= ###
 def is_banned(uid):
-    user_ref = db.collection("users").document(uid)
-    return user_ref.get().get("is_banned")
+    return get_user_ref(uid).get("is_banned")
 
 ### ========= Helper Functions ========= ###
 ### ========= Create User in Firestore Database ========= ###
@@ -99,8 +101,15 @@ def create_user_firestore(uid):
     
     users_ref.document(str(value)).set(user.to_dict())
 
+### ========= get user ref ========= ###
+def get_user_ref(uid):
+    user_ref = db.collection('users').where("uid", "==", uid).stream()
+    return list(user_ref)[0].to_dict()
+    
+
 create_user_email("ilovehotstinkymenunderwear@gmail.com", "helloitsmeyourworstnightmarewetsocks", "bleh")
 update_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2", "bob the builder")
 print(get_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
 print(get_projects("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
 print(get_tasks("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
+print(is_admin("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
