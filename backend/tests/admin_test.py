@@ -1,100 +1,111 @@
 import pytest
 import firebase_admin
-from firebase_admin import auth
-from src.admin import *
-from src.helper import *
-from src.profile import *
+from firebase_admin import credentials
+from firebase_admin import firestore
 
-
-# Set up
-# Use a service account.
-cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-8157d1424f.json')
-app = firebase_admin.initialize_app(cred)
-db = firestore.client()
+from src.profile import is_admin, is_banned, is_removed
+from src.admin import give_admin, ban_user, unban_user,  remove_user, readd_user
 
 #Assuming that 2 users already exist, the first one is root admin and 2nd one is just a normal user
 #each test should somewhat reset for the next test
-@pytest.mark.order1
+#@pytest.mark.order1
+
 def test_give_admin():
-    assert(is_admin(0))
-    assert(not is_admin(1))
-    give_admin(0, 1)
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(not is_admin('xyzabc123'))
+    give_admin('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    assert(is_admin('xyzabc123'))
 
-@pytest.mark.order2
+
+#@pytest.mark.order2
 def test_give_admin_to_admin():
-    assert(is_admin(0))
-    assert(is_admin(1))
-    
-    give_admin(0, 1)
-    assert(is_admin(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(is_admin('xyzabc123'))
+    try:
+        give_admin('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    except ValueError:
+        pass
+    assert(is_admin('xyzabc123'))
 
-@pytest.mark.order3
+#@pytest.mark.order3
 def test_ban_user():
-    assert(is_admin(0))
-    assert(not is_banned(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(not is_banned('xyzabc123'))
     
-    ban_user(0, 1)
-    assert(is_banned(1))
+    ban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    assert(is_banned('xyzabc123'))
 
-@pytest.mark.order4
+#@pytest.mark.order4
 def test_ban_banned_user():
-    assert(is_admin(0))
-    assert(is_banned(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(is_banned('xyzabc123'))
     
-    ban_user(0, 1)
-    assert(is_banned(1))
+    try:
+        ban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    except ValueError:
+        pass
+    assert(is_banned('xyzabc123'))
 
 
 #user is still banned from last test
-@pytest.mark.order5
+#@pytest.mark.order5
 def test_unban_user():
-    assert(is_admin(0))
-    assert(is_banned(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(is_banned('xyzabc123'))
     
-    unban_user(0, 1)
-    assert(not is_banned(1))
+    unban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    assert(not is_banned('xyzabc123'))
 
-@pytest.mark.order6
+#@pytest.mark.order6
 def test_unban_notbanned_user():
-    assert(is_admin(0))
-    assert(not is_banned(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(not is_banned('xyzabc123'))
     
-    unban_user(0, 1)
-    assert(not is_banned(1))
+    try:
+        unban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    except ValueError:
+        pass
+    assert(not is_banned('xyzabc123'))
 
 
-@pytest.mark.order7
+#@pytest.mark.order7
 def test_remove_user():
-    assert(is_admin(0))
-    assert(not is_removed(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(not is_removed('xyzabc123'))
     
-    remove_user(0, 1)
-    assert(is_removed(1))
+    remove_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    assert(is_removed('xyzabc123'))
 
 
 #user still removed
-@pytest.mark.order8
+#@pytest.mark.order8
 def test_remove_removed_user():
-    assert(is_admin(0))
-    assert(is_removed(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(is_removed('xyzabc123'))
     
-    remove_user(0, 1)
-    assert(is_removed(1))
+    try:
+        remove_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    except ValueError:
+        pass
+    assert(is_removed('xyzabc123'))
 
 
 #user still removed from last test
-@pytest.mark.order9
+#@pytest.mark.order9
 def test_readd_removed_user():
-    assert(is_admin(0))
-    assert(is_removed(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(is_removed('xyzabc123'))
     
-    readd_user(0, 1)
-    assert(not is_removed(1))
+    readd_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    assert(not is_removed('xyzabc123'))
 
-@pytest.mark.order10
+#@pytest.mark.order10
 def test_readd_normal_user():
-    assert(is_admin(0))
-    assert(not is_removed(1))
+    assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
+    assert(not is_removed('xyzabc123'))
     
-    readd_user(0, 1)
-    assert(not is_removed(1))
+    try:
+        readd_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
+    except ValueError:
+        pass
+    assert(not is_removed('xyzabc123'))
