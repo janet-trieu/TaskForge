@@ -80,6 +80,16 @@ def get_tasks(uid):
     user_ref = db.collection("users").document(uid)
     return user_ref.get().get("tasks")
 
+### ========= is admin ========= ###
+def is_admin(uid):
+    user_ref = db.collection("users").document(uid)
+    return user_ref.get().get("is_admin")
+
+### ========= is banned ========= ###
+def is_banned(uid):
+    user_ref = db.collection("users").document(uid)
+    return user_ref.get().get("is_banned")
+
 ### ========= Helper Functions ========= ###
 ### ========= Create User in Firestore Database ========= ###
 def create_user_firestore(uid):
@@ -89,7 +99,7 @@ def create_user_firestore(uid):
     
     users_ref.document(str(value)).set(user.to_dict())
 
-#create_user_email("ilovehotstinkymenunderwear@gmail.com", "helloitsmeyourworstnightmarewetsocks", "bleh")
+create_user_email("ilovehotstinkymenunderwear@gmail.com", "helloitsmeyourworstnightmarewetsocks", "bleh")
 update_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2", "bob the builder")
 print(get_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
 print(get_projects("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
