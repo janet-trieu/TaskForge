@@ -6,7 +6,6 @@ from firebase_admin import auth
 from global_counters import *
 from classes import *
 
-tu_doc = db.collection("counters").document("total_user")
 ### ========= Functions ========= ###
 ### ========= Create User ========= ###
 def create_user_email(email, password, display_name):
