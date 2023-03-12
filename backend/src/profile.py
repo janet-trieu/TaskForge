@@ -3,8 +3,11 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from global_counters import *
-from classes import *
+from src.global_counters import get_curr_tuid
+from src.classes import User
+
+
+db = firestore.client()
 
 ### ========= Functions ========= ###
 ### ========= Create User ========= ###
@@ -95,6 +98,10 @@ def is_admin(uid):
 ### ========= is banned ========= ###
 def is_banned(uid):
     return get_user_ref(uid).get("is_banned")
+    
+### ========= is removed ========= ###
+def is_removed(uid):
+    return get_user_ref(uid).get("is_removed")
 
 ### ========= get uid fromemail ========= ###
 def get_uid_from_email(email):
@@ -105,7 +112,7 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(value, uid, False, False, [], [], [])
+    user = User(value, uid, False, False, False, [], [], [])
     
     users_ref.document(str(value)).set(user.to_dict())
 
@@ -114,13 +121,3 @@ def get_user_ref(uid):
     user_ref = db.collection('users').where("uid", "==", uid).stream()
     return list(user_ref)[0].to_dict()
     
-
-create_user_email("ilovehotstinkymenunderwear@gmail.com", "helloitsmeyourworstnightmarewetsocks", "bleh")
-uid = get_uid_from_email("ilovehotstinkymenunderwear@gmail.com")
-update_display_name(uid, "bob the builder")
-print(get_display_name(uid))
-print(get_projects(uid))
-print(get_tasks(uid))
-print(is_admin(uid))
-delete_user(uid)
-
