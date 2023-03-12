@@ -28,13 +28,17 @@ def create_user_email(email, password, display_name):
         create_user_firestore(user.uid)
         update_tuid()
         print('Sucessfully created new user: {0}'.format(user.uid))
+        return user.uid
 
+### ========= Delete User ========= ###
 def delete_user(uid):
     try:
         auth.delete_user(uid)
-
+        tuid = get_user_ref(uid).get("tuid")
+        db.collection("users").document(str(tuid)).delete()
     except:
         print("uid does not correspond to a current user")
+
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
     try:
@@ -92,6 +96,10 @@ def is_admin(uid):
 def is_banned(uid):
     return get_user_ref(uid).get("is_banned")
 
+### ========= get uid fromemail ========= ###
+def get_uid_from_email(email):
+    return auth.get_user_by_email(email).uid
+
 ### ========= Helper Functions ========= ###
 ### ========= Create User in Firestore Database ========= ###
 def create_user_firestore(uid):
@@ -108,8 +116,11 @@ def get_user_ref(uid):
     
 
 create_user_email("ilovehotstinkymenunderwear@gmail.com", "helloitsmeyourworstnightmarewetsocks", "bleh")
-update_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2", "bob the builder")
-print(get_display_name("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
-print(get_projects("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
-print(get_tasks("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
-print(is_admin("Jgq6jSlxHkYS5gx48REykwCAA0Q2"))
+uid = get_uid_from_email("ilovehotstinkymenunderwear@gmail.com")
+update_display_name(uid, "bob the builder")
+print(get_display_name(uid))
+print(get_projects(uid))
+print(get_tasks(uid))
+print(is_admin(uid))
+delete_user(uid)
+
