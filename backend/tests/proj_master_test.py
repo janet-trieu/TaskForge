@@ -320,22 +320,87 @@ def test_remove_invalid_project_member():
 #               Test for invite_to_project                 #
 ############################################################
 
-def test_create_project_not_proj_master():
-    pass
+def test_invite_to_project_not_proj_master():
+
+    reset_project_count()
+
+    incorrect_uid = -1
+
+    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid = 1
+
+    res = invite_to_project(pid, incorrect_uid, receiver_uid)
+
+    assert not res == 0
+
+    reset_projects()
 
 def test_invite_to_project():
     
-    pass
+    reset_project_count()
+
+    sender_uid = 0
+
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid = 1
+
+    res = invite_to_project(pid, sender_uid, receiver_uid)
+
+    assert res == 0
+
+    reset_projects()
+
 
 def test_invite_to_invalid_project():
 
-    pass
+    reset_project_count()
 
-def test_invite_invalid_uid():
+    sender_uid = 0
 
-    pass
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid = 1
+
+    incorrect_pid = -1
+
+    res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
+
+    assert not res == 0
+
+    reset_projects()
+
+def test_invite_invalid_receiver_uid():
+
+    reset_project_count()
+
+    sender_uid = 0
+
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid = -1
+
+    res = invite_to_project(pid, sender_uid, receiver_uid)
+
+    assert not res == 0
+
+    reset_projects()
 
 def test_invite_uid_already_in_project():
 
-    pass
+    reset_project_count()
 
+    sender_uid = 0
+
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid = 1
+
+    add_tm_to_project(pid, 1)
+
+    res = invite_to_project(pid, sender_uid, receiver_uid)
+
+    assert not res == 0
+
+    reset_projects()
