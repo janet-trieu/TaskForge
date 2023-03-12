@@ -1,139 +1,157 @@
 '''
-# 1new connection request
-    # {User} has requested to connect. Accept Decline - !! remove after response !!
-# 2project invitation
-    # {User} has invited you to join {project}. Accept Decline - !! remove after response !!
-# 3assigned a task
-    # You have been assigned {task} in {project}.
-# 4comment added in task
-    # {User} has commented on {task} in {project}.
-# 5upcoming assigned task deadline
-    # {Task} is due soon. - put this up when due in 1 day
-# 6new review
-    # {User} has reviewed you.
-# 7achievement gained
-    # You have gained {achievement} achievement.
-# 8request to leave
-    # {User} has requested to leave {project}. Accept Decline - !! remove after response !!
-
-# EXCEPTIONS
-# - tries to accept even if already responded to connection or project req (happens when accepted via email during time)
-# - User or project or task or comment does not exist
-# - user is not project master for leave
-'''
-
-'''
 TODO
-- Update functions when implemented
-    - create project
-    - create task
-    - send connect req
-    - clear database
+- !!! Currently cannot test with needed functions, added dummy data directly to db 
+    - once more stuff gets implement i can make these tests alot more nicer
+- remember to remove direct calls once these have been implemented to ensure they work along side with respective functions
 '''
+import pytest
 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
 
+from src.notifications import *
+
 # ============ SET UP ============ #
 # Use a service account.
-cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c54a827d6c.json')
-app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-notf_ref = db.collection("notifications").stream
+# ============ HELPERS ============ #
+user_id0 = 'NotifyUser0'
+user_id1 = 'NotifyUser1'
 
+pid_expected = 7357
+tid_expected = 1010
+rid_expected = 400
 
 def setup():
-    auth.create_user(uid=1, display_name='John Doe')
-    auth.create_user(uid=2, display_name='Jane Doe')
+    db.collection('users').document(user_id0).set({'display_name':'John Doe'})
+    db.collection('users').document(user_id1).set({'display_name':'Jane Doe'})
+    db.collection('projects').document(str(pid_expected)).set({'name':'Project Notification !!! NOTIFICATION TEST'})
+    db.collection('tasks').document(str(tid_expected)).set({'name':'Task Notification !!! NOTIFICATION TEST'})
+    db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
+    db.collection('reviews').document(str(rid_expected)).set({'uid':'notifytestid1'})
 
-    create_project() # user 1 creates project
-    create_task() # user 1 creates task in project
+def remove_test_data():
+    pass
 
 # ============ TESTS ============ #
+def test_welcome_notification():
+    notification_welcome(user_id0)
 
-def test_connection_req_notification():
-    setup()
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('welcome')
 
-    send_req() # user 1 send connection request to user 2
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Welcome to TaskForge, John Doe. You can view future notifications here!"
+    assert isinstance(actual_notification.get('time_sent'), datetime)
 
-    #ensure connection requestion notification exists in db
-    # loop through notifications database and check if match
-    for notf in notf_ref:
-        # if ID = user1 && prompt_ID = user2 && type == req && time == timestamp
-            # end loop, notification successful
-    # if not found raise error
-    clear_db()
+def test_connection_request_notification():
+    notification_connection_request(user_id0, user_id1)
 
-def test_project_inv_notification():
-    #setup()
-    #ensure project inv notification exists in db
-    # loop through notifications database and check if match
-    for notf in notf_ref:
-        # if ID = user1 && prompt_ID = user2 && type == inv && time == timestamp && pid == pid
-            # end loop, notification successful
-    # if not found raise error
-    #clear data
-    pass
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('connection_request0')
 
-def test_assigned_notification():
-    #setup()
-    #ensure assigned notification exists in db
-    #clear data
-    pass
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Jane Doe has requested to connect."
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'connection_request'
+    assert actual_notification.get('uid_sender') == 'NotifyUser1'
+    assert actual_notification.get('accept_msg') == "You accepted Jane Doe's connection request."
+    assert actual_notification.get('decline_msg') == "You declined Jane Doe's connection request."
+
+def test_project_invite_notification():
+    notification_project_invite(user_id0, user_id1, pid_expected)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('project_invite0')
+
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Jane Doe has invited you to join Project Notification !!! NOTIFICATION TEST."
+    assert actual_notification.get('pid') == pid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'project_invite'
+    assert actual_notification.get('uid_sender') == 'NotifyUser1'
+    assert actual_notification.get('accept_msg') == "You accepted Jane Doe's project invitation."
+    assert actual_notification.get('decline_msg') == "You declined Jane Doe's project invitation."
+
+def test_assigned_task_notification():
+    notification_assigned_task(user_id0, pid_expected, tid_expected)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('assigned_task0')
+
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "You have been assigned Task Notification !!! NOTIFICATION TEST in Project Notification !!! NOTIFICATION TEST."
+    assert actual_notification.get('pid') == pid_expected
+    assert actual_notification.get('tid') == tid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'assigned_task'
 
 def test_comment_notification():
-    #setup()
-    #ensure comment notification exists in db
-    #clear data
-    pass
+    notification_comment(user_id0, user_id1, pid_expected, tid_expected)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('comment0')
+
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Jane Doe has commented in Task Notification !!! NOTIFICATION TEST in Project Notification !!! NOTIFICATION TEST."
+    assert actual_notification.get('pid') == pid_expected
+    assert actual_notification.get('tid') == tid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'comment'
+    assert actual_notification.get('uid_sender') == 'NotifyUser1'
 
 def test_deadline_notification():
-    #setup()
-    #ensure deadline notification exists in db
-    #clear data
-    pass
+    notification_deadline(user_id0, pid_expected, tid_expected)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('deadline0')
+
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Task Notification !!! NOTIFICATION TEST from Project Notification !!! NOTIFICATION TEST is due soon."
+    assert actual_notification.get('pid') == pid_expected
+    assert actual_notification.get('tid') == tid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'deadline'
 
 def test_review_notification():
-    #setup()
-    #ensure project inv notification exists in db
-    #clear data
-    pass
+    notification_review(user_id0, user_id1, rid_expected)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('review0')
+
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Jane Doe has reviewed you."
+    assert actual_notification.get('rid') == rid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'review'
+    assert actual_notification.get('uid_sender') == 'NotifyUser1'
 
 def test_achievement_notification():
-    #setup()
-    #ensure achievement notification exists in db
-    #clear data
-    pass
+    notification_achievement(user_id0, achievement_str='night_owl')
 
-def test_leave_req_notification():
-    #setup()
-    #ensure leave req notification exists in db
-    #clear data
-    pass
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('achievement0')
 
-def test_invalid_uid():
-    #setup()
-    # ensure notification does not exist in db
-    #clear data
-    pass
+    assert actual_notification.get('achievement') == 'night_owl'
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "You have earned the Night Owl !!! NOTIFICATION TEST achievement."
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'achievement'
 
-def test_invalid_pid():
-    #setup()
-    # ensure notification does not exist in db
-    #clear data
-    pass
+def test_leave_request_notification():
+    notification_leave_request(user_id0, user_id1, pid_expected)
 
-def test_invalid_tid():
-    #setup()
-    # ensure notification does not exist in db
-    #clear data
-    pass
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+    actual_notification = doc_data.get('leave_request0')
 
-def test_invalid_achievement():
-    #setup()
-    # ensure notification does not exist in db
-    #clear data
-    pass
+    assert actual_notification.get('has_read') == False
+    assert actual_notification.get('notification_msg') == "Jane Doe has requested to leave Project Notification !!! NOTIFICATION TEST."
+    assert actual_notification.get('pid') == pid_expected
+    assert isinstance(actual_notification.get('time_sent'), datetime)
+    assert actual_notification.get('type') == 'leave_request'
+    assert actual_notification.get('uid_sender') == 'NotifyUser1'
+    assert actual_notification.get('accept_msg') == "You accepted Jane Doe's project leave."
+    assert actual_notification.get('decline_msg') == "You declined Jane Doe's project leave."
