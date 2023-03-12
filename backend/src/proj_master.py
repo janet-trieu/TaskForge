@@ -6,7 +6,7 @@ Functionalities:
  - request_leave_project()
  - invite_to_project()
 '''
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from src.global_counters import *
 
 db = firestore.client()
@@ -192,5 +192,43 @@ def remove_project_member(pid, uid, uid_to_be_removed):
 # def reqeust_leave_project():
 #     pass
 
-def invite_to_project():
-    pass
+'''
+Invite a specific user to a project
+Returns:
+ - 0 for successful invite
+ - Error for failed invite
+'''
+def invite_to_project(pid, sender_uid, receiver_uid):
+    
+    sender_uid = is_user_project_master(pid, sender_uid)
+
+    if not sender_uid == 0:
+        return f"ERROR: Supplied uid is not the project master of project:{pid}" 
+
+    if pid < 0:
+        return f"ERROR: Invalid project id supplied {pid}"
+
+    proj_ref = db.collection("projects_test").document(str(pid))
+    if proj_ref == None:
+        return f"ERROR: Failed to get reference for project {pid}"
+
+    does_uid_exist = auth.get_users([auth.UidIdentifier(receiver_uid)])
+
+    if does_uid_exist == "":
+        return f"ERROR: Supplied receiver uid: {receiver_uid} does not exist"
+
+    proj_ref = db.collection("projects_test").document(str(pid))
+    project_members = proj_ref.get().get("project_members")
+
+    if receiver_uid in project_members:
+        return f"ERROR: Specified uid:{receiver_uid} is already a project member of project:{pid}"
+
+    receipient_name = auth.get_user(receiver_uid).display_name
+    sender_name = auth.get_user(sender_uid).display_name
+    project_name = proj_ref.get().get("name")
+
+    receipient_email = auth.get_user(receiver_uid).email
+    msg_title = f"Hi {receipient_name}, {sender_name} is inviting you to this project: {project_name}"
+    msg_body = "Please follow the link below to accept or reject this request: https://will_be_added.soon"
+
+    return receipient_email, msg_title, msg_body
