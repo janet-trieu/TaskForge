@@ -34,7 +34,12 @@ def setup():
     db.collection('reviews').document(str(rid_expected)).set({'uid':'notifytestid1'})
 
 def remove_test_data():
-    pass
+    db.collection('users').document(user_id0).delete()
+    db.collection('users').document(user_id1).delete()
+    db.collection('projects').document(str(pid_expected)).delete()
+    db.collection('tasks').document(str(tid_expected)).delete()
+    db.collection('achievements').document('night_owl').delete()
+    db.collection('reviews').document(str(rid_expected)).delete()
 
 # ============ TESTS ============ #
 def test_welcome_notification():
@@ -155,3 +160,13 @@ def test_leave_request_notification():
     assert actual_notification.get('uid_sender') == 'NotifyUser1'
     assert actual_notification.get('accept_msg') == "You accepted Jane Doe's project leave."
     assert actual_notification.get('decline_msg') == "You declined Jane Doe's project leave."
+
+def test_sorted_notifications():
+    # Ensure get_notifications returns a descending order
+    sorted_notifications = get_notifications(user_id0)
+
+    # Assert the current notification timestamp is greater or equal to the next sorted notification
+    for i in range(len(sorted_notifications) - 1):
+        assert sorted_notifications[i]['time_sent'] >= sorted_notifications[i+1]['time_sent']
+
+    remove_test_data()
