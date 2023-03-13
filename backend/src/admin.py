@@ -4,6 +4,20 @@ from firebase_admin import firestore
 from src.profile import is_banned, is_admin, is_removed, get_user_ref
 from src.global_counters import *
 
+'''
+Feature: Admin
+Functionalities:
+    - give_admin
+    - ban_user
+    - unban_user
+    - remove_user
+    - readd_user
+'''
+
+
+'''
+Takes 2 users, 1st being an admin, 2nd one not, and makes 2nd user an admin
+'''
 def give_admin(uid_admin, uid_user): 
     if (not isinstance(uid_admin, str) or not isinstance(uid_user, str)): raise TypeError('uids are strings')
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise ValueError('uid invalid')
@@ -18,9 +32,12 @@ def give_admin(uid_admin, uid_user):
     
     user_ref = db.collection("users").document(doc_name)
     user_ref.update({'is_admin': True})
+    return 0
         
     
-
+'''
+Admin bans a user/admin
+'''
 def ban_user(uid_admin, uid_user):  
     if (not isinstance(uid_admin, str) or not isinstance(uid_user, str)): raise TypeError('uids are strings')
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise ValueError('uid invalid')
@@ -34,7 +51,12 @@ def ban_user(uid_admin, uid_user):
     
     user_ref = db.collection("users").document(doc_name)
     user_ref.update({'is_banned': True})
-    
+    return 0
+
+
+'''
+Admin removes a ban from a banned user
+'''
 def unban_user(uid_admin, uid_user): 
     if (not isinstance(uid_admin, str) or not isinstance(uid_user, str)): raise TypeError('uids are strings')
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise ValueError('uid invalid')
@@ -48,8 +70,13 @@ def unban_user(uid_admin, uid_user):
     
     user_ref = db.collection("users").document(doc_name)
     user_ref.update({'is_banned': False})
+    return 0
 
 
+
+'''
+Similar to ban, but removal is used for very long inactivity or other reasons
+'''
 def remove_user(uid_admin, uid_user):
     if (not isinstance(uid_admin, str) or not isinstance(uid_user, str)): raise TypeError('uids are strings')
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise ValueError('uid invalid')
@@ -63,7 +90,12 @@ def remove_user(uid_admin, uid_user):
     
     user_ref = db.collection("users").document(doc_name)
     user_ref.update({'is_removed': True})
+    return 0
 
+
+'''
+Undoes a removal
+'''
 def readd_user(uid_admin, uid_user):
     if (not isinstance(uid_admin, str) or not isinstance(uid_user, str)): raise TypeError('uids are strings')
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise ValueError('uid invalid')
@@ -77,3 +109,4 @@ def readd_user(uid_admin, uid_user):
     
     user_ref = db.collection("users").document(doc_name)
     user_ref.update({'is_removed': False})
+    return 0
