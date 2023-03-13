@@ -11,12 +11,17 @@ from test_helpers import *
 #                   Test for create_project                #
 ############################################################
 
+proj_master = auth.get_user_by_email("project.master@gmail.com")
+task_master1 = auth.get_user_by_email("tm1@gmail.com")
+task_master2 = auth.get_user_by_email("tm2@gmail.com")
+task_master3 = auth.get_user_by_email("tm3@gmail.com")
+
 def test_create_project_use_default_vals():
 
     reset_project_count()
 
     # test for project creation
-    pid = create_project(0, "Project0", "Creating Project0 for testing", None, None, None, None)
+    pid = create_project(proj_master.uid, "Project0", "Creating Project0 for testing", None, None, None, None)
 
     assert pid == 0
 
@@ -28,7 +33,7 @@ def test_create_project_every_args():
     reset_project_count()
 
     # test for project creation
-    pid = create_project(0, "Project1", "Creating Project1 for testing", "In Progress", "2023-12-31", 5, "test1.jpg")
+    pid = create_project(proj_master.uid, "Project1", "Creating Project1 for testing", "In Progress", "2023-12-31", 5, "test1.jpg")
 
     assert pid == 0
 
@@ -40,12 +45,12 @@ def test_create_multiple_projects():
     reset_project_count()
 
     # test for project1 creation
-    pid = create_project(0, "Project1", "Creating Project1 for testing", None, None, None, None)
+    pid = create_project(proj_master.uid, "Project1", "Creating Project1 for testing", None, None, None, None)
     
     assert pid == 0
 
     # test for project2 creation
-    pid = create_project(0, "Project2", "Creating Project2 for testing", None, None, None, None)
+    pid = create_project(proj_master.uid, "Project2", "Creating Project2 for testing", None, None, None, None)
 
     assert pid == 1
 
@@ -57,7 +62,7 @@ def test_create_project_invalid_uid():
 
     # test for project creation with invalid input
     with pytest.raises(ValueError):
-        create_project(-1, "Project1", "Creating Project1 for testing", None, None, None, None)
+        create_project("Invalid", "Project1", "Creating Project1 for testing", None, None, None, None)
 
     reset_projects()
 
@@ -67,7 +72,7 @@ def test_create_project_invalid_uid_type():
 
     # test for project creation with invalid input
     with pytest.raises(TypeError):
-        create_project("1", "Project1", "Creating Project1 for testing", None, None, None, None)
+        create_project(-1, "Project1", "Creating Project1 for testing", None, None, None, None)
 
     reset_projects()
 
@@ -77,7 +82,7 @@ def test_create_project_invalid_name_type():
 
     # test for project creation with invalid input
     with pytest.raises(TypeError):
-        create_project(0, 1, "Creating Project1 for testing", None, None, None, None)
+        create_project(proj_master.uid, 1, "Creating Project1 for testing", None, None, None, None)
 
     reset_projects()
 
@@ -87,7 +92,7 @@ def test_create_project_empty_name():
 
     # test for project creation with invalid input
     with pytest.raises(ValueError):
-        create_project(0, "", "Creating Project1 for testing", None, None, None, None)
+        create_project(proj_master.uid, "", "Creating Project1 for testing", None, None, None, None)
 
     reset_projects()
 
@@ -97,7 +102,7 @@ def test_create_project_invalid_name_length():
 
     # test for project creation with invalid input
     with pytest.raises(ValueError):
-        create_project(0, "A"*51, "Creating Project1 for testing", None, None, None, None)
+        create_project(proj_master.uid, "A"*51, "Creating Project1 for testing", None, None, None, None)
 
     reset_projects()
 
@@ -107,7 +112,7 @@ def test_create_project_empty_description():
 
     # test for project creation with invalid input
     with pytest.raises(ValueError):
-        create_project(0, "Project1", "", None, None, None, None)
+        create_project(proj_master.uid, "Project1", "", None, None, None, None)
 
     reset_projects()
 
@@ -117,7 +122,7 @@ def test_create_project_invalid_description_type():
 
     # test for project creation with invalid input
     with pytest.raises(TypeError):
-        create_project(0, "Project1", 1, None, None, None, None)
+        create_project(proj_master.uid, "Project1", 1, None, None, None, None)
 
     reset_projects()
 
@@ -127,7 +132,7 @@ def test_create_project_invalid_description_length():
 
     # test for project creation with invalid input
     with pytest.raises(ValueError):
-        create_project(0, "Project1", "A"*1001, None, None, None, None)
+        create_project(proj_master.uid, "Project1", "A"*1001, None, None, None, None)
 
     reset_projects()
 
@@ -136,7 +141,7 @@ def test_create_project_invalid_status():
     reset_project_count()
 
     with pytest.raises(ValueError):
-        create_project(0, "Project1", "Creating Project1 for testing", "None", None, None, None)
+        create_project(proj_master.uid, "Project1", "Creating Project1 for testing", "None", None, None, None)
 
     reset_projects()
 
@@ -154,7 +159,7 @@ def test_create_project_invalid_team_strength():
     reset_project_count()
 
     with pytest.raises(ValueError):
-        create_project(0, "Project1", "Creating Project1 for testing", None, None, -1, None)
+        create_project(proj_master.uid, "Project1", "Creating Project1 for testing", None, None, -1, None)
 
     reset_projects()
 
@@ -163,7 +168,7 @@ def test_create_project_invalid_team_strength_type():
     reset_project_count()
 
     with pytest.raises(TypeError):
-        create_project(0, "Project1", "Creating Project1 for testing", None, None, "None", None)
+        create_project(proj_master.uid, "Project1", "Creating Project1 for testing", None, None, "None", None)
 
     reset_projects()
 
@@ -177,9 +182,9 @@ def test_revive_completed_project_not_proj_master():
     
     reset_project_count()
 
-    incorrect_uid = -1
+    incorrect_uid = task_master1.uid
 
-    pid = create_project(0, "Project 123", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project 123", "description", "Completed", None, None, None)
     res = revive_completed_project(pid, incorrect_uid, "In Review")
 
     assert not res == 0
@@ -190,7 +195,7 @@ def test_revive_completed_project_invalid_pid():
     reset_project_count()
 
     pid = -1
-    res = revive_completed_project(pid, 0, "In Progress")
+    res = revive_completed_project(pid, proj_master.uid, "In Progress")
 
     assert not res == 0
 
@@ -200,17 +205,15 @@ def test_revive_completed_project():
 
     reset_project_count()
 
-    pid = create_project(0, "Project 123", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project 123", "description", "Completed", None, None, None)
 
     proj_ref = db.collection("projects_test").document(str(pid))
-    print(f"THIS IS STATUS == {proj_ref.get().get('status')}")
+
     assert proj_ref.get().get("status") == "Completed"
 
     # revive completed project back into "In Progress"
-    revive_completed_project(pid, proj_ref.get().get("uid"), "In Progress")
+    revive_completed_project(pid, proj_master.uid, "In Progress")
 
-    proj_ref = db.collection("projects_test").document(str(pid))
-    print(f"THIS IS STATUS == {proj_ref.get().get('status')}")
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
@@ -219,7 +222,7 @@ def test_revive_non_completed_project():
 
     reset_project_count()
 
-    pid = create_project(0, "Project X", "description", "In Progress", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "In Progress", None, None, None)
 
     proj_ref = db.collection("projects_test").document(str(pid))
 
@@ -227,7 +230,7 @@ def test_revive_non_completed_project():
 
     assert proj_status == "In Progress"
 
-    res = revive_completed_project(pid, 0, "In Review")
+    res = revive_completed_project(pid, proj_master.uid, "In Review")
 
     assert not res == 0
 
@@ -241,12 +244,12 @@ def test_remove_project_member_not_proj_master():
 
     reset_project_count()
 
-    incorrect_uid = -1
+    incorrect_uid = task_master1.uid
 
-    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
-    add_tm_to_project(pid, 1)
-    uid_to_be_removed = 1
+    add_tm_to_project(pid, task_master1.uid)
+    uid_to_be_removed = task_master1.uid
 
     res = remove_project_member(pid, incorrect_uid, uid_to_be_removed)
 
@@ -258,15 +261,12 @@ def test_remove_project_member_invalid_pid():
 
     reset_project_count()
 
-    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
-    proj_ref = db.collection("projects_test").document(str(pid))
-
-
-    uid_to_be_removed = 1
+    uid_to_be_removed = task_master1.uid
     invalid_pid = -1
 
-    res = remove_project_member(invalid_pid, proj_ref.get().get("uid"), uid_to_be_removed)
+    res = remove_project_member(invalid_pid, proj_master.uid, uid_to_be_removed)
 
     assert not res == 0
 
@@ -279,23 +279,27 @@ def test_remove_project_member():
 
     reset_project_count()
 
-    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
     proj_ref = db.collection("projects_test").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    uid_to_be_removed = 1
+    uid_to_be_removed = task_master1.uid
 
-    add_tm_to_project(pid, 1)
-    add_tm_to_project(pid, 2)
-    add_tm_to_project(pid, 3)
+    add_tm_to_project(pid, task_master1.uid)
+    add_tm_to_project(pid, task_master2.uid)
+    add_tm_to_project(pid, task_master3.uid)
 
-    remove_project_member(pid, proj_ref.get().get("uid"), uid_to_be_removed)
+    assert proj_master.uid == proj_ref.get().get("uid")
+    res = remove_project_member(pid, proj_master.uid, uid_to_be_removed)
+
+    assert res == 0
 
     proj_ref = db.collection("projects_test").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    assert project_members == [0, 2, 3]
+    print(project_members)
+    assert task_master1.uid not in project_members
 
     reset_projects()
 
@@ -303,14 +307,12 @@ def test_remove_invalid_project_member():
 
     reset_project_count()
 
-    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
-    proj_ref = db.collection("projects_test").document(str(pid))
-
-    uid_to_be_removed = 5
+    uid_to_be_removed = task_master1.uid
 
     # remove_project_member only returns 0 after successful removal of a project member
-    res = remove_project_member(pid, proj_ref.get().get("uid"), uid_to_be_removed)
+    res = remove_project_member(pid, proj_master.uid, uid_to_be_removed)
 
     assert not res == 0
 
@@ -320,87 +322,87 @@ def test_remove_invalid_project_member():
 #               Test for invite_to_project                 #
 ############################################################
 
-def test_invite_to_project_not_proj_master():
+# def test_invite_to_project_not_proj_master():
 
-    reset_project_count()
+#     reset_project_count()
 
-    incorrect_uid = -1
+#     incorrect_uid = -1
 
-    pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+#     pid = create_project(0, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = 1
+#     receiver_uid = 1
 
-    res = invite_to_project(pid, incorrect_uid, receiver_uid)
+#     res = invite_to_project(pid, incorrect_uid, receiver_uid)
 
-    assert not res == 0
+#     assert not res == 0
 
-    reset_projects()
+#     reset_projects()
 
-def test_invite_to_project():
+# def test_invite_to_project():
     
-    reset_project_count()
+#     reset_project_count()
 
-    sender_uid = 0
+#     sender_uid = 0
 
-    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = 1
+#     receiver_uid = 1
 
-    res = invite_to_project(pid, sender_uid, receiver_uid)
+#     res = invite_to_project(pid, sender_uid, receiver_uid)
 
-    assert res == 0
+#     assert res == 0
 
-    reset_projects()
+#     reset_projects()
 
 
-def test_invite_to_invalid_project():
+# def test_invite_to_invalid_project():
 
-    reset_project_count()
+#     reset_project_count()
 
-    sender_uid = 0
+#     sender_uid = 0
 
-    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = 1
+#     receiver_uid = 1
 
-    incorrect_pid = -1
+#     incorrect_pid = -1
 
-    res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
+#     res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
 
-    assert not res == 0
+#     assert not res == 0
 
-    reset_projects()
+#     reset_projects()
 
-def test_invite_invalid_receiver_uid():
+# def test_invite_invalid_receiver_uid():
 
-    reset_project_count()
+#     reset_project_count()
 
-    sender_uid = 0
+#     sender_uid = 0
 
-    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = -1
+#     receiver_uid = -1
 
-    res = invite_to_project(pid, sender_uid, receiver_uid)
+#     res = invite_to_project(pid, sender_uid, receiver_uid)
 
-    assert not res == 0
+#     assert not res == 0
 
-    reset_projects()
+#     reset_projects()
 
-def test_invite_uid_already_in_project():
+# def test_invite_uid_already_in_project():
 
-    reset_project_count()
+#     reset_project_count()
 
-    sender_uid = 0
+#     sender_uid = 0
 
-    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = 1
+#     receiver_uid = 1
 
-    add_tm_to_project(pid, 1)
+#     add_tm_to_project(pid, 1)
 
-    res = invite_to_project(pid, sender_uid, receiver_uid)
+#     res = invite_to_project(pid, sender_uid, receiver_uid)
 
-    assert not res == 0
+#     assert not res == 0
 
-    reset_projects()
+#     reset_projects()

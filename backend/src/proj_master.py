@@ -30,8 +30,8 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         picture = "bleh.png"
 
     # check for invalid type inputs:
-    if not type(uid) == int:
-        raise TypeError("uid has to be type of integer!!!")
+    if not type(uid) == str:
+        raise TypeError("uid has to be type of string!!!")
     if not type(name) == str:
         raise TypeError("Project name has to be type of string!!!")
     if not type(description) == str:
@@ -49,7 +49,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         raise TypeError("Project picture has to be type of string!!!")
 
     # check for invalid value inputs:
-    if uid < 0:
+    if not len(uid) == 28:
         raise ValueError("Invalid uid entered!!!")
     if len(name) >= 50:
         raise ValueError("Project name is too long. Please keep it below 50 characters.")
@@ -90,7 +90,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     
     # update the pid after creating a project
     update_pid()
-    print(f"THIS IS CURR PID {curr_pid}")
 
     return curr_pid
 
@@ -100,7 +99,7 @@ Returns:
  - 0 if True
  - error if False
 '''
-def is_user_project_master(uid, pid):
+def is_user_project_master(pid, uid):
 
     proj_ref = db.collection("projects_test").document(str(pid))
     proj_master_id = proj_ref.get().get("uid")
@@ -160,7 +159,7 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     is_valid_uid = is_user_project_master(pid, uid)
 
     if not is_valid_uid == 0:
-        return f"ERROR: Supplied uid is not the project master of project:{pid}" 
+        return f"ERROR: Supplied uid:{uid} is not the project master of project:{pid}" 
 
     if pid < 0:
         return f"ERROR: Invalid project id supplied {pid}"

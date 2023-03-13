@@ -1,4 +1,4 @@
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from src.global_counters import *
 
 db = firestore.client()
@@ -6,6 +6,25 @@ db = firestore.client()
 ############################################################
 #                 Helpers for Project Master               #
 ############################################################
+
+def create_project_master():
+    proj_master = auth.create_user(
+        email = "project.master@gmail.com",
+        password = "password123",
+        display_name = "Project Master"
+    )
+
+    return proj_master
+
+def create_not_project_master(email, password, display_name):
+
+    task_master = auth.create_user(
+        email = email,
+        password = password,
+        display_name = display_name
+    )
+
+    return task_master
 
 def reset_projects():
     project_count = get_curr_pid()
