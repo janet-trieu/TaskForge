@@ -8,3 +8,4 @@ from firebase_admin import credentials, auth
 
 cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c80ed6513a.json')
 app = firebase_admin.initialize_app(cred)
+
