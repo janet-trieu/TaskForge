@@ -9,11 +9,13 @@ const Site = ({ firebaseApp }) => {
     <div id='site-container'>
       <Sidebar firebaseApp={firebaseApp}/>
       <div className='vertical-line' />
-      <Header />
-      <Routes>
-        <Route path='/' element={<Home firebaseApp={firebaseApp} />} />
-        <Route path='/test' element={<Test />} />
-      </Routes>
+      <div id='right-container'>
+        <Header />
+        <Routes>
+          <Route path='/' element={<Home firebaseApp={firebaseApp} />} />
+          <Route path='/test' element={<Test />} />
+        </Routes>
+      </div>
     </div>
   )
 }

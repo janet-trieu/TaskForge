@@ -1,7 +1,3 @@
-/* #root {
-
-} */
-
 #site-container {
   width: 100vw;
   height: 100vh;
@@ -14,7 +10,6 @@
 
 #sidebar {
   width: 15vw;
-  height: 100vh - 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,4 +54,19 @@
 
 .sidebar-button img {
   width: 2vw;
+}
+
+#right-container {
+  width: calc(85vw - 2px);
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  border-bottom: solid 2px lightgray;
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
