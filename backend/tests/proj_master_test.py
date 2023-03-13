@@ -11,6 +11,7 @@ from test_helpers import *
 #                   Test for create_project                #
 ############################################################
 
+# initial variables for the users 
 proj_master = auth.get_user_by_email("project.master@gmail.com")
 task_master1 = auth.get_user_by_email("tm1@gmail.com")
 task_master2 = auth.get_user_by_email("tm2@gmail.com")
@@ -322,87 +323,85 @@ def test_remove_invalid_project_member():
 #               Test for invite_to_project                 #
 ############################################################
 
-# def test_invite_to_project_not_proj_master():
+def test_invite_to_project_not_proj_master():
 
-#     reset_project_count()
+    reset_project_count()
 
-#     incorrect_uid = -1
+    incorrect_uid = task_master3.uid
 
-#     pid = create_project(0, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
-#     receiver_uid = 1
+    receiver_uid = task_master1.uid
 
-#     res = invite_to_project(pid, incorrect_uid, receiver_uid)
+    res = invite_to_project(pid, incorrect_uid, receiver_uid)
 
-#     assert not res == 0
+    assert not res == 0
 
-#     reset_projects()
+    reset_projects()
 
-# def test_invite_to_project():
+def test_invite_to_project():
     
-#     reset_project_count()
+    reset_project_count()
 
-#     sender_uid = 0
+    sender_uid = proj_master.uid
 
-#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-#     receiver_uid = 1
+    receiver_uid = task_master1.uid
 
-#     res = invite_to_project(pid, sender_uid, receiver_uid)
+    res = invite_to_project(pid, sender_uid, receiver_uid)
 
-#     assert res == 0
+    assert res == ("tm1@gmail.com", "Hi TM 1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon")
 
-#     reset_projects()
+    reset_projects()
 
+def test_invite_to_invalid_project():
 
-# def test_invite_to_invalid_project():
+    reset_project_count()
 
-#     reset_project_count()
+    sender_uid = proj_master.uid
 
-#     sender_uid = 0
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+    receiver_uid = task_master1.uid
 
-#     receiver_uid = 1
+    incorrect_pid = -1
 
-#     incorrect_pid = -1
+    res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
 
-#     res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
+    assert not res == 0
 
-#     assert not res == 0
+    reset_projects()
 
-#     reset_projects()
+def test_invite_invalid_receiver_uid():
 
-# def test_invite_invalid_receiver_uid():
+    reset_project_count()
 
-#     reset_project_count()
+    sender_uid = proj_master.uid
 
-#     sender_uid = 0
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+    receiver_uid = "invalid"
 
-#     receiver_uid = -1
+    with pytest.raises(auth.UserNotFoundError):
+        invite_to_project(pid, sender_uid, receiver_uid)
 
-#     res = invite_to_project(pid, sender_uid, receiver_uid)
+    reset_projects()
 
-#     assert not res == 0
+def test_invite_uid_already_in_project():
 
-#     reset_projects()
+    reset_project_count()
 
-# def test_invite_uid_already_in_project():
+    sender_uid = proj_master.uid
 
-#     reset_project_count()
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-#     sender_uid = 0
+    receiver_uid = task_master1.uid
 
-#     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+    add_tm_to_project(pid, task_master1.uid)
 
-#     receiver_uid = 1
+    res = invite_to_project(pid, sender_uid, receiver_uid)
 
-#     add_tm_to_project(pid, 1)
+    assert not res == 0
 
-#     res = invite_to_project(pid, sender_uid, receiver_uid)
-
-#     assert not res == 0
-
-#     reset_projects()
+    reset_projects()

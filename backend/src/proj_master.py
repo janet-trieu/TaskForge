@@ -199,9 +199,9 @@ Returns:
 '''
 def invite_to_project(pid, sender_uid, receiver_uid):
     
-    sender_uid = is_user_project_master(pid, sender_uid)
+    is_valid_uid = is_user_project_master(pid, sender_uid)
 
-    if not sender_uid == 0:
+    if not is_valid_uid == 0:
         return f"ERROR: Supplied uid is not the project master of project:{pid}" 
 
     if pid < 0:
@@ -211,6 +211,7 @@ def invite_to_project(pid, sender_uid, receiver_uid):
     if proj_ref == None:
         return f"ERROR: Failed to get reference for project {pid}"
 
+    print(f"THIS IS RECEIVER UID{receiver_uid}")
     does_uid_exist = auth.get_users([auth.UidIdentifier(receiver_uid)])
 
     if does_uid_exist == "":
@@ -222,6 +223,7 @@ def invite_to_project(pid, sender_uid, receiver_uid):
     if receiver_uid in project_members:
         return f"ERROR: Specified uid:{receiver_uid} is already a project member of project:{pid}"
 
+    print(f"THIS IS SENDER UID{sender_uid}")
     receipient_name = auth.get_user(receiver_uid).display_name
     sender_name = auth.get_user(sender_uid).display_name
     project_name = proj_ref.get().get("name")
@@ -230,4 +232,4 @@ def invite_to_project(pid, sender_uid, receiver_uid):
     msg_title = f"Hi {receipient_name}, {sender_name} is inviting you to this project: {project_name}"
     msg_body = "Please follow the link below to accept or reject this request: https://will_be_added.soon"
 
-    return receipient_email, msg_title, msg_body
+    return (receipient_email, msg_title, msg_body)
