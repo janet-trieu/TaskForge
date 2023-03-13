@@ -1,6 +1,60 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* #root {
+
+} */
+
+#site-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.vertical-line {
+  border-left: 2px solid lightgray;
+}
+
+#sidebar {
+  width: 15vw;
+  height: 100vh - 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2vw;
+  padding-bottom: 2vw;
+  color: gray;
+}
+
+#sidebar-middle {
+  height: 27.5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5vw;
+}
+
+#sidebar-bottom {
+  height: 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.sidebar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+  padding: 1vw 1vh;
+}
+
+.sidebar-button:hover {
+  border-radius: 20px;
+  background-color: rgb(236, 236, 236);
+  cursor: pointer;
+}
+
+.sidebar-button img {
+  width: 2vw;
 }
