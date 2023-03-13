@@ -11,8 +11,6 @@ TODO notes:
 - When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
 - ASSUMPTION should be covered by the function the notfiication is called in
 '''
-import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import firestore
 from datetime import datetime
 
@@ -89,6 +87,23 @@ def create_nid(uid, type):
     return nid
 
 # ============ FUNCTIONS ============ #
+def get_notifications(uid):
+    '''
+    Get the user's notifications in descending time order.
+    Args:
+        uid (string): User getting notifications
+    Returns:
+        sorted_notifications (list): List of user's notifications sorted by descending timestamps
+    '''
+    check_valid_uid
+
+    notf_data = db.collection('notifications').document(uid).get().to_dict()
+
+    # Sort notification dictionaries by time_sent in descending order
+    sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
+
+    return sorted_notifications
+
 def notification_welcome(uid):
     '''
     Welcome message to new user.
@@ -360,26 +375,18 @@ def notification_leave_request(uid, uid_sender, pid):
     db.collection("notifications").document(uid).update(notification)
 
 def get_notifications(uid):
-    #db.collection('notifications').document(uid).get()
-    #get all notifications
-    #sort by timestamp, descending order
-    # TODO monday
-    pass
+    '''
+    Get the user's notifications in descending time order.
+    Args:
+        uid (string): User getting notifications
+    Returns:
+        sorted_notifications (list): List of user's notifications sorted by descending timestamps
+    '''
+    check_valid_uid
 
-if __name__ == "__main__":
-    db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
-    db.collection('users').document('notifytestid1').set({'display_name':'Jane Doe'})
-    db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
-    db.collection('projects').document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
-    db.collection('tasks').document('1337').set({'name':'Task Notification !!! NOTIFICATION TEST'})
-    db.collection('reviews').document('1337').set({'uid':'notifytestid1'})
+    notf_data = db.collection('notifications').document(uid).get().to_dict()
 
-    notification_welcome('notifytestid')
-    notification_connection_request('notifytestid', 'notifytestid1')
-    notification_project_invite('notifytestid', 'notifytestid1', 1337)
-    notification_assigned_task('notifytestid', 1337, 1337)
-    notification_comment('notifytestid', 'notifytestid1', 1337, 1337)
-    notification_deadline('notifytestid', 1337, 1337)
-    notification_review('notifytestid', 'notifytestid1', 1337)
-    notification_achievement('notifytestid', 'night_owl')
-    notification_leave_request('notifytestid', 'notifytestid1', 1337)
+    # Sort notification dictionaries by time_sent in descending order
+    sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
+
+    return sorted_notifications
