@@ -10,6 +10,12 @@ from src.admin import give_admin, ban_user, unban_user,  remove_user, readd_user
 #each test should somewhat reset for the next test
 #@pytest.mark.order1
 
+def test_give_admin_type():
+    try:
+        give_admin(1, 2)
+    except TypeError:
+        pass
+
 def test_give_admin():
     assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
     assert(not is_admin('xyzabc123'))
@@ -26,6 +32,13 @@ def test_give_admin_to_admin():
     except ValueError:
         pass
     assert(is_admin('xyzabc123'))
+
+
+def test_ban_user_type():
+    try:
+        ban_user(1, 2)
+    except TypeError:
+        pass
 
 #@pytest.mark.order3
 def test_ban_user():
@@ -46,6 +59,13 @@ def test_ban_banned_user():
         pass
     assert(is_banned('xyzabc123'))
 
+
+
+def test_unban_user_type():
+    try:
+        unban_user(1, 2)
+    except TypeError:
+        pass
 
 #user is still banned from last test
 #@pytest.mark.order5
@@ -68,6 +88,12 @@ def test_unban_notbanned_user():
     assert(not is_banned('xyzabc123'))
 
 
+def test_remove_usertype():
+    try:
+        remove_user(1, 2)
+    except TypeError:
+        pass
+
 #@pytest.mark.order7
 def test_remove_user():
     assert(is_admin('sklzNex5udNeOd65uvsuGAYBNkH2'))
@@ -89,6 +115,12 @@ def test_remove_removed_user():
         pass
     assert(is_removed('xyzabc123'))
 
+
+def test_readd_user_type():
+    try:
+        readd_user(1, 2)
+    except TypeError:
+        pass
 
 #user still removed from last test
 #@pytest.mark.order9
