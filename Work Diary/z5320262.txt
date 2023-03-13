@@ -67,6 +67,48 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
 ## Week 4 ##
 
 ??? What was planned for the period since the last work diary entry ???
+- Finish and submit our proposal
+- Get started planning our project design, tasks, database etc.
+- Finish notifications implementation for sprint 1
+
+??? What was finished ???
+- Submitted proposal
+- Create skeleton of project implementation
+- Basic global counters for project ID, task ID, epic ID
+- Notification testing
+- Notification implementation for all types of notifications + helpers
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- How to store Notification data? [TECHNICAL]
+	- I explored different ways, comparing advantages and disadvantages
+      - e.g. make a map of notifications in the Users document, having Notifications as it's own collection with uid identifiers
+	  - RESULT: Ultimately found having Notification as a collection more suited to our requirements due to potential performance and sizing issues when querying User documents
+
+- Should I make a Notification class? [TECHNICAL]
+	- RESULT: Ultimately decided it was best not to have them as a class as different notifications require different attributes which will create the class to be quite difficult and complex
+    - e.g. if i try making multiple inits for different Notifications, it would be very hard to really differentiate between them due to the attribute types
+    or creating one big init that takes in a bunch of attributes makes it also super complex
+
+- Learning Firestore and how it's database works
+	- I have not done databases so I watched and read firestore doc + videos which explained that it used NoSQL and how it works and techniques to create a database suited to our requirements
+  (https://www.youtube.com/watch?v=v_hR4K4auoQ&list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ)
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- get_notifications() which returns all the user's notification in descending timestamp order
+  - I am planning to get get_notifications() done today which should not affect the project progress at all
+- Create a function for sending emails for project invites
+  - Dabin needs a function to send an email notification when a user invites another to a project so project_invite implementation is not complete yet
+  - I need to set up a flask server to create this function which Joseph said he will make a skeleton for it which I will wait for while I do get_notifications()
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish off sprint 1 implementations
+- Plan and start sprint 2
+
+///////////////////////////////////////////
+
+## Week 5 ##
+
+??? What was planned for the period since the last work diary entry ???
 
 ??? What was finished ???
 
