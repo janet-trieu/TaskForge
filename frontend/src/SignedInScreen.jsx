@@ -4,18 +4,6 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-// Configure Firebase.
-const config = {"apiKey": "AIzaSyCODWXHzh67zRV-xq9ZFAZ4sVaqKwUq9cY",
-"authDomain": "taskforge-9aea9.firebaseapp.com",
-"databaseURL": "https://taskforge-9aea9-default-rtdb.firebaseio.com",
-"projectId": "taskforge-9aea9",
-"storageBucket": "taskforge-9aea9.appspot.com",
-"messagingSenderId": "221747524877",
-"appId": "1:221747524877:web:8785cfe8e0847bd257ec44",
-"measurementId": "G-5N1VTMSWEC"
-};
-firebase.initializeApp(config);
-
 // Configure FirebaseUI.
 const uiConfig = {
   // Popup signin flow rather than redirect flow.
@@ -31,8 +19,7 @@ const uiConfig = {
   },
 };
 
-function SignInScreen() {
-  const [isSignedIn, setIsSignedIn] = useState(false); // Local signed-in state.
+function SignInScreen({ setIsSignedIn }) {
 
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
@@ -45,8 +32,7 @@ function SignInScreen() {
   if (!isSignedIn) {
     return (
       <div>
-        <h1>My App</h1>
-        <p>Please sign-in:</p>
+        <h2>LOG IN</h2>
         <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
     );
