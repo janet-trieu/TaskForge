@@ -13,9 +13,10 @@ from test_helpers import *
 
 # initial variables for the users 
 proj_master = auth.get_user_by_email("project.master@gmail.com")
-task_master1 = auth.get_user_by_email("tm1@gmail.com")
-task_master2 = auth.get_user_by_email("tm2@gmail.com")
-task_master3 = auth.get_user_by_email("tm3@gmail.com")
+
+task_master1 = auth.get_user_by_email("testingtm1@gmail.com")
+task_master2 = auth.get_user_by_email("testingtm2@gmail.com")
+task_master3 = auth.get_user_by_email("testingtm3@gmail.com")
 
 def test_create_project_use_default_vals():
 
@@ -327,15 +328,19 @@ def test_invite_to_project_not_proj_master():
 
     reset_project_count()
 
+    receiver_uids = []
+
     incorrect_uid = task_master3.uid
 
     pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
     receiver_uid = task_master1.uid
 
-    res = invite_to_project(pid, incorrect_uid, receiver_uid)
+    receiver_uids.append(receiver_uid)
 
-    assert not res == 0
+    res = invite_to_project(pid, incorrect_uid, receiver_uids)
+
+    assert "ERROR" in res
 
     reset_projects()
 
@@ -343,15 +348,50 @@ def test_invite_to_project():
     
     reset_project_count()
 
+    receiver_uids = []
+
     sender_uid = proj_master.uid
 
     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
     receiver_uid = task_master1.uid
 
-    res = invite_to_project(pid, sender_uid, receiver_uid)
+    receiver_uids.append(receiver_uid)
 
-    assert res == ("tm1@gmail.com", "Hi TM 1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon")
+    res = invite_to_project(pid, sender_uid, receiver_uids)
+
+    assert res == {
+        receiver_uid: ["testingtm1@gmail.com", "Hi Task Master1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"]
+    }
+        
+
+    reset_projects()
+
+def test_multiple_invite_to_project():
+    
+    reset_project_count()
+
+    receiver_uids = []
+
+    sender_uid = proj_master.uid
+
+    pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
+
+    receiver_uid1 = task_master1.uid
+    receiver_uid2 = task_master2.uid
+    receiver_uid3 = task_master3.uid
+
+    receiver_uids.append(receiver_uid1)
+    receiver_uids.append(receiver_uid2)
+    receiver_uids.append(receiver_uid3)
+
+    res = invite_to_project(pid, sender_uid, receiver_uids)
+
+    assert res == {
+        receiver_uid1: ["testingtm1@gmail.com", "Hi Task Master1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"],
+        receiver_uid2: ["testingtm2@gmail.com", "Hi Task Master2, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"],
+        receiver_uid3: ["testingtm3@gmail.com", "Hi Task Master3, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"]
+    }
 
     reset_projects()
 
@@ -359,17 +399,21 @@ def test_invite_to_invalid_project():
 
     reset_project_count()
 
+    receiver_uids = []
+
     sender_uid = proj_master.uid
 
     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
     receiver_uid = task_master1.uid
 
+    receiver_uids.append(receiver_uid)
+
     incorrect_pid = -1
 
-    res = invite_to_project(incorrect_pid, sender_uid, receiver_uid)
+    res = invite_to_project(incorrect_pid, sender_uid, receiver_uids)
 
-    assert not res == 0
+    assert "ERROR" in res
 
     reset_projects()
 
@@ -377,14 +421,18 @@ def test_invite_invalid_receiver_uid():
 
     reset_project_count()
 
+    receiver_uids = []
+
     sender_uid = proj_master.uid
 
     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
-    receiver_uid = "invalid"
+    receiver_uid = "fbWQa7QApSXhhx4usHOllqjuhRW2"
+
+    receiver_uids.append(receiver_uid)
 
     with pytest.raises(auth.UserNotFoundError):
-        invite_to_project(pid, sender_uid, receiver_uid)
+        invite_to_project(pid, sender_uid, receiver_uids)
 
     reset_projects()
 
@@ -392,16 +440,20 @@ def test_invite_uid_already_in_project():
 
     reset_project_count()
 
+    receiver_uids = []
+
     sender_uid = proj_master.uid
 
     pid = create_project(sender_uid, "Project X", "description", "Completed", None, None, None)
 
     receiver_uid = task_master1.uid
 
+    receiver_uids.append(receiver_uid)
+
     add_tm_to_project(pid, task_master1.uid)
 
-    res = invite_to_project(pid, sender_uid, receiver_uid)
+    res = invite_to_project(pid, sender_uid, receiver_uids)
 
-    assert not res == 0
+    assert "ERROR" in res
 
     reset_projects()
