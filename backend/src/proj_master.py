@@ -7,9 +7,11 @@ Functionalities:
  - invite_to_project()
 '''
 from firebase_admin import firestore, auth
+# from src.global_counters import *
+# from src.error import *
+# from src.notifications import *
 from global_counters import *
 from error import *
-
 from notifications import *
 
 db = firestore.client()
@@ -211,23 +213,22 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-
     proj_ref = db.collection("projects_test").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    proj_ref = db.collection("projects_test").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
     return_dict = {}
     for uid in receiver_uids:
-        print(f"THIS IS RECEIVER UID:====== {uid}")
-        if auth.get_users([auth.UidIdentifier(uid)]) == False:
-            raise InputError(f"ERROR: Supplied receiver uid: {uid} does not exist")
-        if uid in project_members:
-            raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
+        try:
+            auth.get_user(uid)
+        except InputError:
+            print(f"ERROR: Supplied receiver uid: {uid} does not exist")
+        else:
+            if uid in project_members:
+                raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
 
-        print(f"THIS IS SENDER UID    {sender_uid}")
         receipient_name = auth.get_user(uid).display_name
         sender_name = auth.get_user(sender_uid).display_name
         project_name = proj_ref.get().get("name")
@@ -239,5 +240,6 @@ def invite_to_project(pid, sender_uid, receiver_uids):
         msg_body = "Please follow the link below to accept or reject this request: https://will_be_added.soon"
 
         return_dict[uid] = [receipient_email, msg_title, msg_body]
-    print(return_dict)
+
     return return_dict
+    

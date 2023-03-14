@@ -5,7 +5,7 @@ import os
 from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
 from flask_mail import Mail, Message
-from flask import Flask, request
+from flask import Flask, request, Response
 from profile import *
 
 from proj_master import *
@@ -26,7 +26,6 @@ app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
 mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
-#APP.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -139,8 +138,16 @@ def flask_invite_to_project():
 
     uid_list = []
     for email in data["receiver_uids"]:
-        uid = auth.get_user_by_email(email)
-        uid_list.append(uid)
+
+        try:
+            uid = auth.get_user_by_email(email).uid
+        except auth.UserNotFoundError:
+            return Response(
+                f"Specified email {email} does not exist",
+                status=400
+            )
+        else:
+            uid_list.append(uid)
 
     res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
     return dumps(res)
