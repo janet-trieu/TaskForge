@@ -364,7 +364,6 @@ def test_invite_to_project():
         receiver_uid: ["testingtm1@gmail.com", "Hi Task Master1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"]
     }
         
-
     reset_projects()
 
 def test_multiple_invite_to_project():

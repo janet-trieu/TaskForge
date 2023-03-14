@@ -5,8 +5,498 @@ import pytest
 import requests
 from tests.test_helpers import *
 port = 5010
-url = "http://localhost:{port}/"
+url = f"http://localhost:{port}/"
+
+proj_master = auth.get_user_by_email("project.master@gmail.com")
+
+task_master1 = auth.get_user_by_email("testingtm1@gmail.com")
+task_master2 = auth.get_user_by_email("testingtm2@gmail.com")
+task_master3 = auth.get_user_by_email("testingtm3@gmail.com")
+
+############################################################
+#                   Test for create_project                #
+############################################################
 
 def test_create_project_use_default_vals():
 
     reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+
+    reset_projects()
+
+def test_create_project_use_all_vals():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Not Started",
+        "due_date": "2023-12-31",
+        "team_strength": 5,
+        "picture": "test1.jpg"
+    })
+
+    assert create_resp.status_code == 200
+
+    reset_projects() 
+
+def test_create_multiple_projects():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project1",
+        "description": "Creating Project1 for testing",
+        "status": "Not Started",
+        "due_date": "2023-12-31",
+        "team_strength": 5,
+        "picture": "test1.jpg"
+    })
+
+    assert create_resp.status_code == 200
+
+    reset_projects() 
+
+def test_create_project_TypeError():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": -1,
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 400
+
+    reset_projects()
+
+def test_create_project_ValueError():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 400
+
+    reset_projects()
+
+def test_create_project_invalid_uid():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": "invalid",
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 400
+
+    reset_projects()
+
+############################################################
+#           Test for revive_completed_project              #
+############################################################
+
+def test_revive_completed_project():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Completed",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    # revive completed project back into "In Progress"
+    revive_resp = requests.post(url + "projects/revive", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "new_status": "In Progress"
+    })
+    revive_json = revive_resp.json()
+    assert revive_resp.status_code == 200
+    assert create_json["status"] == "In Progress"
+
+    reset_projects()
+
+def test_revive_completed_project_not_proj_master():
+    
+    reset_project_count()
+
+    incorrect_uid = task_master1.uid
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Completed",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    revive_resp = requests.post(url + "projects/revive", json={
+        "pid": create_json["pid"],
+        "uid": incorrect_uid,
+        "new_status": "In Progress"
+
+    })
+
+    assert revive_resp.status_code == 400
+    assert create_json["status"] == "Completed"
+
+    reset_projects()
+
+def test_revive_non_completed_project():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    revive_resp = requests.post(url + "projects/revive", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "new_status": "In Review"
+
+    })
+
+    assert revive_resp.status_code == 400
+    assert create_json["status"] == "In Progress"
+
+    reset_projects()
+
+############################################################
+#             Test for remove_project_member               #
+############################################################
+
+def test_remove_project_member():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json["pid"], task_master1.uid)
+    add_tm_to_project(create_json["pid"], task_master2.uid)
+    add_tm_to_project(create_json["pid"], task_master3.uid)
+
+    remove_resp = requests.post(url + "projects/remove", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "uid_to_be_removed": task_master1.uid
+    })
+
+    assert remove_resp.status_code == 200
+    assert task_master1.uid not in create_json["project_members"]
+
+    reset_projects() 
+
+def test_remove_project_member_not_proj_master():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json["pid"], task_master1.uid)
+
+    remove_resp = requests.post(url + "projects/remove", json={
+        "pid": create_json["pid"],
+        "uid": task_master2.uid,
+        "uid_to_be_removed": task_master1.uid
+    })
+
+    assert remove_resp.status_code == 400
+    assert task_master1.uid in create_json["project_members"]
+
+    reset_projects() 
+
+def test_remove_project_member_invalid_pid():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json["pid"], task_master1.uid)
+    add_tm_to_project(create_json["pid"], task_master2.uid)
+    add_tm_to_project(create_json["pid"], task_master3.uid)
+
+    remove_resp = requests.post(url + "projects/remove", json={
+        "pid": -1,
+        "uid": proj_master.uid,
+        "uid_to_be_removed": task_master1.uid
+    })
+
+    assert remove_resp.status_code == 400
+    assert task_master1.uid in create_json["project_members"]
+
+    reset_projects() 
+
+def test_remove_invalid_project_member():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    remove_resp = requests.post(url + "projects/remove", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "uid_to_be_removed": task_master1.uid
+    })
+
+    assert remove_resp.status_code == 400
+
+    reset_projects() 
+
+############################################################
+#               Test for invite_to_project                 #
+############################################################
+
+def test_invite_to_project():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "receiver_uids": [task_master1.uid]
+    })
+
+    assert invite_resp.status_code == 200
+    print(invite_resp)
+
+    reset_projects() 
+
+def test_multiple_invite_to_project():
+
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "receiver_uids": [task_master1.uid, task_master2.uid, task_master3.uid]
+    })
+
+    assert invite_resp.status_code == 200
+    print(invite_resp)
+
+    reset_projects() 
+
+def test_invite_to_invalid_project():
+    
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", json={
+        "pid": -1,
+        "uid": proj_master.uid,
+        "receiver_uids": [task_master1.uid]
+    })
+
+    assert invite_resp.status_code == 400
+    print(invite_resp)
+
+    reset_projects() 
+
+def test_invite_invalid_receiver_uid():
+    
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "receiver_uids": ["fbWQa7QApSXhhx4usHOllqjuhRW2"]
+    })
+
+    assert invite_resp.status_code == 400
+    print(invite_resp)
+
+    reset_projects() 
+
+def test_invite_uid_already_in_project():
+    
+    reset_project_count()
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": proj_master.uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "In Progress",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json["pid"], task_master1.uid)
+
+    invite_resp = requests.post(url + "projects/invite", json={
+        "pid": create_json["pid"],
+        "uid": proj_master.uid,
+        "receiver_uids": [task_master1.uid]
+    })
+
+    assert invite_resp.status_code == 400
+    print(invite_resp)
+
+    reset_projects() 
