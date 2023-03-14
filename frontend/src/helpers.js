@@ -2,13 +2,13 @@ import config from './config.json';
 
 const URL = `http://localhost:${config.BACKEND_PORT}`;
 
-export const makeRequest = async (path, method, body, token) => {
+export const makeRequest = async (path, method, body, uid) => {
   if (body) {
     const response = await fetch(`${URL}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `${uid}`,
       },
       body: JSON.stringify(body)
     });
@@ -19,7 +19,7 @@ export const makeRequest = async (path, method, body, token) => {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${uid}`,
       }
     });
     const data = await response.json();
