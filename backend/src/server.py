@@ -5,7 +5,8 @@ import os
 from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
 from flask_mail import Mail, Message
-from flask import Flask, request
+from flask import Flask, request, Response
+from profile import *
 
 from proj_master import *
 from profile_page import *
@@ -25,7 +26,6 @@ app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
 mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
-#APP.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -137,48 +137,44 @@ def admin_readd_user():
     data = request.get_json()
     return dumps(readd_user(data["uid_admin"], data["uid_user"]))
 
-
-
-
 #PROJECT ROUTES
-@app.route("/project/create/project", methods=["POST"])
-def create_project():
-    """
-    create_project_user flask
-    """
+@app.route("/projects/create", methods=["POST"])
+def flask_create_project():
     data = request.get_json()
-    return dumps(create_project(data["uid"], data["name"], data["description"], 
-                data["status"], data["team_strength"], data["picture"]))
+    pid = create_project(data["uid"], data["name"], data["description"], data["status"], data["due_date"], data["team_strength"], data["picture"])
+    return dumps(pid)
 
-@app.route("/project/revive/completed/project", methods=["POST"])
-def revive_completed_project():
-    """
-    revive_completed_project flask
-    """
+@app.route("/projects/revive", methods=["POST"])
+def flask_revive_project():
     data = request.get_json()
-    return dumps(revive_completed_project(data["pid"], data["uid"], data["new_status"]))
+    res = revive_completed_project(data["pid"], data["uid"], data["new_status"])
+    return dumps(res)
 
-
-@app.route('/invite/to/project', methods=['POST'])
-def invite_to_project_flask():
-    inputs = request.get_json()
-    proj_inv = invite_to_project(inputs['pid'], inputs['sender_uid'], inputs['receiver_uid'])
-
-    receipient_email = proj_inv[0]
-    msg_title = proj_inv[1]
-    msg_body = proj_inv[2]
-
-    msg = Message(msg_title, sender = sending_email, recipients = [receipient_email])
-    msg.body = msg_body
-    mail.send(msg)
-    
-@app.route("/project/remove/user", methods=["POST"])
-def project_remove_user():
-    """
-    project_remove_user flask
-    """
+@app.route("/projects/remove", methods=["POST"])
+def flask_remove_project_member():
     data = request.get_json()
-    return dumps(readd_user(data["pid"], data["uid"], data["uid_to_be_removed"]))
+    res = remove_project_member(data["pid"], data["uid"], data["uid_to_be_removed"])
+    return dumps(res)
+
+@app.route("/projects/invite", methods=["POST"])
+def flask_invite_to_project():
+    data = request.get_json()
+
+    uid_list = []
+    for email in data["receiver_uids"]:
+
+        try:
+            uid = auth.get_user_by_email(email).uid
+        except auth.UserNotFoundError:
+            return Response(
+                f"Specified email {email} does not exist",
+                status=400
+            )
+        else:
+            uid_list.append(uid)
+
+    res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
+    return dumps(res)
 
 # NOTIFICATIONS ROUTES #
 @app.route('/notification/get/notifications', methods=['GET'])
