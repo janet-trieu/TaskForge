@@ -6,6 +6,7 @@ from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
 from flask_mail import Mail, Message
 from flask import Flask, request
+from profile import *
 
 from proj_master import *
 from profile import *
@@ -156,6 +157,36 @@ def profile_update():
         return "Invalid Email", 400
     update_role(uid, role)
     update_photo_url(uid, photo_url)
+
+@app.route("/projects/create", methods=["POST"])
+def flask_create_project():
+    data = request.get_json()
+    pid = create_project(data["uid"], data["name"], data["description"], data["status"], data["due_date"], data["team_strength"], data["picture"])
+    return dumps(pid)
+
+@app.route("/projects/revive", methods=["POST"])
+def flask_revive_project():
+    data = request.get_json()
+    res = revive_completed_project(data["pid"], data["uid"], data["new_status"])
+    return dumps(res)
+
+@app.route("/projects/remove", methods=["POST"])
+def flask_remove_project_member():
+    data = request.get_json()
+    res = remove_project_member(data["pid"], data["uid"], data["uid_to_be_removed"])
+    return dumps(res)
+
+@app.route("/projects/invite", methods=["POST"])
+def flask_invite_to_project():
+    data = request.get_json()
+
+    uid_list = []
+    for email in data["receiver_uids"]:
+        uid = auth.get_user_by_email(email)
+        uid_list.append(uid)
+
+    res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
+    return dumps(res)
     
 if __name__ == "__main__":
     app.run()

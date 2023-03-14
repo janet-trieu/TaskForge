@@ -3,8 +3,8 @@ Test file for Flask http testing of project master feature
 '''
 import pytest
 import requests
-from tests.test_helpers import *
-port = 5010
+from test_helpers import *
+port = 5000
 url = f"http://localhost:{port}/"
 
 proj_master = auth.get_user_by_email("project.master@gmail.com")
