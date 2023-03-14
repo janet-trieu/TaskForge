@@ -2,6 +2,14 @@ from json import dumps
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 
+from admin import give_admin, ban_user, unban_user, remove_user, readd_user
+
+from flask_mail import Mail, Message
+from flask import Flask, request
+
+from proj_master import *
+
+'''
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
@@ -41,8 +49,7 @@ def echo():
     })
     
 #ADMIN ROUTES#
-@app.route("/admin/give_admin", methods=["POST"])
->>>>>>> 9c3fb04 (reordered file)
+@app.route("/admin/give/admin", methods=["POST"])
 def admin_give_admin():
     """
     give_admin flask
@@ -50,7 +57,7 @@ def admin_give_admin():
     data = request.get_json()
     return dumps(give_admin(data["uid_admin"], data["uid_user"]))
     
-@APP.route("/admin/ban_user", methods=["POST"])
+@app.route("/admin/ban/user", methods=["POST"])
 def admin_ban_user():
     """
     ban_user flask
@@ -58,7 +65,7 @@ def admin_ban_user():
     data = request.get_json()
     return dumps(ban_user(data["uid_admin"], data["uid_user"]))
     
-@APP.route("/admin/unban_user", methods=["POST"])
+@app.route("/admin/unban/user", methods=["POST"])
 def admin_unban_user():
     """
     unban_user flask
@@ -66,7 +73,7 @@ def admin_unban_user():
     data = request.get_json()
     return dumps(unban_user(data["uid_admin"], data["uid_user"]))
     
-@APP.route("/admin/remove_user", methods=["POST"])
+@app.route("/admin/remove/user", methods=["POST"])
 def admin_remove_user():
     """
     remove_user flask
@@ -74,7 +81,7 @@ def admin_remove_user():
     data = request.get_json()
     return dumps(remove_user(data["uid_admin"], data["uid_user"]))
     
-@APP.route("/admin/readd_user", methods=["POST"])
+@app.route("/admin/readd/user", methods=["POST"])
 def admin_readd_user():
     """
     readd_user flask
@@ -86,6 +93,24 @@ def admin_readd_user():
 
 
 #PROJECT ROUTES
+@app.route("/project/create/project", methods=["POST"])
+def create_project():
+    """
+    create_project_user flask
+    """
+    data = request.get_json()
+    return dumps(create_project(int(data["uid"]), str(data["name"]), str(data["description"], 
+                str(data["status"])), str(data["team_strength"]), str(data["picture"])))
+
+@app.route("/project/revive/completed/project", methods=["POST"])
+def revive_completed_project():
+    """
+    revive_completed_project flask
+    """
+    data = request.get_json()
+    return dumps(revive_completed_project(int(data["pid"]), str(data["uid"]), str(data["new_status"], )))
+
+
 @app.route('/invite/to/project', methods=['POST'])
 def invite_to_project_flask():
     inputs = request.get_json()
@@ -98,4 +123,11 @@ def invite_to_project_flask():
     msg = Message(msg_title, sender = sending_email, recipients = [receipient_email])
     msg.body = msg_body
     mail.send(msg)
->>>>>>> 9c3fb04 (reordered file)
+    
+@app.route("/project/remove/user", methods=["POST"])
+def project_remove_user():
+    """
+    project_remove_user flask
+    """
+    data = request.get_json()
+    return dumps(readd_user(int(data["pid"]), int(data["uid"]), int(data["uid_to_be_removed"])))
