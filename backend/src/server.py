@@ -24,6 +24,9 @@ def defaultHandler(err):
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
 mail = Mail(app)
+
+#APP.register_error_handler(Exception, defaultHandler)
+mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
 #APP.register_error_handler(Exception, defaultHandler)
 
@@ -116,6 +119,7 @@ def revive_completed_project():
     return dumps(revive_completed_project(data["pid"], data["uid"], data["new_status"]))
 
 
+#PROJECT ROUTES
 @app.route('/invite/to/project', methods=['POST'])
 def invite_to_project_flask():
     inputs = request.get_json()
