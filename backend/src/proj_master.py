@@ -9,6 +9,8 @@ Functionalities:
 from firebase_admin import firestore, auth
 from src.global_counters import *
 
+from src.notifications import *
+
 db = firestore.client()
 
 '''
@@ -227,6 +229,8 @@ def invite_to_project(pid, sender_uid, receiver_uid):
     receipient_name = auth.get_user(receiver_uid).display_name
     sender_name = auth.get_user(sender_uid).display_name
     project_name = proj_ref.get().get("name")
+
+    notification_project_invite(receiver_uid, sender_uid, pid)
 
     receipient_email = auth.get_user(receiver_uid).email
     msg_title = f"Hi {receipient_name}, {sender_name} is inviting you to this project: {project_name}"

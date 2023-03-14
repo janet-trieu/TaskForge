@@ -3,6 +3,12 @@ from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
+from flask_mail import Mail, Message
+from flask import Flask, request
+
+from src.proj_master import *
+
+
 '''
 def defaultHandler(err):
     response = err.get_response()
@@ -15,15 +21,23 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 '''
-APP = Flask(__name__)
-CORS(APP)
+app = Flask(__name__)
+CORS(app)
 
-APP.config['TRAP_HTTP_EXCEPTIONS'] = True
+app.config['TRAP_HTTP_EXCEPTIONS'] = True
 #APP.register_error_handler(Exception, defaultHandler)
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'compgpt3900@gmail.com'
+app.config['MAIL_PASSWORD'] = "gqjtjsnnaxwqeeeg"
+
+sending_email = "compgpt3900@gmail.com"
 
 
 # Example
-@APP.route("/echo", methods=['GET'])
+@app.route("/echo", methods=['GET'])
 def echo():
     data = request.args.get('data')
     if data == 'echo':
@@ -34,7 +48,7 @@ def echo():
     
 #ADMIN ROUTES
 
-@APP.route("/admin/give_admin", methods=["POST"])
+@app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
     give_admin flask
@@ -42,7 +56,7 @@ def admin_give_admin():
     data = request.get_json()
     return dumps(give_admin(int(data["uid_admin"]), int(data["uid_user"])))
     
-@APP.route("/admin/ban_user", methods=["POST"])
+@app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
     """
     ban_user flask
@@ -50,7 +64,7 @@ def admin_ban_user():
     data = request.get_json()
     return dumps(ban_user(int(data["uid_admin"]), int(data["uid_user"])))
     
-@APP.route("/admin/unban_user", methods=["POST"])
+@app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
     """
     unban_user flask
@@ -58,7 +72,7 @@ def admin_unban_user():
     data = request.get_json()
     return dumps(unban_user(int(data["uid_admin"]), int(data["uid_user"])))
     
-@APP.route("/admin/remove_user", methods=["POST"])
+@app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
     """
     remove_user flask
@@ -66,10 +80,27 @@ def admin_remove_user():
     data = request.get_json()
     return dumps(remove_user(int(data["uid_admin"]), int(data["uid_user"])))
     
-@APP.route("/admin/readd_user", methods=["POST"])
+@app.route("/admin/readd_user", methods=["POST"])
 def admin_readd_user():
     """
     readd_user flask
     """
     data = request.get_json()
     return dumps(readd_user(int(data["uid_admin"]), int(data["uid_user"])))
+
+
+
+mail = Mail(app)
+
+@app.route('/invite/to/project', methods=['POST'])
+def invite_to_project_flask():
+    inputs = request.get_json()
+    proj_inv = invite_to_project(inputs['pid'], inputs['sender_uid'], inputs['receiver_uid'])
+
+    receipient_email = proj_inv[0]
+    msg_title = proj_inv[1]
+    msg_body = proj_inv[2]
+
+    msg = Message(msg_title, sender = sending_email, recipients = [receipient_email])
+    msg.body = msg_body
+    mail.send(msg)
