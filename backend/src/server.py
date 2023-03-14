@@ -23,9 +23,11 @@ def defaultHandler(err):
 '''
 app = Flask(__name__)
 CORS(app)
+mail = Mail(app)
+
+#APP.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
-#APP.register_error_handler(Exception, defaultHandler)
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
@@ -46,8 +48,7 @@ def echo():
         'data': data
     })
     
-#ADMIN ROUTES
-
+#ADMIN ROUTES#
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
@@ -90,8 +91,8 @@ def admin_readd_user():
 
 
 
-mail = Mail(app)
 
+#PROJECT ROUTES
 @app.route('/invite/to/project', methods=['POST'])
 def invite_to_project_flask():
     inputs = request.get_json()
