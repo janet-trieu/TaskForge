@@ -3,8 +3,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from global_counters import get_curr_tuid, update_tuid
-from classes import User
+from src.global_counters import get_curr_tuid, update_tuid
+from src.classes import User
 
 db = firestore.client()
 ### ========= Functions ========= ###
