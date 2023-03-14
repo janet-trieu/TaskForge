@@ -3,7 +3,7 @@ from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
-
+'''
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
@@ -14,12 +14,12 @@ def defaultHandler(err):
     })
     response.content_type = 'application/json'
     return response
-
+'''
 APP = Flask(__name__)
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
-APP.register_error_handler(Exception, defaultHandler)
+#APP.register_error_handler(Exception, defaultHandler)
 
 
 # Example
