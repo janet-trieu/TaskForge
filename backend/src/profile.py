@@ -44,6 +44,9 @@ def delete_user(uid):
 ### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
+    # if old email is same as new email, change nothing
+    if new_email == get_email(uid):
+        return
     try:
         user = auth.update_user(
             uid,
