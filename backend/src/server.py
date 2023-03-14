@@ -156,6 +156,23 @@ def profile_update():
         return "Invalid Email", 400
     update_role(uid, role)
     update_photo(uid, photo_url)
+
+
+# NOTIFICATIONS ROUTES #
+@app.route('/notification/get/notifications', methods=['GET'])
+def get_notifications():
+    data = request.get_json()
+    return dumps(get_notifications(data['uid']))
+
+@app.route('/notification/clear/notification', methods=['DELETE'])
+def clear_notification():
+    data = request.get_json()
+    return dumps(clear_notification(data['uid'], data['notf_dict']))
+
+@app.route('/notification/clear/all/notifications', methods=['DELETE'])
+def clear_all_notifications():
+    data = request.get_json()
+    return dumps(clear_all_notifications(data['uid']))
     
 if __name__ == "__main__":
     app.run()
