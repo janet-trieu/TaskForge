@@ -8,6 +8,10 @@
   border-left: 2px solid lightgray;
 }
 
+.hide {
+  display: none;
+}
+
 #sidebar {
   width: 15vw;
   display: flex;
@@ -67,6 +71,42 @@
   height: 10vh;
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+}
+
+.create-project-button {
+  background-color: lightgreen;
+  padding: 0.8em;
+  font-size: 2vh;
+  border-radius: 30px;
+}
+
+.create-project-button:hover {
+  cursor: pointer;
+}
+
+#create-project-page {
+  padding-left: 3vw;
+  padding-top: 1vh;
+}
+
+#create-project-form label {
+  font-weight: bold;
+}
+
+#create-project-form input {
+  background-color: white;
+  color: black;
+  padding: 1vh;
+  margin-top: 1vh;
+  width: 30vw;
+  border-color: lightgray;
+  border-radius: 10px;
+}
+
+#project-invite {
+  background-image: url('assets/search.png');
+  background-position: calc(30vw - 20px) 0px;
+  background-repeat: no-repeat;
 }

@@ -23,11 +23,9 @@ const Sidebar = ({ firebaseApp }) => {
           <div className="sidebar-button" onClick={() => navigate('/connections')}><img src={connectionsIcon} />Connections</div>
         </div>
         <div id='sidebar-bottom'>
-          <div className="sidebar-button" onClick={() => navigate('/settings')}>
-            <img src={settingsIcon} /> Settings
-          </div>
+          <div className="sidebar-button" onClick={() => navigate('/settings')}><img src={settingsIcon} />Settings</div>
           <div className="sidebar-button" onClick={() => {firebaseApp.auth().signOut(); navigate('/');}}>
-            <img src={logoutIcon} /> Logout
+            <img src={logoutIcon} />Logout
           </div>
         </div>
       </div>
