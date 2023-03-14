@@ -158,7 +158,3 @@ def create_user_firestore(uid):
 ### ========= get user ref ========= ###
 def get_user_ref(uid):
     return db.collection('users').document(uid).get()
-
-uid = create_user_email("bobs@gmail.com", "gsalgdgwags", "bobby")
-print(is_removed(uid))
-
