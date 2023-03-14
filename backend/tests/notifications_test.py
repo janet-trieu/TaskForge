@@ -169,4 +169,46 @@ def test_sorted_notifications():
     for i in range(len(sorted_notifications) - 1):
         assert sorted_notifications[i]['time_sent'] >= sorted_notifications[i+1]['time_sent']
 
+def test_clear_all_notifications():
+    clear_all_notifications(user_id0)
+
+    doc_data = db.collection('notifications').document(user_id0).get().to_dict()
+
+    assert doc_data == {}
+
+def test_clear_notification():
+    notification_connection_request(user_id0, user_id1)
+    notification_achievement(user_id0, achievement_str='night_owl')
+
+    notf_list = get_notifications(user_id0)
+    
+    assert len(notf_list) == 2
+
+    # clear achievement0 - most recent notification
+    clear_notification(user_id0, notf_list[0])
+
+    notf_list = get_notifications(user_id0)
+
+    assert len(notf_list) == 1
+    assert notf_list[0]['nid'] == 'connection_request0'
+    assert notf_list[0]['uid_sender'] == 'NotifyUser1'
+    assert notf_list[0]['notification_msg'] == 'Jane Doe has requested to connect.'
+
+def test_no_dupe_nid():
+    clear_all_notifications(user_id0)
+
+    notification_comment(user_id0, user_id1, pid_expected, tid_expected)
+    notification_comment(user_id0, user_id1, pid_expected, tid_expected)
+    notification_comment(user_id0, user_id1, pid_expected, tid_expected)
+
+    # Clear 2nd notification
+    notf_list = get_notifications(user_id0)
+    clear_notification(user_id0, notf_list[1])
+
+    # 'comment0', 'comment2' still exist. making length = 2
+    # without dupe check, the next comment would have the nid 'comment2'
+    # with dupe check, the next comment would have the nid 'comment3' instead
+    notification_comment(user_id0, user_id1, pid_expected, tid_expected)
+    notf_list = get_notifications(user_id0)
+    assert notf_list[0]['nid'] == 'comment3'
     remove_test_data()
