@@ -7,9 +7,9 @@ Functionalities:
  - invite_to_project()
 '''
 from firebase_admin import firestore, auth
-from src.global_counters import *
+from global_counters import *
 
-from src.notifications import *
+from notifications import *
 
 db = firestore.client()
 

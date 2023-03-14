@@ -1,15 +1,15 @@
 from json import dumps
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
-
+import os
 from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
 from flask_mail import Mail, Message
 from flask import Flask, request
 
 from proj_master import *
-from src.profile import *
-'''
+from profile import *
+
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
@@ -20,11 +20,11 @@ def defaultHandler(err):
     })
     response.content_type = 'application/json'
     return response
-'''
-app = Flask(__name__)
+
+app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
 mail = Mail(app)
-
+app.register_error_handler(Exception, defaultHandler)
 #APP.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -54,47 +54,45 @@ def echo():
 @APP.route("/admin/give_admin", methods=["POST"])
 =======
 #ADMIN ROUTES#
-@app.route("/admin/give/admin", methods=["POST"])
+@app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
     give_admin flask
     """
     data = request.get_json()
-    return dumps(give_admin(int(data["uid_admin"]), int(data["uid_user"])))
+    return dumps(give_admin(data["uid_admin"], data["uid_user"]))
     
-@app.route("/admin/ban/user", methods=["POST"])
+@app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
     """
     ban_user flask
     """
     data = request.get_json()
-    return dumps(ban_user(int(data["uid_admin"]), int(data["uid_user"])))
+    return dumps(ban_user(data["uid_admin"], data["uid_user"]))
     
-@app.route("/admin/unban/user", methods=["POST"])
+@app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
     """
     unban_user flask
     """
     data = request.get_json()
-    return dumps(unban_user(int(data["uid_admin"]), int(data["uid_user"])))
+    return dumps(unban_user(data["uid_admin"], data["uid_user"]))
     
-@app.route("/admin/remove/user", methods=["POST"])
+@app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
     """
     remove_user flask
     """
     data = request.get_json()
-    return dumps(remove_user(int(data["uid_admin"]), int(data["uid_user"])))
+    return dumps(remove_user(data["uid_admin"], data["uid_user"]))
     
-@app.route("/admin/readd/user", methods=["POST"])
+@app.route("/admin/readd_user", methods=["POST"])
 def admin_readd_user():
     """
     readd_user flask
     """
     data = request.get_json()
-    return dumps(readd_user(int(data["uid_admin"]), int(data["uid_user"])))
-<<<<<<< HEAD
-=======
+    return dumps(readd_user(data["uid_admin"], data["uid_user"]))
 
 
 
@@ -106,8 +104,8 @@ def create_project():
     create_project_user flask
     """
     data = request.get_json()
-    return dumps(create_project(int(data["uid"]), str(data["name"]), str(data["description"], 
-                str(data["status"])), str(data["team_strength"]), str(data["picture"])))
+    return dumps(create_project(data["uid"], data["name"], data["description"], 
+                data["status"], data["team_strength"], data["picture"]))
 
 @app.route("/project/revive/completed/project", methods=["POST"])
 def revive_completed_project():
@@ -115,7 +113,7 @@ def revive_completed_project():
     revive_completed_project flask
     """
     data = request.get_json()
-    return dumps(revive_completed_project(int(data["pid"]), str(data["uid"]), str(data["new_status"], )))
+    return dumps(revive_completed_project(data["pid"], data["uid"], data["new_status"]))
 
 
 @app.route('/invite/to/project', methods=['POST'])
@@ -137,7 +135,7 @@ def project_remove_user():
     project_remove_user flask
     """
     data = request.get_json()
-    return dumps(readd_user(int(data["pid"]), int(data["uid"]), int(data["uid_to_be_removed"])))
+    return dumps(readd_user(data["pid"], data["uid"], data["uid_to_be_removed"]))
     
     
 @app.route('/user/details', methods=['GET'])
@@ -163,3 +161,7 @@ def profile_update():
         return "Invalid Email", 400
     update_role(uid, role)
     update_photo_url(uid, photo_url)
+    
+if __name__ == "__main__":
+    app.run()
+
