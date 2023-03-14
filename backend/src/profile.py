@@ -88,7 +88,7 @@ def update_photo(uid, new_photo_url):
         print('Unsuccesful photo change')
 
 ### ========= Update Role ========= ###
-def update_display_name(uid, new_role):
+def update_role(uid, new_role):
     user_ref = db.collection("users").document(uid)
     user_ref.update({"role": new_role})
 
