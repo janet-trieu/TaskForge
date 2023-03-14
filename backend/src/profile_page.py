@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from global_counters import get_curr_tuid, update_tuid
+from global_counters import *
 from classes import User
 
 db = firestore.client()
@@ -48,7 +48,7 @@ def update_email(uid, new_email):
     try:
         user = auth.update_user(
             uid,
-            display_name = new_email
+            email = new_email
         )
         print('Sucessfully updated user: {0}'.format(user.uid))
     except ValueError:
@@ -158,3 +158,12 @@ def create_user_firestore(uid):
 ### ========= get user ref ========= ###
 def get_user_ref(uid):
     return db.collection('users').document(uid).get()
+
+### ========= is valid user ========= ###
+def is_valid_user(uid):
+    try:
+        auth.get_user(uid)
+    except auth.UserNotFoundError:
+        return False
+    else:
+        return True

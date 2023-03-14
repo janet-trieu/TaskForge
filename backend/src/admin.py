@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from profile import is_banned, is_admin, is_removed, get_user_ref
+from profile_page import is_banned, is_admin, is_removed, get_user_ref
 from global_counters import *
 import sys
 from error import InputError, AccessError

@@ -6,7 +6,6 @@ Frontend notes:
 - responsive notifications have special message fields when the user 'accepts' or 'declines'
     - so we dont have to worry about deleting the notification and the user remembers what they responded
     - e.g. user presses accept to connection request. the notification text is changed from 'notification_msg' to 'accept_msg'
-
 TODO notes:
 - When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
 - ASSUMPTION should be covered by the function the notfiication is called in
@@ -14,17 +13,30 @@ TODO notes:
 from firebase_admin import firestore
 from datetime import datetime
 
-# from src.helper import *
 from helper import *
 
 db = firestore.client()
 
 # ============ HELPERS ============ #
 
+def does_nid_exists(uid, nid):
+    doc_ref = db.collection('notifications').document(uid)
+
+    # Check if field name exists in document
+    if nid in doc_ref.get().to_dict():
+        return True
+    else:
+        return False
+
 def create_nid(uid, type):
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
     nid = f'{type}{count}'
+    
+    # If nid exists, increment count and update nid and check again until unique
+    while does_nid_exists(uid, nid):
+        count += 1
+        nid = f'{type}{count}'
 
     return nid
 
@@ -62,6 +74,7 @@ def notification_welcome(uid):
             "has_read": False,
             "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
             "time_sent": datetime.now(),
+            "nid": 'welcome'
         }
     }
 
@@ -90,7 +103,8 @@ def notification_connection_request(uid, uid_sender):
             "type": notification_type,
             "uid_sender": uid_sender,
             "accept_msg": f"You accepted {sender_name}'s connection request.",
-            "decline_msg": f"You declined {sender_name}'s connection request."
+            "decline_msg": f"You declined {sender_name}'s connection request.",
+            "nid": nid
         }
     }
 
@@ -123,7 +137,8 @@ def notification_project_invite(uid, uid_sender, pid):
             "type": notification_type,
             "uid_sender": uid_sender,
             "accept_msg": f"You accepted {sender_name}'s project invitation.",
-            "decline_msg": f"You declined {sender_name}'s project invitation."
+            "decline_msg": f"You declined {sender_name}'s project invitation.",
+            "nid": nid
         }
     }
 
@@ -154,7 +169,8 @@ def notification_assigned_task(uid, pid, tid):
             "pid": pid,
             "tid": tid,
             "time_sent": datetime.now(),
-            "type": notification_type
+            "type": notification_type,
+            "nid": nid
         }
     }
 
@@ -189,7 +205,8 @@ def notification_comment(uid, uid_sender, pid, tid):
             "tid": tid,
             "time_sent": datetime.now(),
             "type": notification_type,
-            "uid_sender": uid_sender
+            "uid_sender": uid_sender,
+            "nid": nid
         }
     }
 
@@ -221,6 +238,7 @@ def notification_deadline(uid, pid, tid):
             "tid": tid,
             "time_sent": datetime.now(),
             "type": notification_type,
+            "nid": nid
         }
     }
 
@@ -250,7 +268,8 @@ def notification_review(uid, uid_sender, rid):
             "rid": rid,
             "time_sent": datetime.now(),
             "type": notification_type,
-            "uid_sender": uid_sender
+            "uid_sender": uid_sender,
+            "nid": nid
         }
     }
 
@@ -278,6 +297,7 @@ def notification_achievement(uid, achievement_str):
             "notification_msg": f"You have earned the {achievement_name} achievement.",
             "time_sent": datetime.now(),
             "type": notification_type,
+            "nid": nid
         }
     }
 
@@ -310,7 +330,8 @@ def notification_leave_request(uid, uid_sender, pid):
             "type": notification_type,
             "uid_sender": uid_sender,
             "accept_msg": f"You accepted {sender_name}'s project leave.",
-            "decline_msg": f"You declined {sender_name}'s project leave."
+            "decline_msg": f"You declined {sender_name}'s project leave.",
+            "nid": nid
         }
     }
 
@@ -322,7 +343,7 @@ def get_notifications(uid):
     Args:
         uid (string): User getting notifications
     Returns:
-        sorted_notifications (list): List of user's notifications sorted by descending timestamps
+        sorted_notifications (list): List of dictionaries of user's notifications sorted by descending timestamps
     '''
     check_valid_uid
 
@@ -332,3 +353,55 @@ def get_notifications(uid):
     sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
 
     return sorted_notifications
+
+def clear_notification(uid, notf_dict):
+    '''
+    Clears all the user's notification
+    Args:
+        uid (string): User getting notifications
+        notf_dict (dictionary): Dictionary of notification data
+    '''
+    check_valid_uid(uid)
+    nid = notf_dict['nid']
+    doc_ref = db.collection('notifications').document(uid)
+    doc_ref.update({
+        nid: firestore.DELETE_FIELD
+    })
+
+def clear_all_notifications(uid):
+    '''
+    Clears all the user's notification
+    Args:
+        uid (string): User getting notifications
+    '''
+    check_valid_uid(uid)
+    notf_data = db.collection('notifications').document(uid)
+    notf_data.set({}) #set to nothing
+
+if __name__ == "__main__":
+    # im just gonna keep this here cause i like to test and not keep writing data again and again hehe
+    """ db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
+    db.collection('users').document('notifytestid1').set({'display_name':'Jane Doe'})
+    db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
+    db.collection('projects').document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
+    db.collection('tasks').document('1337').set({'name':'Task Notification !!! NOTIFICATION TEST'})
+    db.collection('reviews').document('1337').set({'uid':'notifytestid1'})
+    notification_welcome('notifytestid')
+    notification_connection_request('notifytestid', 'notifytestid1')
+    notification_project_invite('notifytestid', 'notifytestid1', 1337)
+    notification_assigned_task('notifytestid', 1337, 1337)
+    notification_comment('notifytestid', 'notifytestid1', 1337, 1337)
+    notification_deadline('notifytestid', 1337, 1337)
+    notification_review('notifytestid', 'notifytestid1', 1337)
+    notification_achievement('notifytestid', 'night_owl')
+    notification_leave_request('notifytestid', 'notifytestid1', 1337)
+    clear_all_notifications('notifytestid')
+    #checking if nid is unique when deleted a specific notification
+    notification_achievement('notifytestid', 'night_owl')
+    notification_achievement('notifytestid', 'night_owl')
+    notification_achievement('notifytestid', 'night_owl')
+    notflist = get_notifications('notifytestid')
+    clear_notification('notifytestid', notflist[1])
+    notification_achievement('notifytestid', 'night_owl')
+    clear_notification('notifytestid', notflist[1])
+    notification_achievement('notifytestid', 'night_owl') """
