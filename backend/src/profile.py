@@ -3,12 +3,10 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from src.global_counters import get_curr_tuid
+from src.global_counters import get_curr_tuid, update_tuid
 from src.classes import User
 
-
 db = firestore.client()
-
 ### ========= Functions ========= ###
 ### ========= Create User ========= ###
 def create_user_email(email, password, display_name):
@@ -44,6 +42,9 @@ def delete_user(uid):
 ### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
+    # if old email is same as new email, change nothing
+    if new_email == get_email(uid):
+        return
     try:
         user = auth.update_user(
             uid,
@@ -75,11 +76,26 @@ def update_password(uid, new_password):
         )
         print('Sucessfully updated user: {0}'.format(user.uid))
 
+### ========= Update photo ========= ###
+def update_photo(uid, new_photo_url):
+    try:
+        user = auth.update_user(
+            uid,
+            photo_url = new_photo_url
+        )
+        print('Sucessfully updated user: {0}'.format(user.uid))
+    except:  
+        print('Unsuccesful photo change')
+
 ### ========= Update Role ========= ###
 def update_display_name(uid, new_role):
-    user_ref = db.collection("users").document(str(get_tuid(uid)))
+    user_ref = db.collection("users").document(uid)
     user_ref.update({"role": new_role})
 
+### ========= Update DOB ========= ###
+def update_DOB(uid, new_DOB):
+    user_ref = db.collection("users").document(uid)
+    user_ref.update({"DOB": new_DOB})
 
 ### ========= Getters ========= ###
 ### ========= get tuid ========= ###
@@ -90,6 +106,10 @@ def get_tuid(uid):
 def get_display_name(uid):
     return auth.get_user(uid).display_name
 
+### ========= Get photo ========= ###
+def get_photo(uid):
+    return auth.get_user(uid).photo_url
+
 ### ========= Get email ========= ###
 def get_email(uid):
     return auth.get_user(uid).email
@@ -97,6 +117,10 @@ def get_email(uid):
 ### ========= Get Role ========= ###
 def get_projects(uid):    
     return get_user_ref(uid).get("role")
+
+### ========= Get DOB ========= ###
+def get_DOB(uid):    
+    return get_user_ref(uid).get("DOB")
 
 ### ========= Get Projects ========= ###
 def get_projects(uid):    
@@ -127,12 +151,10 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(value, uid, "", False, False, False, [], [], [])
+    user = User(uid, value, "", "", False, False, False, [], [], [])
     
-    users_ref.document(str(value)).set(user.to_dict())
+    users_ref.document(uid).set(user.to_dict())
 
 ### ========= get user ref ========= ###
 def get_user_ref(uid):
-    user_ref = db.collection('users').where("uid", "==", uid).stream()
-    return list(user_ref)[0].to_dict()
-    
+    return db.collection('users').document(uid).get()
