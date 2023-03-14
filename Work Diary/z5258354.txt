@@ -107,3 +107,27 @@ What was not finished, why this happened, how this affects the overall project p
 What is planned for the next period (e.g., next week)
 - proposal should be complete, start working on the implementaiton itself
 - start looking into integrating fireBase and our project
+
+=== Week 4 ===
+
+General Content:
+- finally begun implementing sprint 1 features
+- as of writing, have completed all features for project master feature
+- team working well in bringing everything together for the demo on Wednesday
+- have been communicating thoroughly both on meetings and offline, with every discussion being meaningful
+
+What was planned for the period since the last work diary entry
+- Finish working on the Proposal, and start implementing sprint 1 features
+
+What was finished
+- Project Master feature
+- Root Admin Feature
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- Mainly adjusting to the new python environment for everyone, and configuring everything correctly
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Rest of the Sprint 1 features, but will be done by Wednesday (demo)
+
+What is planned for the next period (e.g., next week)
+- Complete the demo, start working on sprint 2
