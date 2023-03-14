@@ -75,11 +75,26 @@ def update_password(uid, new_password):
         )
         print('Sucessfully updated user: {0}'.format(user.uid))
 
+### ========= Update photo ========= ###
+def update_photo(uid, new_photo_url):
+    try:
+        user = auth.update_user(
+            uid,
+            photo_url = new_photo_url
+        )
+        print('Sucessfully updated user: {0}'.format(user.uid))
+    except:  
+        print('Unsuccesful photo change')
+
 ### ========= Update Role ========= ###
 def update_display_name(uid, new_role):
     user_ref = db.collection("users").document(str(get_tuid(uid)))
     user_ref.update({"role": new_role})
 
+### ========= Update DOB ========= ###
+def update_DOB(uid, new_DOB):
+    user_ref = db.collection("users").document(str(get_tuid(uid)))
+    user_ref.update({"DOB": new_DOB})
 
 ### ========= Getters ========= ###
 ### ========= get tuid ========= ###
@@ -90,6 +105,10 @@ def get_tuid(uid):
 def get_display_name(uid):
     return auth.get_user(uid).display_name
 
+### ========= Get photo ========= ###
+def get_photo(uid):
+    return auth.get_user(uid).photo_url
+
 ### ========= Get email ========= ###
 def get_email(uid):
     return auth.get_user(uid).email
@@ -97,6 +116,10 @@ def get_email(uid):
 ### ========= Get Role ========= ###
 def get_projects(uid):    
     return get_user_ref(uid).get("role")
+
+### ========= Get DOB ========= ###
+def get_DOB(uid):    
+    return get_user_ref(uid).get("DOB")
 
 ### ========= Get Projects ========= ###
 def get_projects(uid):    
