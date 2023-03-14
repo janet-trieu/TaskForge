@@ -41,7 +41,7 @@ def delete_user(uid):
         db.collection("users").document(str(tuid)).delete()
     except:
         print("uid does not correspond to a current user")
-
+### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
     try:
@@ -75,6 +75,17 @@ def update_password(uid, new_password):
         )
         print('Sucessfully updated user: {0}'.format(user.uid))
 
+### ========= Update Role ========= ###
+def update_display_name(uid, new_role):
+    user_ref = db.collection("users").document(str(get_tuid(uid)))
+    user_ref.update({"role": new_role})
+
+
+### ========= Getters ========= ###
+### ========= get tuid ========= ###
+def get_tuid(uid):
+    return get_user_ref(uid).get("tuid")
+
 ### ========= Get display name ========= ###
 def get_display_name(uid):
     return auth.get_user(uid).display_name
@@ -82,6 +93,10 @@ def get_display_name(uid):
 ### ========= Get email ========= ###
 def get_email(uid):
     return auth.get_user(uid).email
+
+### ========= Get Role ========= ###
+def get_projects(uid):    
+    return get_user_ref(uid).get("role")
 
 ### ========= Get Projects ========= ###
 def get_projects(uid):    
@@ -112,7 +127,7 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(value, uid, False, False, False, [], [], [])
+    user = User(value, uid, "", False, False, False, [], [], [])
     
     users_ref.document(str(value)).set(user.to_dict())
 
