@@ -27,5 +27,5 @@ def invite_to_project_flask():
     msg_body = proj_inv[2]
 
     msg = Message(msg_title, sender = sending_email, recipients = [receipient_email])
-    msg.body = proj_inv[2]
+    msg.body = msg_body
     mail.send(msg)
