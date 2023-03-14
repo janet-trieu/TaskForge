@@ -8,7 +8,7 @@ from flask_mail import Mail, Message
 from flask import Flask, request
 
 from proj_master import *
-
+from src.profile import *
 '''
 def defaultHandler(err):
     response = err.get_response()
@@ -138,3 +138,28 @@ def project_remove_user():
     """
     data = request.get_json()
     return dumps(readd_user(int(data["pid"]), int(data["uid"]), int(data["uid_to_be_removed"])))
+    
+    
+@app.route('/user/details', methods=['GET'])
+def user_details():
+    #name, email, role, photo_url, num_connections, rating
+    data = request.get_json()
+    uid = data["uid"]
+    display_name = str(get_display_name(uid))
+    email = str(get_email(uid))
+    photo_url = str(get_photo_url(uid))
+    return dumps(display_name, email, photo_url, int(0), int(0))
+
+@app.route('/profile/update', methods=['PUT'])
+def profile_update():
+    data = request.get_json()
+    uid = data["uid"]
+    email = data["email"]
+    role = data["role"]
+    photo_url = data["photo_url"]
+    try:
+        update_email(uid, email)
+    except ValueError:
+        return "Invalid Email", 400
+    update_role(uid, role)
+    update_photo_url(uid, photo_url)
