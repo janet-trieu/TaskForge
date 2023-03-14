@@ -1,5 +1,5 @@
 from json import dumps
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, Response
 from flask_cors import CORS
 import os
 from admin import give_admin, ban_user, unban_user, remove_user, readd_user
@@ -48,6 +48,54 @@ def echo():
         'data': data
     })
     
+#Profile Routes#
+@app.route('/user/details', methods=['GET'])
+def user_details():
+    #name, email, role, photo_url, num_connections, rating
+    data = request.get_json()
+    uid = data["uid"]
+    if is_valid_user(uid) == False:
+        return Response(status=400)
+    else:
+        display_name = str(get_display_name(uid))
+        email = str(get_email(uid))
+        photo_url = str(get_photo(uid))
+        return dumps({"display_name": display_name, "email": email, "photo_url": photo_url, "num_connections": int(0), "rating": int(0)}), 200
+
+@app.route('/profile/update', methods=['PUT'])
+def profile_update():
+    data = request.get_json()
+    uid = data["uid"]
+    if is_valid_user(uid) == False:
+        return Response(status=400)
+    else:
+        email = data["email"]
+        role = data["role"]
+        photo_url = data["photo_url"]
+        try:
+            update_email(uid, email)
+        except ValueError:
+            return "Invalid Email"
+        update_role(uid, role)
+        update_photo(uid, photo_url)
+        return Response(status=200)
+
+@app.route('/get/tasks', methods=['GET'])
+def get_user_tasks():
+    data = request.get_json()
+    uid = data["uid"]
+    if is_valid_user(uid) == False:
+        return Response(status=400)
+    else:
+        return Response(get_tasks(uid), status=200)
+
+@app.route('/create/user', methods=['PUTS'])
+def create_user():
+    data = request.get_json()
+    uid = data["uid"]
+    create_user_firestore(uid)
+
+
 #ADMIN ROUTES#
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
@@ -131,32 +179,6 @@ def project_remove_user():
     """
     data = request.get_json()
     return dumps(readd_user(data["pid"], data["uid"], data["uid_to_be_removed"]))
-    
-    
-@app.route('/user/details', methods=['GET'])
-def user_details():
-    #name, email, role, photo_url, num_connections, rating
-    data = request.get_json()
-    uid = data["uid"]
-    display_name = str(get_display_name(uid))
-    email = str(get_email(uid))
-    photo_url = str(get_photo(uid))
-    return dumps(display_name, email, photo_url, int(0), int(0))
-
-@app.route('/profile/update', methods=['PUT'])
-def profile_update():
-    data = request.get_json()
-    uid = data["uid"]
-    email = data["email"]
-    role = data["role"]
-    photo_url = data["photo_url"]
-    try:
-        update_email(uid, email)
-    except ValueError:
-        return "Invalid Email", 400
-    update_role(uid, role)
-    update_photo(uid, photo_url)
-
 
 # NOTIFICATIONS ROUTES #
 @app.route('/notification/get/notifications', methods=['GET'])
@@ -173,7 +195,7 @@ def clear_notification():
 def clear_all_notifications():
     data = request.get_json()
     return dumps(clear_all_notifications(data['uid']))
-    
+
 if __name__ == "__main__":
     app.run()
 
