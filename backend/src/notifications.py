@@ -344,7 +344,7 @@ def get_notifications(uid):
     Args:
         uid (string): User getting notifications
     Returns:
-        sorted_notifications (list): List of user's notifications sorted by descending timestamps
+        sorted_notifications (list): List of dictionaries of user's notifications sorted by descending timestamps
     '''
     check_valid_uid
 
@@ -381,7 +381,7 @@ def clear_all_notifications(uid):
 
 if __name__ == "__main__":
     # im just gonna keep this here cause i like to test and not keep writing data again and again hehe
-    db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
+    """ db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
     db.collection('users').document('notifytestid1').set({'display_name':'Jane Doe'})
     db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
     db.collection('projects').document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
@@ -407,4 +407,4 @@ if __name__ == "__main__":
     clear_notification('notifytestid', notflist[1])
     notification_achievement('notifytestid', 'night_owl')
     clear_notification('notifytestid', notflist[1])
-    notification_achievement('notifytestid', 'night_owl')
+    notification_achievement('notifytestid', 'night_owl') """
