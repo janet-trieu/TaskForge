@@ -8,7 +8,7 @@ from flask_mail import Mail, Message
 from flask import Flask, request
 
 from proj_master import *
-from profile import *
+from profile_page import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -140,7 +140,7 @@ def user_details():
     uid = data["uid"]
     display_name = str(get_display_name(uid))
     email = str(get_email(uid))
-    photo_url = str(get_photo_url(uid))
+    photo_url = str(get_photo(uid))
     return dumps(display_name, email, photo_url, int(0), int(0))
 
 @app.route('/profile/update', methods=['PUT'])
@@ -155,7 +155,7 @@ def profile_update():
     except ValueError:
         return "Invalid Email", 400
     update_role(uid, role)
-    update_photo_url(uid, photo_url)
+    update_photo(uid, photo_url)
     
 if __name__ == "__main__":
     app.run()
