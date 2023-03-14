@@ -40,6 +40,7 @@ def remove_test_data():
     db.collection('tasks').document(str(tid_expected)).delete()
     db.collection('achievements').document('night_owl').delete()
     db.collection('reviews').document(str(rid_expected)).delete()
+    db.collection('notifications').document(user_id0).delete()
 
 # ============ TESTS ============ #
 def test_welcome_notification():
