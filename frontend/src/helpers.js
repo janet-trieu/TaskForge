@@ -36,7 +36,7 @@ export const fileToDataUrl = (file) => {
   // Bad data, let's walk away.
   if (!valid) {
     alert('Provided file is not a png, jpg, or jpeg image.');
-    return;
+    return null;
   }
 
   const reader = new FileReader();
