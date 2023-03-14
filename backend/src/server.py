@@ -1,15 +1,15 @@
 from json import dumps
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
-
+import os
 from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 
 from flask_mail import Mail, Message
 from flask import Flask, request
 
 from proj_master import *
-from src.profile import *
-'''
+from profile import *
+
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
@@ -24,7 +24,7 @@ def defaultHandler(err):
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
 mail = Mail(app)
-
+app.register_error_handler(Exception, defaultHandler)
 #APP.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -39,7 +39,7 @@ sending_email = "compgpt3900@gmail.com"
 
 
 # Example
-@APP.route("/echo", methods=['GET'])
+@app.route("/echo", methods=['GET'])
 def echo():
     data = request.args.get('data')
     if data == 'echo':
@@ -48,11 +48,6 @@ def echo():
         'data': data
     })
     
-<<<<<<< HEAD
-#ADMIN ROUTES
-
-@APP.route("/admin/give_admin", methods=["POST"])
-=======
 #ADMIN ROUTES#
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
@@ -95,44 +90,6 @@ def admin_readd_user():
     return dumps(readd_user(data["uid_admin"], data["uid_user"]))
 
 
-
-
-#PROJECT ROUTES
-@app.route("/project/create/project", methods=["POST"])
-def create_project():
-    """
-    create_project_user flask
-    """
-    data = request.get_json()
-    return dumps(create_project(data["uid"], data["name"], data["description"], 
-                data["status"], data["team_strength"], data["picture"]))
-
-@app.route("/project/revive/completed/project", methods=["POST"])
-def revive_completed_project():
-    """
-    revive_completed_project flask
-    """
-    data = request.get_json()
-    return dumps(revive_completed_project(data["pid"], data["uid"], data["new_status"]))
-
-
-#PROJECT ROUTES
-@app.route("/project/create/project", methods=["POST"])
-def create_project():
-    """
-    create_project_user flask
-    """
-    data = request.get_json()
-    return dumps(create_project(data["uid"], data["name"], data["description"], 
-                data["status"], data["team_strength"], data["picture"]))
-
-@app.route("/project/revive/completed/project", methods=["POST"])
-def revive_completed_project():
-    """
-    revive_completed_project flask
-    """
-    data = request.get_json()
-    return dumps(revive_completed_project(data["pid"], data["uid"], data["new_status"]))
 
 
 #PROJECT ROUTES
@@ -199,3 +156,7 @@ def profile_update():
         return "Invalid Email", 400
     update_role(uid, role)
     update_photo_url(uid, photo_url)
+    
+if __name__ == "__main__":
+    app.run()
+
