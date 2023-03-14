@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from global_counters import get_curr_tuid, update_tuid
+from global_counters import *
 from classes import User
 
 db = firestore.client()
@@ -39,7 +39,6 @@ def delete_user(uid):
         db.collection("users").document(str(tuid)).delete()
     except:
         print("uid does not correspond to a current user")
-### ========= Updaters ========= ###
 ### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
