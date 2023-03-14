@@ -12,7 +12,7 @@ db = firestore.client()
 #auth.create_user(email='yoloswag@gmail.com', password='unidropout')
 
 
-user = auth.get_user_by_email('yoloswag@gmail.com')
+user = auth.get_user_by_email('joseph.saad137@gmail.com')
 print(user.email)
 print(user.uid)
 print(user.disabled)
