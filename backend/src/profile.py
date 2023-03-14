@@ -150,7 +150,7 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(value, uid, "", False, False, False, [], [], [])
+    user = User(value, uid, "", "", False, False, False, [], [], [])
     
     users_ref.document(str(value)).set(user.to_dict())
 
