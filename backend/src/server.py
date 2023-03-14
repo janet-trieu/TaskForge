@@ -48,6 +48,44 @@ def echo():
         'data': data
     })
     
+#Profile Routes#
+@app.route('/user/details', methods=['GET'])
+def user_details():
+    #name, email, role, photo_url, num_connections, rating
+    data = request.get_json()
+    uid = data["uid"]
+    display_name = str(get_display_name(uid))
+    email = str(get_email(uid))
+    photo_url = str(get_photo(uid))
+    return dumps(display_name, email, photo_url, int(0), int(0))
+
+@app.route('/profile/update', methods=['PUT'])
+def profile_update():
+    data = request.get_json()
+    uid = data["uid"]
+    email = data["email"]
+    role = data["role"]
+    photo_url = data["photo_url"]
+    try:
+        update_email(uid, email)
+    except ValueError:
+        return "Invalid Email", 400
+    update_role(uid, role)
+    update_photo(uid, photo_url)
+
+@app.route('/get/tasks', methods=['GET'])
+def get_user_tasks():
+    data = request.get_json()
+    uid = data["uid"]
+    return get_tasks(uid)
+
+@app.route('/create/user', methods=['PUTS'])
+def create_user():
+    data = request.get_json()
+    uid = data["uid"]
+    create_user_firestore(uid)
+
+
 #ADMIN ROUTES#
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
@@ -131,31 +169,6 @@ def project_remove_user():
     """
     data = request.get_json()
     return dumps(readd_user(data["pid"], data["uid"], data["uid_to_be_removed"]))
-    
-    
-@app.route('/user/details', methods=['GET'])
-def user_details():
-    #name, email, role, photo_url, num_connections, rating
-    data = request.get_json()
-    uid = data["uid"]
-    display_name = str(get_display_name(uid))
-    email = str(get_email(uid))
-    photo_url = str(get_photo(uid))
-    return dumps(display_name, email, photo_url, int(0), int(0))
-
-@app.route('/profile/update', methods=['PUT'])
-def profile_update():
-    data = request.get_json()
-    uid = data["uid"]
-    email = data["email"]
-    role = data["role"]
-    photo_url = data["photo_url"]
-    try:
-        update_email(uid, email)
-    except ValueError:
-        return "Invalid Email", 400
-    update_role(uid, role)
-    update_photo(uid, photo_url)
     
 if __name__ == "__main__":
     app.run()
