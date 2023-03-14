@@ -161,4 +161,4 @@ def create_user_firestore(uid):
 def get_user_ref(uid):
     user_ref = db.collection('users').where("uid", "==", uid).stream()
     return list(user_ref)[0].to_dict()
-    
+ 
