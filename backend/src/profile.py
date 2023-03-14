@@ -3,12 +3,10 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from src.global_counters import get_curr_tuid
-from src.classes import User
-
+from global_counters import get_curr_tuid, update_tuid
+from classes import User
 
 db = firestore.client()
-
 ### ========= Functions ========= ###
 ### ========= Create User ========= ###
 def create_user_email(email, password, display_name):
@@ -91,12 +89,12 @@ def update_photo(uid, new_photo_url):
 
 ### ========= Update Role ========= ###
 def update_display_name(uid, new_role):
-    user_ref = db.collection("users").document(str(get_tuid(uid)))
+    user_ref = db.collection("users").document(uid)
     user_ref.update({"role": new_role})
 
 ### ========= Update DOB ========= ###
 def update_DOB(uid, new_DOB):
-    user_ref = db.collection("users").document(str(get_tuid(uid)))
+    user_ref = db.collection("users").document(uid)
     user_ref.update({"DOB": new_DOB})
 
 ### ========= Getters ========= ###
@@ -153,12 +151,14 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(value, uid, "", "", False, False, False, [], [], [])
+    user = User(uid, value, "", "", False, False, False, [], [], [])
     
-    users_ref.document(str(value)).set(user.to_dict())
+    users_ref.document(uid).set(user.to_dict())
 
 ### ========= get user ref ========= ###
 def get_user_ref(uid):
-    user_ref = db.collection('users').where("uid", "==", uid).stream()
-    return list(user_ref)[0].to_dict()
- 
+    return db.collection('users').document(uid).get()
+
+uid = create_user_email("bobs@gmail.com", "gsalgdgwags", "bobby")
+print(is_removed(uid))
+
