@@ -40,6 +40,7 @@ def delete_user(uid):
     except:
         print("uid does not correspond to a current user")
 ### ========= Updaters ========= ###
+### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
     # if old email is same as new email, change nothing
