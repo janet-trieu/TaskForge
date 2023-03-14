@@ -23,9 +23,11 @@ const Auth = () => {
 
   return (
     <>
+    <div id='auth-page'>
       <img src={logo} style={{width: '6em'}}/>
       <h2>LOG IN</h2>
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+    </div>
     </>
   );
 };
