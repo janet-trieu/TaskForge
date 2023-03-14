@@ -32,3 +32,19 @@ We decided to use firebase instead of a local postgresql database since it was p
 authentication, so we didnt have to implement it ourselves. 
 I added more to the background portion of the proposal to better engage with the marking critera.
 We also named our project taskForge. I added our sprint 3 user stories into the jira roadmap.
+
+
+============================================================================================================================
+
+Week 4
+
+I was given the task of figuring out how firebase worked, how to use it and how to get started with the backend, mainly
+with the database. Joseph had a similar task, but he focused alot more on firebase authentication. 
+I spent some time messing around with it, and came up with 2 testing files in firebase_test branch that showed
+how to access the database and manipulate data within it and also read from it. 
+We also split up different functionalities to work on, I took admin. I wrote the tests and implemented the functions
+Much discussion took place about how user ids could work, and we are yet to iron out the details. Also talk about 
+firebase auth, and if we should keep using it. I believe we are going to keep it, since joseph can use cloud functions to do
+things we thought we could not.
+
+The sprint ends very soon, and it does not look like we'll finish in time, so some issues may have to be pushed to sprint 2
