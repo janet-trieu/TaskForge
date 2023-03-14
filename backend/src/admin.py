@@ -26,11 +26,7 @@ def give_admin(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise ValueError('You are not an admin')
     if (is_admin(uid_user)): raise ValueError('User is already an admin')
     
-    user_ref = db.collection('users').where("uid", "==", uid_user).stream()
-    for doc in user_ref:
-        doc_name = doc.id
-    
-    user_ref = db.collection("users").document(doc_name)
+    user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_admin': True})
     return 0
         
@@ -45,11 +41,7 @@ def ban_user(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise ValueError('You are not an admin')
     if (is_banned(uid_user)): raise ValueError('User is already banned')
     
-    user_ref = db.collection('users').where("uid", "==", uid_user).stream()
-    for doc in user_ref:
-        doc_name = doc.id
-    
-    user_ref = db.collection("users").document(doc_name)
+    user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_banned': True})
     return 0
 
@@ -64,11 +56,7 @@ def unban_user(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise ValueError('You are not an admin')
     if (not is_banned(uid_user)): raise ValueError('User is not banned')
     
-    user_ref = db.collection('users').where("uid", "==", uid_user).stream()
-    for doc in user_ref:
-        doc_name = doc.id
-    
-    user_ref = db.collection("users").document(doc_name)
+    user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_banned': False})
     return 0
 
@@ -84,11 +72,7 @@ def remove_user(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise ValueError('You are not an admin')
     if (is_removed(uid_user)): raise ValueError('User is already removed')
     
-    user_ref = db.collection('users').where("uid", "==", uid_user).stream()
-    for doc in user_ref:
-        doc_name = doc.id
-    
-    user_ref = db.collection("users").document(doc_name)
+    user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_removed': True})
     return 0
 
@@ -103,10 +87,6 @@ def readd_user(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise ValueError('You are not an admin')
     if (not is_removed(uid_user)): raise ValueError('User is not removed')
     
-    user_ref = db.collection('users').where("uid", "==", uid_user).stream()
-    for doc in user_ref:
-        doc_name = doc.id
-    
-    user_ref = db.collection("users").document(doc_name)
+    user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_removed': False})
     return 0
