@@ -7,7 +7,7 @@ from admin import give_admin, ban_user, unban_user, remove_user, readd_user
 from flask_mail import Mail, Message
 from flask import Flask, request, Response
 from profile import *
-
+from authentication import *
 from proj_master import *
 from profile_page import *
 
@@ -47,6 +47,16 @@ def echo():
     return dumps({
         'data': data
     })
+
+#--- Authentication Routes ---#
+@app.route("/authentication/reset_password", methods=["POST"])
+def flask_reset_password():
+    data = request.get_json()
+    res = get_reset_password_link(data["uid"])
+    if res == -1:
+        return Response(status=400)
+    else:
+        return dumps(res)
     
 #Profile Routes#
 @app.route('/user/details', methods=['GET'])
