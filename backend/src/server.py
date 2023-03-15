@@ -2,14 +2,13 @@ from json import dumps
 from flask import Flask, request, send_from_directory, Response
 from flask_cors import CORS
 import os
-from admin import give_admin, ban_user, unban_user, remove_user, readd_user
-
 from flask_mail import Mail, Message
 from flask import Flask, request, Response
-from profile import *
-from authentication import *
-from proj_master import *
-from profile_page import *
+
+from .authentication import *
+from .admin import *
+from .proj_master import *
+from .profile_page import *
 
 def defaultHandler(err):
     response = err.get_response()

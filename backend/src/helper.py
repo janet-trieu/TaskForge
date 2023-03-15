@@ -12,7 +12,7 @@ def check_valid_uid(uid):
 
     doc = db.collection('users').document(uid).get()
     if not doc.exists:
-        raise ValueError(f'uid {uid} does not exist in database')
+        raise InputError(f'uid {uid} does not exist in database')
 
 def check_valid_pid(pid):
     if not isinstance(pid, int):
@@ -20,7 +20,7 @@ def check_valid_pid(pid):
 
     doc = db.collection('projects').document(str(pid)).get()
     if not doc.exists:
-        raise ValueError(f'pid {pid} does not exist in database')
+        raise InputError(f'pid {pid} does not exist in database')
 
 def check_valid_tid(tid):
     if not isinstance(tid, int):
@@ -28,7 +28,7 @@ def check_valid_tid(tid):
     
     doc = db.collection('tasks').document(str(tid)).get()
     if not doc.exists:
-        raise ValueError(f'tid {tid} does not exist in database')
+        raise InputError(f'tid {tid} does not exist in database')
 
 def check_valid_rid(rid):
     if not isinstance(rid, int):
@@ -36,7 +36,7 @@ def check_valid_rid(rid):
     
     doc = db.collection('reviews').document(str(rid)).get()
     if not doc.exists:
-        raise ValueError(f'rid {rid} does not exist in database')
+        raise InputError(f'rid {rid} does not exist in database')
 
 def check_valid_achievement(achievement_str):
     if not isinstance(achievement_str, str):
@@ -44,7 +44,7 @@ def check_valid_achievement(achievement_str):
     
     doc = db.collection('achievements').document(achievement_str).get()
     if not doc.exists:
-        raise ValueError(f'achievement_str {achievement_str} does not exist in database')
+        raise InputError(f'achievement_str {achievement_str} does not exist in database')
     
 def get_display_name(uid):
     check_valid_uid(uid)

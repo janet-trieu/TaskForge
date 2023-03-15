@@ -1,12 +1,12 @@
 # Imports
-import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
-from global_counters import *
-from classes import User
+from .global_counters import *
+from .classes import User
+from .error import *
 
 db = firestore.client()
+
 ### ========= Functions ========= ###
 ### ========= Create User ========= ###
 def create_user_email(email, password, display_name):
@@ -18,7 +18,7 @@ def create_user_email(email, password, display_name):
         )
     except auth.EmailAlreadyExistsError:
         print("Email already exists")
-    except ValueError:
+    except InputError:
         if display_name == "":
             print("Display name must not be empty")
         if len(password) < 6:
@@ -51,13 +51,13 @@ def update_email(uid, new_email):
             email = new_email
         )
         print('Sucessfully updated user: {0}'.format(user.uid))
-    except ValueError:
+    except InputError:
         print('Invalid email address')
 
 ### ========= Update Display Name ========= ###
 def update_display_name(uid, new_display_name):
     if new_display_name == "":
-        raise ValueError("Display name must not be empty")
+        raise InputError("Display name must not be empty")
     else:
         user = auth.update_user(
             uid,
@@ -68,7 +68,7 @@ def update_display_name(uid, new_display_name):
 ### ========= Update Password ========= ###
 def update_password(uid, new_password):
     if len(new_password) < 6:
-        raise ValueError("Password must be at least 6 characters long")
+        raise InputError("Password must be at least 6 characters long")
     else:
         user = auth.update_user(
             uid,

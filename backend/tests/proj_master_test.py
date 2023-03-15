@@ -5,7 +5,7 @@ Blackbox testing of Project Master Feature
 import pytest
 from src.projects import *
 from src.proj_master import *
-from test_helpers import *
+from tests.test_helpers import *
 
 ############################################################
 #                   Test for create_project                #

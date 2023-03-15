@@ -3,7 +3,7 @@ Test file for Flask http testing of project master feature
 '''
 import pytest
 import requests
-from test_helpers import *
+from tests.test_helpers import *
 port = 5000
 url = f"http://localhost:{port}/"
 
