@@ -30,7 +30,7 @@ def reset_projects():
     project_count = get_curr_pid()
 
     for i in range(0, project_count):
-        db.collection("projects_test").document(str(i)).delete()
+        db.collection("projects").document(str(i)).delete()
 
 def reset_project_count():
     counter_ref = db.collection("counters").document("total_projects")
@@ -38,7 +38,7 @@ def reset_project_count():
     counter_ref.update({"pid": 0})
 
 def add_tm_to_project(pid, new_uid):
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
     if not new_uid in project_members:

@@ -95,11 +95,11 @@ for doc in docs:
 p0 = Project(0, 0, datetime.datetime.now())
 t0 = Task(0, 0, datetime.datetime.now())
 
-projects_ref = db.collection('projects')
+projects_ref = db.collection("projects")
 projects_ref.document('0').set(p0.to_dict())
 
 
 #ADDING TASKS AS A SUBCOLLECTION INSIDE OF A PROJECT DOCUMENT
-p0_ref = db.collection('projects').document('0')
+p0_ref = db.collection("projects").document('0')
 t0_ref = p0_ref.collection('tasks').document('0')
 t0_ref.set(t0.to_dict())

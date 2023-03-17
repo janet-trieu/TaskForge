@@ -22,7 +22,7 @@ def check_valid_pid(pid):
     if not isinstance(pid, int):
         raise InputError('pid needs to be an int')
 
-    doc = db.collection('projects').document(str(pid)).get()
+    doc = db.collection("projects").document(str(pid)).get()
     if not doc.exists:
         raise InputError(f'pid {pid} does not exist in database')
 
@@ -59,7 +59,7 @@ def get_display_name(uid):
 
 def get_project_name(pid):
     check_valid_pid(pid)
-    name = db.collection('projects').document(str(pid)).get().get('name')
+    name = db.collection("projects").document(str(pid)).get().get('name')
     return name
 
 def get_task_name(tid):

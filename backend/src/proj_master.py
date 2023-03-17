@@ -86,7 +86,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     # get the current pid to return
     curr_pid = get_curr_pid()
 
-    db.collection("projects_test").document(str(curr_pid)).set(data)
+    db.collection("projects").document(str(curr_pid)).set(data)
 
     data = {
         "pid": curr_pid
@@ -106,7 +106,7 @@ Returns:
 '''
 def is_user_project_master(pid, uid):
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     proj_master_id = proj_ref.get().get("uid")
 
     if uid == proj_master_id:
@@ -131,7 +131,7 @@ def revive_completed_project(pid, uid, new_status):
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}" )
 
     
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
     
@@ -170,7 +170,7 @@ def remove_project_member(pid, uid, uid_to_be_removed):
         raise AccessError(f"ERROR: Supplied uid:{uid} is not the project master of project:{pid}")
 
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
@@ -213,7 +213,7 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
