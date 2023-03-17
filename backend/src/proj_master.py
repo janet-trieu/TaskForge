@@ -233,11 +233,12 @@ def invite_to_project(pid, sender_uid, receiver_uids):
         sender_name = auth.get_user(sender_uid).display_name
         project_name = proj_ref.get().get("name")
 
-        # notification_project_invite(uid, sender_uid, pid)
+        # Add project invitation notification data in database
+        notification_project_invite(uid, sender_uid, pid)
 
         receipient_email = auth.get_user(uid).email
-        msg_title = f"Hi {receipient_name}, {sender_name} is inviting you to this project: {project_name}"
-        msg_body = "Please follow the link below to accept or reject this request: https://will_be_added.soon"
+        msg_title = f"TaskForge: Project Invitation to {project_name}"
+        msg_body = f"Hi {receipient_name}, \n{sender_name} is inviting you to project {project_name}.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."
 
         return_dict[uid] = [receipient_email, msg_title, msg_body]
 
