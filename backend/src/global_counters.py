@@ -1,13 +1,6 @@
 '''
-Feature: Global ID counters (Project, Epic, Task, Total User)
-
-Functionalities:
-    - init_?id
-        > Resets ID to 0
-    - get_curr_?id
-        > Returns currrent amount of ID
-    - update_?id
-        > Increments ID
+IMPORTANT: Frontend needs to ensure the documents 'total_projects', 'total_epics', 'total_tasks' and 'total_user' exist
+by calling init at the VERY START of the system's life
 '''
 import firebase_admin
 from firebase_admin import credentials
