@@ -91,7 +91,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     data = {
         "pid": curr_pid
     }
-    db.collection("counters").document("project").set(data)
+    db.collection("counters").document("total_projects").set(data)
     
     # update the pid after creating a project
     update_pid()

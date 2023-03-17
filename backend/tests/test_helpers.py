@@ -33,7 +33,7 @@ def reset_projects():
         db.collection("projects_test").document(str(i)).delete()
 
 def reset_project_count():
-    counter_ref = db.collection("counters").document("project")
+    counter_ref = db.collection("counters").document("total_projects")
 
     counter_ref.update({"pid": 0})
 
