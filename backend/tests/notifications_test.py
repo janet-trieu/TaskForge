@@ -1,9 +1,3 @@
-'''
-TODO
-- !!! Currently cannot test with needed functions, added dummy data directly to db 
-    - once more stuff gets implement i can make these tests alot more nicer
-- remember to remove direct calls once these have been implemented to ensure they work along side with respective functions
-'''
 import pytest
 
 import firebase_admin
@@ -11,49 +5,54 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
 
+from src.profile_page import *
 from src.notifications import *
 
 # ============ SET UP ============ #
-# Use a service account.
 db = firestore.client()
 
-# ============ HELPERS ============ #
-user_id0 = 'NotifyUser0'
-user_id1 = 'NotifyUser1'
-
-pid_expected = 7357
+create_user_email("notificationtest0@gmail.com", "password123", "John Doe")
+create_user_email("notificationtest1@gmail.com", "password123", "Jane Doe")
+""" pid_expected = 7357
 tid_expected = 1010
-rid_expected = 400
+rid_expected = 400 """
+""" db.collection('projects').document(str(pid_expected)).set({'name':'Project Notification !!! NOTIFICATION TEST'})
+db.collection('tasks').document(str(tid_expected)).set({'name':'Task Notification !!! NOTIFICATION TEST'})
+db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
+db.collection('reviews').document(str(rid_expected)).set({'uid':'notifytestid1'}) """
 
-def setup():
-    db.collection('users').document(user_id0).set({'display_name':'John Doe'})
-    db.collection('users').document(user_id1).set({'display_name':'Jane Doe'})
-    db.collection('projects').document(str(pid_expected)).set({'name':'Project Notification !!! NOTIFICATION TEST'})
-    db.collection('tasks').document(str(tid_expected)).set({'name':'Task Notification !!! NOTIFICATION TEST'})
-    db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
-    db.collection('reviews').document(str(rid_expected)).set({'uid':'notifytestid1'})
+user_id0 = auth.get_user_by_email("notificationtest0@gmail.com").uid
+user_id1 = auth.get_user_by_email("notificationtest1@gmail.com").uid
 
 def remove_test_data():
-    db.collection('users').document(user_id0).delete()
-    db.collection('users').document(user_id1).delete()
-    db.collection('projects').document(str(pid_expected)).delete()
+    '''
+    Helper function to remove all test data from database
+    '''
+    delete_user(user_id0)
+    delete_user(user_id1)
+    clear_all_notifications(user_id0)
+    clear_all_notifications(user_id1)
+    """db.collection('projects').document(str(pid_expected)).delete()
     db.collection('tasks').document(str(tid_expected)).delete()
     db.collection('achievements').document('night_owl').delete()
-    db.collection('reviews').document(str(rid_expected)).delete()
-    db.collection('notifications').document(user_id0).delete()
+    db.collection('reviews').document(str(rid_expected)).delete()"""
 
 # ============ TESTS ============ #
 def test_welcome_notification():
-    notification_welcome(user_id0)
-
+    '''
+    Test to ensure create_user_email() adds a welcome notification in the database
+    '''
     doc_data = db.collection('notifications').document(user_id0).get().to_dict()
     actual_notification = doc_data.get('welcome')
 
     assert actual_notification.get('has_read') == False
     assert actual_notification.get('notification_msg') == "Welcome to TaskForge, John Doe. You can view future notifications here!"
     assert isinstance(actual_notification.get('time_sent'), datetime)
+    remove_test_data()
 
-def test_connection_request_notification():
+# COMMENTED OUT TESTS THAT ARE WAITING FOR IT'S PARENT FUNCTION TO BE IMPLEMENTED
+
+""" def test_connection_request_notification():
     notification_connection_request(user_id0, user_id1)
 
     doc_data = db.collection('notifications').document(user_id0).get().to_dict()
@@ -212,4 +211,4 @@ def test_no_dupe_nid():
     notification_comment(user_id0, user_id1, pid_expected, tid_expected)
     notf_list = get_notifications(user_id0)
     assert notf_list[0]['nid'] == 'comment3'
-    remove_test_data()
+    remove_test_data() """

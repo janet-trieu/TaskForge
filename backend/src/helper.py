@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from firebase_admin import auth
 
 db = firestore.client()
 
@@ -48,7 +49,7 @@ def check_valid_achievement(achievement_str):
     
 def get_display_name(uid):
     check_valid_uid(uid)
-    name = db.collection('users').document(uid).get().get('display_name')
+    name = auth.get_user(uid).display_name
     return name
 
 def get_project_name(pid):
