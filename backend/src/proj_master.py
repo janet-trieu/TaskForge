@@ -187,7 +187,7 @@ def remove_project_member(pid, uid, uid_to_be_removed):
 ''''
 Invite a specific user to a project
 Returns:
- - 0 for successful invite
+ - parameters required to send email for success
  - Error for failed invite
 '''
 def invite_to_project(pid, sender_uid, receiver_uids):
