@@ -21,68 +21,68 @@ else:
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 
-# ############################################################
-# #                    Test for view_project                 #
-# ############################################################
+############################################################
+#                    Test for view_project                 #
+############################################################
 
-# def test_view_project():
+def test_view_project():
     
-#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-#     # add tm to project
-#     add_tm_to_project(pid, tm1_uid)
+    # add tm to project
+    add_tm_to_project(pid, tm1_uid)
 
-#     res = view_project(pid, tm1_uid)
+    res = view_project(pid, tm1_uid)
 
-#     pm_name = auth.get_user(pm_uid).display_name
-#     proj_ref = db.collection("projects").document(str(pid))
-#     proj_members = proj_ref.get().get("project_members")
+    pm_name = auth.get_user(pm_uid).display_name
+    proj_ref = db.collection("projects").document(str(pid))
+    proj_members = proj_ref.get().get("project_members")
 
-#     assert res == {
-#         "project_master": pm_name,
-#         "name": "Project0",
-#         "description": "Creating Project0 for testing",
-#         "project_members": proj_members,
-#         "tasks": []
-#     }
+    assert res == {
+        "project_master": pm_name,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "project_members": proj_members,
+        "tasks": []
+    }
 
-#     reset_projects()
+    reset_projects()
 
-# def test_view_project_invalid_pid():
+def test_view_project_invalid_pid():
 
-#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-#     # add tm to project
-#     add_tm_to_project(pid, tm1_uid)
+    # add tm to project
+    add_tm_to_project(pid, tm1_uid)
 
-#     with pytest.raises(InputError):
-#         view_project(-1, tm1_uid)
+    with pytest.raises(InputError):
+        view_project(-1, tm1_uid)
         
-#     reset_projects()
+    reset_projects()
 
-# def test_view_project_invalid_uid():
+def test_view_project_invalid_uid():
 
-#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-#     with pytest.raises(InputError):
-#         view_project(pid, "invalid")
+    with pytest.raises(InputError):
+        view_project(pid, "invalid")
 
-#     reset_projects()
+    reset_projects()
 
-# def test_view_project_not_in_project():
+def test_view_project_not_in_project():
 
-#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-#     res = view_project(pid, tm1_uid)
+    res = view_project(pid, tm1_uid)
 
-#     pm_name = auth.get_user(pm_uid).display_name
+    pm_name = auth.get_user(pm_uid).display_name
 
-#     assert res == {
-#         "project_master": pm_name,
-#         "name": "Project0"
-#     }
+    assert res == {
+        "project_master": pm_name,
+        "name": "Project0"
+    }
         
-#     reset_projects()
+    reset_projects()
 
 ############################################################
 #                   Test for search_project                #
@@ -95,6 +95,29 @@ def test_search_project_simple():
     proj1 = db.collection("projects").document(str(pid1))
 
     query = "Alpha"
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_project_upper_lower():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    add_tm_to_project(pid1, tm1_uid)
+    proj1 = db.collection("projects").document(str(pid1))
+
+    query = "alpha"
     res = search_project(tm1_uid, query)
 
     pm_name = auth.get_user(pm_uid).display_name

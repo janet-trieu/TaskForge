@@ -5,6 +5,7 @@ import pytest
 import requests
 from src.test_helpers import *
 from src.helper import *
+
 port = 5000
 url = f"http://localhost:{port}/"
 
@@ -144,3 +145,299 @@ def test_view_project_not_in_project():
     }
       
     reset_projects()
+
+############################################################
+#                   Test for search_project                #
+############################################################
+
+def test_search_project_simple():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(create_json))
+    pm_name = auth.get_user(pm_uid).display_name
+
+    query = "Alpha"
+
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_project_pm_name():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(create_json))
+    pm_name = auth.get_user(pm_uid).display_name
+
+    query = "Master"
+
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_project_verbose():
+
+    create_resp1 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp1.status_code == 200
+
+    create_resp2 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Beta",
+        "description": "Beta does Receiving",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp2.status_code == 200
+
+    create_resp3 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Gamma",
+        "description": "Gamma does Serving",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp3.status_code == 200
+
+    create_json1 = create_resp1.json()
+    create_json2 = create_resp1.json()
+    create_json3 = create_resp1.json()
+
+    add_tm_to_project(create_json1, tm1_uid)
+    add_tm_to_project(create_json2, tm1_uid)
+    add_tm_to_project(create_json3, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(create_json1))
+    proj2 = db.collection("projects").document(str(create_json2))
+    proj3 = db.collection("projects").document(str(create_json3))
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    # tm1 is a part of the 3 projects created above
+    query = "Alpha"
+    
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    query = "Receiving"
+
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    query = "Project"
+
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "description": proj3.get().get("description"),
+            "name": proj3.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj3.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_partial_member():
+
+    create_resp1 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp1.status_code == 200
+
+    create_resp2 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Beta",
+        "description": "Beta does Receiving",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp2.status_code == 200
+
+    create_resp3 = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project Gamma",
+        "description": "Gamma does Serving",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp3.status_code == 200
+
+    create_json1 = create_resp1.json()
+    create_json2 = create_resp1.json()
+    create_json3 = create_resp1.json()
+
+    # tm1 is a part of the 2 projects created above
+    add_tm_to_project(create_json1, tm1_uid)
+    add_tm_to_project(create_json2, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(create_json1))
+    proj2 = db.collection("projects").document(str(create_json2))
+    proj3 = db.collection("projects").document(str(create_json3))
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    query = "Project"
+
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "name": proj3.get().get("name"),
+            "project_master": pm_name,
+        }
+    ]
+
+    reset_projects()
+
+def test_search_return_nothing():
+
+    query = "asdwqdasd"
+    search_resp = requests.get(url + "projects/search", json={
+        "uid": tm1_uid,
+        "query": query 
+    })
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == []

@@ -81,7 +81,6 @@ Returns:
 Above are returned as a list of dictionary
 
 Raises:
-- InputError for any incorrect values
 '''
 def search_project(uid, query):
 
@@ -98,7 +97,7 @@ def search_project(uid, query):
 
         description = doc.to_dict().get("description")
         project_members = doc.to_dict().get("project_members")
-        if query in proj_name or query in description or query in pm_name:
+        if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower():
             if uid in project_members:
                 return_dict = {
                     "project_master": pm_name,
