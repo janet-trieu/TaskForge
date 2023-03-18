@@ -3,13 +3,17 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
 
+from .profile_page import *
 from .error import *
+from .global_counters import *
 
 db = firestore.client()
 
 # ============ HELPERS ============ #
 
-# ERROR CHECKS #
+############################################################
+#                      Error Checking                      #
+############################################################
 def check_valid_uid(uid):
     if not isinstance(uid, str):
         raise InputError('uid needs to be a string')
@@ -50,8 +54,9 @@ def check_valid_achievement(achievement_str):
     if not doc.exists:
         raise InputError(f'achievement_str {achievement_str} does not exist in database')
     
-# GETTERS #
-    
+############################################################
+#                          Getters                         #
+############################################################
 def get_display_name(uid):
     check_valid_uid(uid)
     name = auth.get_user(uid).display_name
@@ -71,3 +76,29 @@ def get_achievement_name(achievement_str):
     check_valid_achievement(achievement_str)
     name = db.collection('achievements').document(achievement_str).get().get('name')
     return name
+
+############################################################
+#                       Create Users                       #
+############################################################
+def create_admin(uid):
+    data = {
+        'is_admin': True,
+        'is_banned': False,
+        'is_removed': False
+    }
+
+    db.collection('users').document(uid).set(data)
+
+############################################################
+#                      Reset Database                      #
+############################################################
+
+def reset_projects():
+    project_count = get_curr_pid()
+
+    for i in range(0, project_count):
+        db.collection("projects").document(str(i)).delete()
+
+    counter_ref = db.collection("counters").document("total_projects")
+
+    counter_ref.update({"pid": 0})

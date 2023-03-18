@@ -7,9 +7,10 @@ Functionalities:
  - invite_to_project()
 '''
 from firebase_admin import firestore, auth
-from src.global_counters import *
-from src.error import *
-from src.notifications import *
+from .global_counters import *
+from .error import *
+from .notifications import *
+from .helper import *
 
 db = firestore.client()
 
@@ -85,10 +86,10 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
 
     db.collection("projects").document(str(curr_pid)).set(data)
 
-    data = {
-        "pid": curr_pid
-    }
-    db.collection("counters").document("total_projects").set(data)
+    # data = {
+    #     "pid": curr_pid
+    # }
+    # db.collection("counters").document("total_projects").set(data)
     
     # update the pid after creating a project
     update_pid()
@@ -126,15 +127,13 @@ def revive_completed_project(pid, uid, new_status):
 
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}" )
-
     
     proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
     
-    '''
-    check if uid exists, assuming exists for now
-    '''
+    # check whether the specified uid exists
+    check_valid_uid(uid)
 
     if not proj_ref.get().get("status") == "Completed":
         raise InputError(f"ERROR: Cannot revive a project that is not Completed")
@@ -166,14 +165,12 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid:{uid} is not the project master of project:{pid}")
 
-
     proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    '''
-    check if uid exists, assuming exists for now
-    '''
+    # check whether the specified uid exists
+    check_valid_uid(uid)
 
     # check if the uid_to_be_removed is in the project
     project_members = proj_ref.get().get("project_members")
@@ -188,11 +185,6 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     })
 
     return 0
-    
-
-# Below shouldnt be in proj_master, but keeping it here till we find somewhere more appropriate
-# def reqeust_leave_project():
-#     pass
 
 ''''
 Invite a specific user to a project
@@ -218,13 +210,12 @@ def invite_to_project(pid, sender_uid, receiver_uids):
 
     return_dict = {}
     for uid in receiver_uids:
-        try:
-            auth.get_user(uid)
-        except InputError:
-            print(f"ERROR: Supplied receiver uid: {uid} does not exist")
-        else:
-            if uid in project_members:
-                raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
+
+        # check whether the specified uid exists
+        check_valid_uid(uid)
+
+        if uid in project_members:
+            raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
 
         receipient_name = auth.get_user(uid).display_name
         sender_name = auth.get_user(sender_uid).display_name
