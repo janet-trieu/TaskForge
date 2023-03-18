@@ -10,7 +10,7 @@ from src.notifications import *
 from src.proj_master import *
 from src.global_counters import *
 
-from tests.test_helpers import *
+from src.test_helpers import *
 
 # ============ SET UP ============ #
 db = firestore.client()

@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
 
-from error import *
+from .error import *
 
 db = firestore.client()
 

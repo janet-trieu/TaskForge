@@ -1,5 +1,6 @@
 from firebase_admin import firestore, auth
 from .global_counters import *
+from .profile_page import *
 
 db = firestore.client()
 
