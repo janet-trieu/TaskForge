@@ -64,3 +64,61 @@ def view_project(pid, uid):
         }
 
     return return_dict
+
+'''
+Takes in user id and a search query (string)
+Returns the project details of all the projects that the user is a part of
+Any project the user is not a part of, has restricted information
+ - only project master name, and project name
+
+Arguments:
+- uid (user id)
+- query (string)
+
+Returns:
+- full project details if user is part of the project
+- restrictied details if user is not part of the project
+Above are returned as a list of dictionary
+
+Raises:
+- InputError for any incorrect values
+'''
+def search_project(uid, query):
+
+    check_valid_uid(uid)
+
+    docs = db.collection("projects").stream()
+
+    return_list = []
+    for doc in docs:
+        return_dict = {}
+        pm_uid = doc.to_dict().get("uid")
+        pm_name = auth.get_user(pm_uid).display_name
+        proj_name = doc.to_dict().get("name")
+
+        description = doc.to_dict().get("description")
+        project_members = doc.to_dict().get("project_members")
+        if query in proj_name or query in description or query in pm_name:
+            if uid in project_members:
+                return_dict = {
+                    "project_master": pm_name,
+                    "name": proj_name,
+                    "description": description,
+                    "project_members": project_members,
+                    "tasks": []
+                }
+            else:
+                return_dict = {
+                    "project_master": pm_name,
+                    "name": proj_name
+                }
+        
+        return_list.append(return_dict)
+        print(f"Successfully added {proj_name} to list of search result")
+
+    return_list = list(filter(None, return_list))
+
+    return return_list
+        
+
+        

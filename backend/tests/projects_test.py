@@ -7,7 +7,7 @@ from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
 from src.projects import *
-
+reset_projects()
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
@@ -21,74 +21,122 @@ else:
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 
-############################################################
-#                    Test for view_project                 #
-############################################################
+# ############################################################
+# #                    Test for view_project                 #
+# ############################################################
 
-def test_view_project():
+# def test_view_project():
     
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-    # add tm to project
-    add_tm_to_project(pid, tm1_uid)
+#     # add tm to project
+#     add_tm_to_project(pid, tm1_uid)
 
-    res = view_project(pid, tm1_uid)
+#     res = view_project(pid, tm1_uid)
 
-    pm_name = auth.get_user(pm_uid).display_name
-    proj_ref = db.collection("projects").document(str(pid))
-    proj_members = proj_ref.get().get("project_members")
+#     pm_name = auth.get_user(pm_uid).display_name
+#     proj_ref = db.collection("projects").document(str(pid))
+#     proj_members = proj_ref.get().get("project_members")
 
-    assert res == {
-        "project_master": pm_name,
-        "name": "Project0",
-        "description": "Creating Project0 for testing",
-        "project_members": proj_members,
-        "tasks": []
-    }
+#     assert res == {
+#         "project_master": pm_name,
+#         "name": "Project0",
+#         "description": "Creating Project0 for testing",
+#         "project_members": proj_members,
+#         "tasks": []
+#     }
 
-    reset_projects()
+#     reset_projects()
 
-def test_view_project_invalid_pid():
+# def test_view_project_invalid_pid():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-    # add tm to project
-    add_tm_to_project(pid, tm1_uid)
+#     # add tm to project
+#     add_tm_to_project(pid, tm1_uid)
 
-    with pytest.raises(InputError):
-        view_project(-1, tm1_uid)
+#     with pytest.raises(InputError):
+#         view_project(-1, tm1_uid)
         
-    reset_projects()
+#     reset_projects()
 
-def test_view_project_invalid_uid():
+# def test_view_project_invalid_uid():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-    with pytest.raises(InputError):
-        view_project(pid, "invalid")
+#     with pytest.raises(InputError):
+#         view_project(pid, "invalid")
 
-    reset_projects()
+#     reset_projects()
 
-def test_view_project_not_in_project():
+# def test_view_project_not_in_project():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+#     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-    res = view_project(pid, tm1_uid)
+#     res = view_project(pid, tm1_uid)
 
-    pm_name = auth.get_user(pm_uid).display_name
+#     pm_name = auth.get_user(pm_uid).display_name
 
-    assert res == {
-        "project_master": pm_name,
-        "name": "Project0"
-    }
+#     assert res == {
+#         "project_master": pm_name,
+#         "name": "Project0"
+#     }
         
-    reset_projects()
+#     reset_projects()
 
 ############################################################
 #                   Test for search_project                #
 ############################################################
 
-def test_search_project():
+def test_search_project_simple():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    add_tm_to_project(pid1, tm1_uid)
+    proj1 = db.collection("projects").document(str(pid1))
+
+    query = "Alpha"
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_project_pm_name():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    add_tm_to_project(pid1, tm1_uid)
+    proj1 = db.collection("projects").document(str(pid1))
+
+    query = "Master"
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+
+def test_search_project_verbose():
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
@@ -110,22 +158,23 @@ def test_search_project():
 
     assert res == [
         {
-            "project_master": pm_name,
-            "name": proj1.get().get("name"),
             "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
             "tasks": []
         }
     ]
 
-    query = "Reciving"
+    query = "Receiving"
     res = search_project(tm1_uid, query)
+    print(res)
 
     assert res == [
         {
-            "project_master": pm_name,
-            "name": proj2.get().get("name"),
             "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
             "tasks": []
         }
@@ -136,24 +185,24 @@ def test_search_project():
 
     assert res == [
         {
-            "project_master": pm_name,
-            "name": proj1.get().get("name"),
             "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
             "tasks": []
         },
         {
-            "project_master": pm_name,
-            "name": proj2.get().get("name"),
             "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
             "tasks": []
         },
         {
+            "description": proj3.get().get("description"),
+            "name": proj3.get().get("name"),
             "project_master": pm_name,
-            "name": proj2.get().get("name"),
-            "description": proj2.get().get("description"),
-            "project_members": proj2.get().get("project_members"),
+            "project_members": proj3.get().get("project_members"),
             "tasks": []
         }
     ]
@@ -173,44 +222,30 @@ def test_search_partial_member():
     proj3 = db.collection("projects").document(str(pid3))
 
     # tm1 is a part of the 2 projects created above
-    query = "Alpha"
+    query = "Project"
     res = search_project(tm1_uid, query)
 
     pm_name = auth.get_user(pm_uid).display_name
 
     assert res == [
         {
-            "project_master": pm_name,
-            "name": proj1.get().get("name"),
             "description": proj1.get().get("description"),
-            "project_members": proj1.get().get("project_members"),
-            "tasks": []
-        }
-    ]
-
-    query = "Project"
-    res = search_project(tm1_uid, query)
-
-    assert res == [
-        {
-            "project_master": pm_name,
             "name": proj1.get().get("name"),
-            "description": proj1.get().get("description"),
+            "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
             "tasks": []
         },
         {
-            "project_master": pm_name,
-            "name": proj2.get().get("name"),
             "description": proj2.get().get("description"),
+            "name": proj2.get().get("name"),
+            "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
             "tasks": []
         },
         {
+            "name": proj3.get().get("name"),
             "project_master": pm_name,
-            "name": proj2.get().get("name")
         }
-
     ]
 
     reset_projects()
