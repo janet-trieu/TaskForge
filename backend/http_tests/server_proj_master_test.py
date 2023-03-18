@@ -7,7 +7,7 @@ from src.test_helpers import *
 from src.helper import *
 port = 5000
 url = f"http://localhost:{port}/"
-
+reset_projects() 
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
@@ -151,8 +151,6 @@ def test_revive_completed_project():
 
     assert create_resp.status_code == 200
     create_json = create_resp.json()
-
-    print(f"this is create_json: {create_json}")
 
     # revive completed project back into "In Progress"
     revive_resp = requests.post(url + "projects/revive", json={
@@ -442,8 +440,6 @@ def test_invite_to_invalid_project():
 
 def test_invite_invalid_receiver_uid():
     
-    
-
     create_resp = requests.post(url + "projects/create", json={
         "uid": pm_uid,
         "name": "Project0",
@@ -497,5 +493,233 @@ def test_invite_uid_already_in_project():
     })
 
     assert invite_resp.status_code == 400
+
+    reset_projects() 
+
+############################################################
+#                   Test for update_project                #
+############################################################
+
+def test_update_project():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    updates = {
+        "name": "Project 123",
+        "description": "description 123",
+        "status": "In Progress",
+        "due_date": "2023-11-30",
+        "team_strength": 5,
+        "picture": "testing.png"
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 200
+
+    name = proj_ref.get().get("name")
+    description = proj_ref.get().get("description")
+    status = proj_ref.get().get("status")
+    due_date = proj_ref.get().get("due_date")
+    team_strength = proj_ref.get().get("team_strength")
+    picture = proj_ref.get().get("picture")
+
+    assert name == "Project 123"
+    assert description == "description 123"
+    assert status == "In Progress"
+    assert due_date == "2023-11-30"
+    assert team_strength == 5
+    assert picture == "testing.png"
+
+    reset_projects() 
+
+def test_update_project_invalid_type():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    updates = {
+        "name": -1,
+        "description": -1,
+        "status": -1,
+        "due_date": -1,
+        "team_strength": "hi",
+        "picture": -1
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 400
+
+    reset_projects() 
+
+def test_update_project_invalid_value():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": None,
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    updates = {
+        "name": "A"*2000,
+        "description": "A"*2000,
+        "status": "bleh",
+        "due_date": "202020",
+        "team_strength": -1,
+        "picture": "hi"
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 400
+
+    reset_projects() 
+
+def test_update_project_completed():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Not Started",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    updates = {
+        "status": "Completed",
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 200
+
+    # try to update again
+    updates = {
+        "status": "In Progress",
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 403
+
+    reset_projects() 
+
+def test_update_project_invalid_pid():
+    
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Not Started",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    updates = {
+        "status": "Completed",
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": -1,
+        "uid": pm_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 400
+
+    reset_projects() 
+
+def test_update_project_not_project_master():
+
+    create_resp = requests.post(url + "projects/create", json={
+        "uid": pm_uid,
+        "name": "Project0",
+        "description": "Creating Project0 for testing",
+        "status": "Not Started",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    updates = {
+        "status": "Completed",
+    }
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": tm1_uid,
+        "updates": updates
+    })
+
+    assert update_resp.status_code == 403
 
     reset_projects() 
