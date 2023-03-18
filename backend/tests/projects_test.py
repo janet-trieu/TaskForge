@@ -83,3 +83,141 @@ def test_view_project_not_in_project():
     }
         
     reset_projects()
+
+############################################################
+#                   Test for search_project                #
+############################################################
+
+def test_search_project():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
+    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
+
+    add_tm_to_project(pid1, tm1_uid)
+    add_tm_to_project(pid2, tm1_uid)
+    add_tm_to_project(pid3, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(pid1))
+    proj2 = db.collection("projects").document(str(pid2))
+    proj3 = db.collection("projects").document(str(pid3))
+
+    # tm1 is a part of the 3 projects created above
+    query = "Alpha"
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "project_master": pm_name,
+            "name": proj1.get().get("name"),
+            "description": proj1.get().get("description"),
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    query = "Reciving"
+    res = search_project(tm1_uid, query)
+
+    assert res == [
+        {
+            "project_master": pm_name,
+            "name": proj2.get().get("name"),
+            "description": proj2.get().get("description"),
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    query = "Project"
+    res = search_project(tm1_uid, query)
+
+    assert res == [
+        {
+            "project_master": pm_name,
+            "name": proj1.get().get("name"),
+            "description": proj1.get().get("description"),
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "project_master": pm_name,
+            "name": proj2.get().get("name"),
+            "description": proj2.get().get("description"),
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "project_master": pm_name,
+            "name": proj2.get().get("name"),
+            "description": proj2.get().get("description"),
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+def test_search_partial_member():
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
+    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
+
+    add_tm_to_project(pid1, tm1_uid)
+    add_tm_to_project(pid2, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(pid1))
+    proj2 = db.collection("projects").document(str(pid2))
+    proj3 = db.collection("projects").document(str(pid3))
+
+    # tm1 is a part of the 2 projects created above
+    query = "Alpha"
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "project_master": pm_name,
+            "name": proj1.get().get("name"),
+            "description": proj1.get().get("description"),
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        }
+    ]
+
+    query = "Project"
+    res = search_project(tm1_uid, query)
+
+    assert res == [
+        {
+            "project_master": pm_name,
+            "name": proj1.get().get("name"),
+            "description": proj1.get().get("description"),
+            "project_members": proj1.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "project_master": pm_name,
+            "name": proj2.get().get("name"),
+            "description": proj2.get().get("description"),
+            "project_members": proj2.get().get("project_members"),
+            "tasks": []
+        },
+        {
+            "project_master": pm_name,
+            "name": proj2.get().get("name")
+        }
+
+    ]
+
+    reset_projects()
+
+def test_search_return_nothing():
+
+    query = "asdwqdasd"
+    res = search_project(tm1_uid, query)
+
+    assert res == []
