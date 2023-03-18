@@ -6,7 +6,7 @@ from src.authentication import *
 
 def test_reset_password():
 
-    user_id = "Xaao51rHL9fJK6U6E0NtPixAh0k2"
+    user_id = "rFoLiVMvWwaahFGpQTsb9jtZKT53"
 
     res = get_reset_password_link(user_id)
 

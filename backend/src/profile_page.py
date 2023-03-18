@@ -35,8 +35,8 @@ def create_user_email(email, password, display_name):
 def delete_user(uid):
     try:
         auth.delete_user(uid)
-        tuid = get_user_ref(uid).get("tuid")
-        db.collection("users").document(str(tuid)).delete()
+        # tuid = get_user_ref(uid).get("tuid")
+        db.collection("users").document(str(uid)).delete()
     except:
         print("uid does not correspond to a current user")
 ### ========= Updaters ========= ###
@@ -78,14 +78,17 @@ def update_password(uid, new_password):
 
 ### ========= Update photo ========= ###
 def update_photo(uid, new_photo_url):
+    # user_ref = db.collection("users").document(uid)
+    # user_ref.update({"picture": new_photo_url})
     try:
-        user = auth.update_user(
-            uid,
-            photo_url = new_photo_url
-        )
-        print('Sucessfully updated user: {0}'.format(user.uid))
-    except:  
-        print('Unsuccesful photo change')
+        user = auth.get_user(uid)
+        user = auth.update_user({"photo_url": new_photo_url})
+    except:
+        print("Error occurred in trying to update user photo")
+        print(f"UID: {uid} | new_photo_url: {new_photo_url}")
+        print(f"this is user: {user.display_name}")
+    else:
+        print('Sucessfully updated user: {0}'.format(uid))
 
 ### ========= Update Role ========= ###
 def update_role(uid, new_role):
@@ -108,7 +111,7 @@ def get_display_name(uid):
 
 ### ========= Get photo ========= ###
 def get_photo(uid):
-    return auth.get_user(uid).photo_url
+    return get_user_ref(uid).get("picture")
 
 ### ========= Get email ========= ###
 def get_email(uid):
@@ -151,7 +154,7 @@ def get_uid_from_email(email):
 def create_user_firestore(uid):
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", False, False, False, [], [], [])
+    user = User(uid, value, "", "", "", False, False, False, [], [], [])
     
     users_ref.document(uid).set(user.to_dict())
 

@@ -13,9 +13,9 @@ from firebase_admin import firestore, auth
 
 db = firestore.client()
 
-p_doc = db.collection("counters").document("project")
-e_doc = db.collection("counters").document("epic")
-t_doc = db.collection("counters").document("task")
+p_doc = db.collection("counters").document("total_projects")
+e_doc = db.collection("counters").document("total_epics")
+t_doc = db.collection("counters").document("total_tasks")
 
 ### ========= Project ID ========= ###
 def init_pid():
