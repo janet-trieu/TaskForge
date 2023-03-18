@@ -5,6 +5,7 @@ Functionalities:
  - remove_project_member()
  - request_leave_project()
  - invite_to_project()
+ - update_project()
 '''
 from firebase_admin import firestore, auth
 from .global_counters import *

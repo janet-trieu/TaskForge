@@ -6,6 +6,7 @@ from src.projects import *
 from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
+from src.projects import *
 
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
@@ -39,7 +40,7 @@ def test_view_project():
 
     assert res == {
         "project_master": pm_name,
-        "name": "Project 0",
+        "name": "Project0",
         "description": "Creating Project0 for testing",
         "project_members": proj_members,
         "tasks": []
@@ -54,9 +55,18 @@ def test_view_project_invalid_pid():
     # add tm to project
     add_tm_to_project(pid, tm1_uid)
 
-    with pytest.raise(InputError):
+    with pytest.raises(InputError):
         view_project(-1, tm1_uid)
         
+    reset_projects()
+
+def test_view_project_invalid_uid():
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    with pytest.raises(InputError):
+        view_project(pid, "invalid")
+
     reset_projects()
 
 def test_view_project_not_in_project():
