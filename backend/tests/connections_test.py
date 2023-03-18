@@ -17,17 +17,13 @@ def fixture_uid():
     '''
     Create users for data
     '''
-    try:
-        uid1 = create_user_email("conn1@gmail.com", "conntest1", "conntest1")
-        uid2 = create_user_email("conn2@gmail.com", "conntest2", "conntest2")
-        uid3 = create_user_email("conn3@gmail.com", "conntest3", "conntest3")
-    except:
-        print("users already created")
-    else:
-        uid1 = auth.get_user_by_email("conn1@gmail.com").uid
-        uid2 = auth.get_user_by_email("conn2@gmail.com").uid
-        uid3 = auth.get_user_by_email("conn3@gmail.com").uid
-        return [uid1, uid2, uid3]
+    #create_user_email("conn1@gmail.com", "conntest1", "conntest1")
+    #create_user_email("conn2@gmail.com", "conntest2", "conntest2")
+    #create_user_email("conn3@gmail.com", "conntest3", "conntest3")
+    #uid1 = auth.get_user_by_email("conn1@gmail.com").uid
+    #uid2 = auth.get_user_by_email("conn2@gmail.com").uid
+    #uid3 = auth.get_user_by_email("conn3@gmail.com").uid
+    #return [uid1, uid2, uid3]
 
 
 
@@ -40,27 +36,27 @@ def test_uid_type_connection_request_respond():
 
 #uid1 sending a request to uid2
 def test_success_connection_request_respond_deny(uids):
-    uid1, uid2, uid3 = uids
+    #uid1, uid2, uid3 = uids
     #clear_all_notifications(uid2)
-    assert(not is_connected(uid1, uid2))
-    assert(not is_connected(uid2, uid1))
-    notification_connection_request(uid2, uid1)
+    assert(not is_connected('cvFHViM13NdczRaThWhIGDiqUZO2', 'tdqpOmI5iDaOCkKBWyjNUVWHAID2'))
+    assert(not is_connected('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2'))
+    notification_connection_request('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2')
 
-    connection_request_respond(uid2, 'connection_request0', False)
-    assert(not is_connected(uid1, uid2))
-    assert(not is_connected(uid2, uid1))
+    connection_request_respond('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'connection_request0', False)
+    assert(not is_connected('cvFHViM13NdczRaThWhIGDiqUZO2', 'tdqpOmI5iDaOCkKBWyjNUVWHAID2'))
+    assert(not is_connected('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2'))
 
 #uid1 sending a request to uid2
 def test_success_connection_request_respond_accept(uids):
-    uid1, uid2, uid3 = uids
+    #uid1, uid2, uid3 = uids
     #clear_all_notifications(uid2)
-    assert(not is_connected(uid1, uid2))
-    assert(not is_connected(uid2, uid1))
-    notification_connection_request(uid2, uid1)
+    assert(not is_connected('cvFHViM13NdczRaThWhIGDiqUZO2', 'tdqpOmI5iDaOCkKBWyjNUVWHAID2'))
+    assert(not is_connected('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2'))
+    notification_connection_request('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2')
 
-    connection_request_respond(uid2, 'connection_request0', True)
-    assert(is_connected(uid1, uid2))
-    assert(is_connected(uid2, uid1))
+    connection_request_respond('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'connection_request0', True)
+    assert(is_connected('cvFHViM13NdczRaThWhIGDiqUZO2', 'tdqpOmI5iDaOCkKBWyjNUVWHAID2'))
+    assert(is_connected('tdqpOmI5iDaOCkKBWyjNUVWHAID2', 'cvFHViM13NdczRaThWhIGDiqUZO2'))
 """
 
 def test_uid_type_get_connection_requests():
