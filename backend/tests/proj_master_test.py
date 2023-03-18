@@ -211,7 +211,7 @@ def test_revive_completed_project():
 
     pid = create_project(proj_master.uid, "Project 123", "description", "Completed", None, None, None)
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
 
     assert proj_ref.get().get("status") == "Completed"
 
@@ -228,7 +228,7 @@ def test_revive_non_completed_project():
 
     pid = create_project(proj_master.uid, "Project X", "description", "In Progress", None, None, None)
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
 
     proj_status = proj_ref.get().get("status")
 
@@ -282,7 +282,7 @@ def test_remove_project_member():
 
     pid = create_project(proj_master.uid, "Project X", "description", "Completed", None, None, None)
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
     uid_to_be_removed = task_master1.uid
@@ -296,7 +296,7 @@ def test_remove_project_member():
 
     assert res == 0
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
     print(project_members)

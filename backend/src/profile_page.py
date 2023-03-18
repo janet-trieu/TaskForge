@@ -5,6 +5,7 @@ from firebase_admin import firestore
 from firebase_admin import auth
 from global_counters import *
 from classes import User
+from notifications import notification_welcome
 
 db = firestore.client()
 ### ========= Functions ========= ###
@@ -37,6 +38,7 @@ def delete_user(uid):
         auth.delete_user(uid)
         tuid = get_user_ref(uid).get("tuid")
         db.collection("users").document(str(tuid)).delete()
+        db.collection('notifications').document(uid).delete()
     except:
         print("uid does not correspond to a current user")
 ### ========= Updaters ========= ###
@@ -154,6 +156,9 @@ def create_user_firestore(uid):
     user = User(uid, value, "", "", False, False, False, [], [], [])
     
     users_ref.document(uid).set(user.to_dict())
+
+    # Add welcome notification to new user
+    notification_welcome(uid)
 
 ### ========= get user ref ========= ###
 def get_user_ref(uid):

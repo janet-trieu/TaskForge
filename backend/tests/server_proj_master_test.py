@@ -168,7 +168,7 @@ def test_revive_completed_project():
 
     assert revive_resp.status_code == 200
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
@@ -201,7 +201,7 @@ def test_revive_completed_project_not_proj_master():
 
     assert revive_resp.status_code == 403
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
     assert proj_ref.get().get("status") == "Completed"
 
     reset_projects()
@@ -232,7 +232,7 @@ def test_revive_non_completed_project():
 
     assert revive_resp.status_code == 400
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
@@ -270,7 +270,7 @@ def test_remove_project_member():
 
     assert remove_resp.status_code == 200
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
     
     assert task_master1.uid not in proj_ref.get().get("project_members")
 
@@ -303,7 +303,7 @@ def test_remove_project_member_not_proj_master():
 
     assert remove_resp.status_code == 403
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
 
     assert task_master1.uid in proj_ref.get().get("project_members")
 
@@ -338,7 +338,7 @@ def test_remove_project_member_invalid_pid():
 
     assert remove_resp.status_code == 400
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
     assert task_master1.uid in proj_ref.get().get("project_members")
 
     reset_projects() 
@@ -501,7 +501,7 @@ def test_invite_uid_already_in_project():
 
     add_tm_to_project(create_json, task_master1.uid)
 
-    proj_ref = db.collection("projects_test").document(str(create_json))
+    proj_ref = db.collection("projects").document(str(create_json))
 
     assert task_master1.uid in proj_ref.get().get("project_members")
 
