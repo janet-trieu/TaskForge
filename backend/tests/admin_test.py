@@ -3,8 +3,9 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-from src.profile import is_admin, is_banned, is_removed
+from src.profile_page import is_admin, is_banned, is_removed
 from src.admin import give_admin, ban_user, unban_user,  remove_user, readd_user
+from src.error import *
 
 #Assuming that 2 users already exist, the first one is root admin and 2nd one is just a normal user
 #each test should somewhat reset for the next test
@@ -13,7 +14,7 @@ from src.admin import give_admin, ban_user, unban_user,  remove_user, readd_user
 def test_give_admin_type():
     try:
         give_admin(1, 2)
-    except TypeError:
+    except InputError:
         pass
 
 def test_give_admin():
@@ -29,7 +30,7 @@ def test_give_admin_to_admin():
     assert(is_admin('xyzabc123'))
     try:
         give_admin('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
-    except ValueError:
+    except InputError:
         pass
     assert(is_admin('xyzabc123'))
 
@@ -37,7 +38,7 @@ def test_give_admin_to_admin():
 def test_ban_user_type():
     try:
         ban_user(1, 2)
-    except TypeError:
+    except InputError:
         pass
 
 #@pytest.mark.order3
@@ -55,7 +56,7 @@ def test_ban_banned_user():
     
     try:
         ban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
-    except ValueError:
+    except InputError:
         pass
     assert(is_banned('xyzabc123'))
 
@@ -64,7 +65,7 @@ def test_ban_banned_user():
 def test_unban_user_type():
     try:
         unban_user(1, 2)
-    except TypeError:
+    except InputError:
         pass
 
 #user is still banned from last test
@@ -83,7 +84,7 @@ def test_unban_notbanned_user():
     
     try:
         unban_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
-    except ValueError:
+    except InputError:
         pass
     assert(not is_banned('xyzabc123'))
 
@@ -91,7 +92,7 @@ def test_unban_notbanned_user():
 def test_remove_usertype():
     try:
         remove_user(1, 2)
-    except TypeError:
+    except InputError:
         pass
 
 #@pytest.mark.order7
@@ -111,7 +112,7 @@ def test_remove_removed_user():
     
     try:
         remove_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
-    except ValueError:
+    except InputError:
         pass
     assert(is_removed('xyzabc123'))
 
@@ -119,7 +120,7 @@ def test_remove_removed_user():
 def test_readd_user_type():
     try:
         readd_user(1, 2)
-    except TypeError:
+    except InputError:
         pass
 
 #user still removed from last test
@@ -138,6 +139,6 @@ def test_readd_normal_user():
     
     try:
         readd_user('sklzNex5udNeOd65uvsuGAYBNkH2', 'xyzabc123')
-    except ValueError:
+    except InputError:
         pass
     assert(not is_removed('xyzabc123'))
