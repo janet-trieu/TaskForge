@@ -9,6 +9,7 @@ from .authentication import *
 from .admin import *
 from .proj_master import *
 from .profile_page import *
+from .projects import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -219,6 +220,12 @@ def clear_notification():
 def clear_all_notifications():
     data = request.get_json()
     return dumps(clear_all_notifications(data['uid']))
+
+# PROJECT MANAGEMENT ROUTES #
+@app.route("/projects/view", methods=["GET"])
+def flask_view_project():
+    data = request.get_json()
+    return dumps(view_project(data["pid"], data["uid"]))
 
 if __name__ == "__main__":
     app.run()
