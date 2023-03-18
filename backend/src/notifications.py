@@ -29,6 +29,8 @@ def does_nid_exists(uid, nid):
         return False
 
 def create_nid(uid, type):
+
+    print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
     nid = f'{type}{count}'

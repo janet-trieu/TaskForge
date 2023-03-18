@@ -31,10 +31,10 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         team_strength = None
     if picture == None:
         picture = "bleh.png"
+    
+    check_valid_uid(uid)
 
     # check for invalid type inputs:
-    if not type(uid) == str:
-        raise InputError("uid has to be type of string!!!")
     if not type(name) == str:
         raise InputError("Project name has to be type of string!!!")
     if not type(description) == str:
@@ -52,8 +52,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         raise InputError("Project picture has to be type of string!!!")
 
     # check for invalid value inputs:
-    if not len(uid) == 28:
-        raise AccessError("Invalid uid entered!!!")
     if len(name) >= 50:
         raise InputError("Project name is too long. Please keep it below 50 characters.")
     if len(name) <= 0:
