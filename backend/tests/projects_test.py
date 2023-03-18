@@ -26,10 +26,50 @@ else:
 
 def test_view_project():
     
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    # add tm to project
+    add_tm_to_project(pid, tm1_uid)
+
+    res = view_project(pid, tm1_uid)
+
+    pm_name = auth.get_user(pm_uid).display_name
+    proj_ref = db.collection("projects").document(str(pid))
+    proj_members = proj_ref.get().get("project_members")
+
+    assert res == {
+        "project_master": pm_name,
+        "name": "Project 0",
+        "description": "Creating Project0 for testing",
+        "project_members": proj_members,
+        "tasks": []
+    }
+
+    reset_projects()
 
 def test_view_project_invalid_pid():
-    pass
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    # add tm to project
+    add_tm_to_project(pid, tm1_uid)
+
+    with pytest.raise(InputError):
+        view_project(-1, tm1_uid)
+        
+    reset_projects()
 
 def test_view_project_not_in_project():
-    pass
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    res = view_project(pid, tm1_uid)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == {
+        "project_master": pm_name,
+        "name": "Project0"
+    }
+        
+    reset_projects()
