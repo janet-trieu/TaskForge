@@ -401,7 +401,7 @@ def test_invite_uid_already_in_project():
 #                   Test for update_project                #
 ############################################################
 
-def test_update_project_name():
+def test_update_project():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 

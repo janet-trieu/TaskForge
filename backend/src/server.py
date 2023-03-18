@@ -196,6 +196,14 @@ def flask_invite_to_project():
 
     return dumps(res)
 
+@app.route("/projects/update", methods=["POST"])
+def flask_update_project():
+    data = request.get_json()
+
+    res = update_project(data["pid"], data["uid"], data["updates"])
+
+    return dumps(res)
+
 # NOTIFICATIONS ROUTES #
 @app.route('/notification/get/notifications', methods=['GET'])
 def get_notifications():
