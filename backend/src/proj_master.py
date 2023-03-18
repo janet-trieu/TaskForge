@@ -187,7 +187,7 @@ def remove_project_member(pid, uid, uid_to_be_removed):
 ''''
 Invite a specific user to a project
 Returns:
- - 0 for successful invite
+ - parameters required to send email for success
  - Error for failed invite
 '''
 def invite_to_project(pid, sender_uid, receiver_uids):
@@ -229,4 +229,88 @@ def invite_to_project(pid, sender_uid, receiver_uids):
         return_dict[uid] = [receipient_email, msg_title, msg_body]
 
     return return_dict
+
+''''
+Update a specific project details
+Returns:
+ - 0 for successful update
+ - Error for failed update
+'''
+def update_project(pid, uid, updates):
     
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    if updates == {}:
+        raise InputError(f"ERROR: Cannot call this function without making any updates")
+
+    for key, val in updates.items():
+        if key == "name":
+            if not type(val) == str:
+                raise InputError("Project name has to be type of string")
+            elif len(val) >= 50:
+                raise InputError("Project name is too long. Please keep it below 50 characters.")
+            elif len(val) <= 0:
+                raise InputError("Project requires a name!!!")
+            else:
+                proj_ref.update({
+                    "name": val
+                })
+        elif key == "description":
+            if not type(val) == str:
+                raise InputError("Project description has to be type of string")
+            elif len(val) >= 1000:
+                raise InputError("Project description is too long. Please keep it below 1000 characters.")
+            elif len(val) <= 0:
+                raise InputError("Project requies a description!!!")
+            else:
+                proj_ref.update({
+                    "description": val
+                })
+        elif key == "status":
+            if not type(val) == str:
+                raise InputError("Project status has to be type of string")
+            elif not val in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
+                raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
+            elif val == proj_ref.get().get("status"):
+                raise InputError("Cannot update the status of the project to its current status")
+            elif proj_ref.get().get("status") == "Completed":
+                raise AccessError(f"ERROR: Cannot update the status of a completed project. Please use revive_completed_project instead")
+            else:
+                proj_ref.update({
+                    "status": val
+                })
+        elif key == "due_date":
+            if not type(val) == str:
+                raise InputError("Project due date has to be type of string")
+            proj_ref.update({
+                    "due_date": val
+            })
+        elif key == "team_strength":
+            if not type(val) == int:
+                raise InputError("Project team strength has to be type of int")
+            elif val < 0:
+                raise InputError("Team strength cannot be less than 0!!!")
+            else:
+                proj_ref.update({
+                    "team_strength": val
+                })
+        elif key == "picture":
+            if not type(val) == str:
+                raise InputError("Project picture url has to be type of string")
+            proj_ref.update({
+                "picture": val
+            })
+        else:
+            raise InputError(f"Specified project detail {key} does not exist")
+    
+    return 0
