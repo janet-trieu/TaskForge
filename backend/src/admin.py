@@ -1,7 +1,6 @@
-import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import sys
+
 from .global_counters import *
 from .profile_page import *
 from .error import InputError, AccessError
@@ -14,7 +13,6 @@ Functionalities:
     - remove_user
     - readd_user
 '''
-
 
 '''
 Takes 2 users, 1st being an admin, 2nd one not, and makes 2nd user an admin
@@ -33,8 +31,6 @@ def give_admin(uid_admin, uid_user):
     user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_admin': True})
     return {}
-
-        
     
 '''
 Admin bans a user/admin
@@ -53,7 +49,6 @@ def ban_user(uid_admin, uid_user):
     user_ref.update({'is_banned': True})
     return {}
 
-
 '''
 Admin removes a ban from a banned user
 Args:
@@ -71,8 +66,6 @@ def unban_user(uid_admin, uid_user):
     user_ref.update({'is_banned': False})
     return {}
 
-
-
 '''
 Similar to ban, but removal is used for very long inactivity or other reasons
 Args:
@@ -89,7 +82,6 @@ def remove_user(uid_admin, uid_user):
     user_ref = db.collection("users").document(uid_user)
     user_ref.update({'is_removed': True})
     return {}
-
 
 '''
 Undoes a removal

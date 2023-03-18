@@ -4,14 +4,22 @@ Test file for Flask http testing of project master feature
 import pytest
 import requests
 from src.test_helpers import *
+from src.helper import *
 port = 5000
 url = f"http://localhost:{port}/"
 
-proj_master = auth.get_user_by_email("project.master@gmail.com")
-
-task_master1 = auth.get_user_by_email("testingtm1@gmail.com")
-task_master2 = auth.get_user_by_email("testingtm2@gmail.com")
-task_master3 = auth.get_user_by_email("testingtm3@gmail.com")
+try:
+    pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
+    tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
+    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
+    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
+except:
+    print("project master and users already created")
+else:
+    pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
+    tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
+    tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
+    tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 
 ############################################################
 #                   Test for create_project                #
@@ -19,10 +27,8 @@ task_master3 = auth.get_user_by_email("testingtm3@gmail.com")
 
 def test_create_project_use_default_vals():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": None,
@@ -37,10 +43,8 @@ def test_create_project_use_default_vals():
 
 def test_create_project_use_all_vals():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "Not Started",
@@ -55,10 +59,8 @@ def test_create_project_use_all_vals():
 
 def test_create_multiple_projects():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": None,
@@ -70,7 +72,7 @@ def test_create_multiple_projects():
     assert create_resp.status_code == 200
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project1",
         "description": "Creating Project1 for testing",
         "status": "Not Started",
@@ -85,10 +87,8 @@ def test_create_multiple_projects():
 
 def test_create_project_TypeError():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": -1,
         "description": "Creating Project0 for testing",
         "status": None,
@@ -103,10 +103,8 @@ def test_create_project_TypeError():
 
 def test_create_project_ValueError():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "",
         "status": None,
@@ -121,8 +119,6 @@ def test_create_project_ValueError():
 
 def test_create_project_invalid_uid():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
         "uid": "invalid",
         "name": "Project0",
@@ -133,7 +129,7 @@ def test_create_project_invalid_uid():
         "picture": None
     })
 
-    assert create_resp.status_code == 403
+    assert create_resp.status_code == 400
 
     reset_projects()
 
@@ -143,10 +139,8 @@ def test_create_project_invalid_uid():
 
 def test_revive_completed_project():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "Completed",
@@ -163,29 +157,23 @@ def test_revive_completed_project():
     # revive completed project back into "In Progress"
     revive_resp = requests.post(url + "projects/revive", json={
         "pid": create_json,
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "new_status": "In Progress"
     })
 
     assert revive_resp.status_code == 200
 
     proj_ref = db.collection("projects").document(str(create_json))
-<<<<<<< HEAD:backend/http_tests/server_proj_master_test.py
-    print(proj_ref.get().get("name"))
-=======
->>>>>>> c267f6512f99d333660ef7575a3f83ad174ce354:backend/tests/server_proj_master_test.py
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
 
 def test_revive_completed_project_not_proj_master():
-    
-    reset_project_count()
 
-    incorrect_uid = task_master1.uid
+    incorrect_uid = tm1_uid
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "Completed",
@@ -213,10 +201,8 @@ def test_revive_completed_project_not_proj_master():
 
 def test_revive_non_completed_project():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -230,7 +216,7 @@ def test_revive_non_completed_project():
 
     revive_resp = requests.post(url + "projects/revive", json={
         "pid": create_json,
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "new_status": "In Review"
 
     })
@@ -248,10 +234,8 @@ def test_revive_non_completed_project():
 
 def test_remove_project_member():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -263,30 +247,28 @@ def test_remove_project_member():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    add_tm_to_project(create_json, task_master1.uid)
-    add_tm_to_project(create_json, task_master2.uid)
-    add_tm_to_project(create_json, task_master3.uid)
+    add_tm_to_project(create_json, tm1_uid)
+    add_tm_to_project(create_json, tm2_uid)
+    add_tm_to_project(create_json, tm3_uid)
 
     remove_resp = requests.post(url + "projects/remove", json={
         "pid": create_json,
-        "uid": proj_master.uid,
-        "uid_to_be_removed": task_master1.uid
+        "uid": pm_uid,
+        "uid_to_be_removed": tm1_uid
     })
 
     assert remove_resp.status_code == 200
 
     proj_ref = db.collection("projects").document(str(create_json))
     
-    assert task_master1.uid not in proj_ref.get().get("project_members")
+    assert tm1_uid not in proj_ref.get().get("project_members")
 
     reset_projects() 
 
 def test_remove_project_member_not_proj_master():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -298,28 +280,26 @@ def test_remove_project_member_not_proj_master():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    add_tm_to_project(create_json, task_master1.uid)
+    add_tm_to_project(create_json, tm1_uid)
 
     remove_resp = requests.post(url + "projects/remove", json={
         "pid": create_json,
-        "uid": task_master2.uid,
-        "uid_to_be_removed": task_master1.uid
+        "uid": tm2_uid,
+        "uid_to_be_removed": tm1_uid
     })
 
     assert remove_resp.status_code == 403
 
     proj_ref = db.collection("projects").document(str(create_json))
 
-    assert task_master1.uid in proj_ref.get().get("project_members")
+    assert tm1_uid in proj_ref.get().get("project_members")
 
     reset_projects() 
 
 def test_remove_project_member_invalid_pid():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -331,29 +311,27 @@ def test_remove_project_member_invalid_pid():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    add_tm_to_project(create_json, task_master1.uid)
-    add_tm_to_project(create_json, task_master2.uid)
-    add_tm_to_project(create_json, task_master3.uid)
+    add_tm_to_project(create_json, tm1_uid)
+    add_tm_to_project(create_json, tm2_uid)
+    add_tm_to_project(create_json, tm3_uid)
 
     remove_resp = requests.post(url + "projects/remove", json={
         "pid": -1,
-        "uid": proj_master.uid,
-        "uid_to_be_removed": task_master1.uid
+        "uid": pm_uid,
+        "uid_to_be_removed": tm1_uid
     })
 
     assert remove_resp.status_code == 400
 
     proj_ref = db.collection("projects").document(str(create_json))
-    assert task_master1.uid in proj_ref.get().get("project_members")
+    assert tm1_uid in proj_ref.get().get("project_members")
 
     reset_projects() 
 
 def test_remove_invalid_project_member():
 
-    reset_project_count()
-
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -367,8 +345,8 @@ def test_remove_invalid_project_member():
 
     remove_resp = requests.post(url + "projects/remove", json={
         "pid": create_json,
-        "uid": proj_master.uid,
-        "uid_to_be_removed": task_master1.uid
+        "uid": pm_uid,
+        "uid_to_be_removed": tm1_uid
     })
 
     assert remove_resp.status_code == 400
@@ -381,10 +359,10 @@ def test_remove_invalid_project_member():
 
 def test_invite_to_project():
 
-    reset_project_count()
+    tm1_email = auth.get_user(tm1_uid).email
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -398,8 +376,8 @@ def test_invite_to_project():
 
     invite_resp = requests.post(url + "projects/invite", json={
         "pid": create_json,
-        "sender_uid": proj_master.uid,
-        "receiver_uids": [task_master1.email]
+        "sender_uid": pm_uid,
+        "receiver_uids": [tm1_email]
     })
 
     assert invite_resp.status_code == 200
@@ -408,10 +386,12 @@ def test_invite_to_project():
 
 def test_multiple_invite_to_project():
 
-    reset_project_count()
+    tm1_email = auth.get_user(tm1_uid).email
+    tm2_email = auth.get_user(tm2_uid).email
+    tm3_email = auth.get_user(tm3_uid).email
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -425,8 +405,8 @@ def test_multiple_invite_to_project():
 
     invite_resp = requests.post(url + "projects/invite", json={
         "pid": create_json,
-        "sender_uid": proj_master.uid,
-        "receiver_uids": [task_master1.email, task_master2.email, task_master3.email]
+        "sender_uid": pm_uid,
+        "receiver_uids": [tm1_email, tm2_email, tm3_email]
     })
 
     assert invite_resp.status_code == 200
@@ -435,10 +415,10 @@ def test_multiple_invite_to_project():
 
 def test_invite_to_invalid_project():
     
-    reset_project_count()
+    tm1_email = auth.get_user(tm1_uid).email
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -452,8 +432,8 @@ def test_invite_to_invalid_project():
 
     invite_resp = requests.post(url + "projects/invite", json={
         "pid": -1,
-        "sender_uid": proj_master.uid,
-        "receiver_uids": [task_master1.email]
+        "sender_uid": pm_uid,
+        "receiver_uids": [tm1_email]
     })
 
     assert invite_resp.status_code == 400
@@ -462,10 +442,10 @@ def test_invite_to_invalid_project():
 
 def test_invite_invalid_receiver_uid():
     
-    reset_project_count()
+    
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -479,7 +459,7 @@ def test_invite_invalid_receiver_uid():
 
     invite_resp = requests.post(url + "projects/invite", json={
         "pid": create_json,
-        "sender_uid": proj_master.uid,
+        "sender_uid": pm_uid,
         "receiver_uids": ["doesnt.exist@gmail.com"]
     })
 
@@ -488,11 +468,11 @@ def test_invite_invalid_receiver_uid():
     reset_projects() 
 
 def test_invite_uid_already_in_project():
-    
-    reset_project_count()
+
+    tm1_email = auth.get_user(tm1_uid).email
 
     create_resp = requests.post(url + "projects/create", json={
-        "uid": proj_master.uid,
+        "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "status": "In Progress",
@@ -504,16 +484,16 @@ def test_invite_uid_already_in_project():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    add_tm_to_project(create_json, task_master1.uid)
+    add_tm_to_project(create_json, tm1_uid)
 
     proj_ref = db.collection("projects").document(str(create_json))
 
-    assert task_master1.uid in proj_ref.get().get("project_members")
+    assert tm1_uid in proj_ref.get().get("project_members")
 
     invite_resp = requests.post(url + "projects/invite", json={
         "pid": create_json,
-        "sender_uid": proj_master.uid,
-        "receiver_uids": [task_master1.email]
+        "sender_uid": pm_uid,
+        "receiver_uids": [tm1_email]
     })
 
     assert invite_resp.status_code == 400
