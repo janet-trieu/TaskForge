@@ -396,3 +396,32 @@ def test_invite_uid_already_in_project():
         invite_to_project(pid, sender_uid, receiver_uids)
 
     reset_projects()
+
+############################################################
+#                   Test for update_project                #
+############################################################
+
+def test_update_project_name():
+    pass
+
+def test_update_project_description():
+    pass
+
+def test_update_project_status():
+    pass
+
+def test_update_project_due_date():
+    pass
+
+def test_update_project_team_strength():
+    pass
+
+def test_update_project_logo():
+    pass
+
+def test_update_project_invalid_pid():
+    pass
+
+def test_update_project_not_project_master():
+    pass
+
