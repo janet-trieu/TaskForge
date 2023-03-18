@@ -8,8 +8,5 @@ def connection_request_respond():
 def get_connection_requests():
     pass
 
-def send_connection_request():
-    pass
-
 def get_connected_taskmasters():
     pass
