@@ -8,7 +8,7 @@ url = f"http://localhost:{port}/"
 def test_reset_password():
 
     reset_resp = requests.post(url + "authentication/reset_password", json={
-        "uid": "Xaao51rHL9fJK6U6E0NtPixAh0k2"
+        "uid": "3TssNFyMXmOtTGarpRtAZ7VrOd72"
     })
 
     assert reset_resp.status_code == 200

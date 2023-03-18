@@ -2,14 +2,13 @@ from json import dumps
 from flask import Flask, request, send_from_directory, Response
 from flask_cors import CORS
 import os
-from admin import give_admin, ban_user, unban_user, remove_user, readd_user
-
 from flask_mail import Mail, Message
 from flask import Flask, request, Response
-from profile import *
-from authentication import *
-from proj_master import *
-from profile_page import *
+
+from .authentication import *
+from .admin import *
+from .proj_master import *
+from .profile_page import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -184,6 +183,17 @@ def flask_invite_to_project():
             uid_list.append(uid)
 
     res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
+
+    # Send email to all users in uid_list
+    for uid, data in res.items():
+        receipient_email = data[0]
+        msg_title = data[1]
+        msg_body = data[2]
+
+        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+        msg.body = msg_body
+        mail.send(msg)
+
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
