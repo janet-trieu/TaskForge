@@ -150,7 +150,7 @@ def admin_readd_user():
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
-    pid = create_project(data["uid"], data["name"], data["description"], data["status"], data["due_date"], data["team_strength"], data["picture"])
+    pid = create_project(data["uid"], data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])

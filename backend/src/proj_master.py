@@ -20,11 +20,9 @@ Returns:
  - pid of newly generated project if successful
  - error if failed to create project
 '''
-def create_project(uid, name, description, status, due_date, team_strength, picture):
+def create_project(uid, name, description, due_date, team_strength, picture):
 
     # setting default values 
-    if status == None:
-        status = "Not Started"
     if due_date == None:
         due_date = None
     if team_strength == None:
@@ -39,8 +37,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         raise InputError("Project name has to be type of string!!!")
     if not type(description) == str:
         raise InputError("Project description has to be type of string!!!")
-    if not type(status) == str:
-        raise InputError("Project status has to be type of string!!!")
     # if not due_date == None:
     #     if not isinstance(due_date, date):
     #         raise InputError("Project due date has to be type of date!!!")
@@ -61,8 +57,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     if len(description) <= 0:
         raise InputError("Project requies a description!!!")
     
-    if not status in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
-        raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
     # TO-DO: check for due date being less than 1 day away from today
     if not team_strength == None:
         if team_strength < 0:
@@ -72,7 +66,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         "uid": uid,
         "name": name,
         "description": description,
-        "status": status,
+        "status": "Not Started",
         "due_date": due_date,
         "team_strength": team_strength,
         "picture": picture,
@@ -83,11 +77,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     curr_pid = get_curr_pid()
 
     db.collection("projects").document(str(curr_pid)).set(data)
-
-    # data = {
-    #     "pid": curr_pid
-    # }
-    # db.collection("counters").document("total_projects").set(data)
     
     # update the pid after creating a project
     update_pid()
