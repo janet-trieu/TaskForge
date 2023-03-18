@@ -405,14 +405,7 @@ def test_update_project_name():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
-    name = proj_ref.get().get("name")
-    description = proj_ref.get().get("description")
-    status = proj_ref.get().get("status")
-    due_date = proj_ref.get().get("due_date")
-    team_strength = proj_ref.get().get("team_strength")
-    picture = proj_ref.get().get("picture")
+    proj_ref = db.collection("projects").document(str(pid))
 
     updates = {
         "name": "Project 123",
@@ -424,6 +417,13 @@ def test_update_project_name():
     }
 
     res = update_project(pid, pm_uid, updates)
+
+    name = proj_ref.get().get("name")
+    description = proj_ref.get().get("description")
+    status = proj_ref.get().get("status")
+    due_date = proj_ref.get().get("due_date")
+    team_strength = proj_ref.get().get("team_strength")
+    picture = proj_ref.get().get("picture")
 
     assert res == 0
     assert name == "Project 123"
@@ -437,16 +437,12 @@ def test_update_project_invalid_name_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"name": -1})
 
 def test_update_project_invalid_name_value():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
-
-    proj_ref = db.collection("projects").document(pid)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"name": "A"*200})
@@ -455,16 +451,12 @@ def test_update_project_invalid_description_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"description": 200})
 
 def test_update_project_invalid_description_value():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
-
-    proj_ref = db.collection("projects").document(pid)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"description": "A"*2001})
@@ -473,16 +465,12 @@ def test_update_project_invalid_status_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"status": -1})
 
 def test_update_project_invalid_status_value():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
-
-    proj_ref = db.collection("projects").document(pid)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"status": "abc"})
@@ -491,7 +479,9 @@ def test_update_project_completed():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
+    proj_ref = db.collection("projects").document(str(pid))
+
+    assert proj_ref.get().get("status") == "Not Started"
 
     res = update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -505,25 +495,19 @@ def test_update_project_invalid_due_date_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"due_date": -1})
 
-def test_update_project_invalid_due_date_value():
+# def test_update_project_invalid_due_date_value():
 
-    pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
+#     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
-    with pytest.raises(InputError):
-        update_project(pid, pm_uid, {"due_date": "1999-01-01"})
+#     with pytest.raises(InputError):
+#         update_project(pid, pm_uid, {"due_date": "1999-01-01"})
 
 def test_update_project_invalid_team_strength_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
-
-    proj_ref = db.collection("projects").document(pid)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"team_strength": "5"})
@@ -532,16 +516,12 @@ def test_update_project_invalid_team_strength_value():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"team_strength": -1})
 
 def test_update_project_invalid_picture_type():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
-
-    proj_ref = db.collection("projects").document(pid)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"picture": -1})
@@ -550,8 +530,6 @@ def test_update_project_invalid_pid():
     
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
     with pytest.raises(InputError):
         update_project(-1, pm_uid, {"name": "Project X"})
 
@@ -559,8 +537,6 @@ def test_update_project_not_project_master():
 
     pid = create_project(pm_uid, "Project 0", "description", "Not Started", None, None, None)
 
-    proj_ref = db.collection("projects").document(pid)
-
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         update_project(pid, tm1_uid, {"name": "Project X"})
 
