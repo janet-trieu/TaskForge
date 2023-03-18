@@ -44,7 +44,7 @@ def is_connected(uid1, uid2):
     '''
     Assume uids have already been checked as existing
     '''
-    connections = db.collection('users').document(uid1).get().to_dict().get('connections')
+    connections = db.collection('users').document(uid1).get().to_dict()
     if (uid2 in connections): return True
     return False
     
