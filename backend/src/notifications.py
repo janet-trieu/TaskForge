@@ -12,8 +12,8 @@ TODO notes:
 '''
 from firebase_admin import firestore
 from datetime import datetime
-from error import *
-from helper import *
+from .error import *
+from .helper import *
 
 from src.helper import *
 
@@ -25,6 +25,7 @@ def does_nid_exists(uid, nid):
     doc_ref = db.collection('notifications').document(uid)
 
     # Check if field name exists in document
+    if (doc_ref.get().to_dict() is None): return False
     if nid in doc_ref.get().to_dict():
         return True
     else:
@@ -34,7 +35,10 @@ def create_nid(uid, type):
 
     print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
-    count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
+    if (doc_dict is None):
+        count = 0
+    else:
+        count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
     nid = f'{type}{count}'
     
     # If nid exists, increment count and update nid and check again until unique
@@ -63,7 +67,7 @@ def get_notifications(uid):
     Returns:
         sorted_notifications (list): List of user's notifications sorted by descending timestamps
     '''
-    check_valid_uid
+    check_valid_uid(uid)
 
     notf_data = db.collection('notifications').document(uid).get().to_dict()
 
@@ -359,7 +363,7 @@ def get_notifications(uid):
     Returns:
         sorted_notifications (list): List of dictionaries of user's notifications sorted by descending timestamps
     '''
-    check_valid_uid
+    check_valid_uid(uid)
 
     notf_data = db.collection('notifications').document(uid).get().to_dict()
 

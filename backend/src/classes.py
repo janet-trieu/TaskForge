@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 class User(object):
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, tasks):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, tasks, connections):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -15,6 +15,7 @@ class User(object):
         self.achievements = achievements
         self.projects = projects
         self.tasks = tasks
+        self.connections = connections
         
         
     def to_dict(self):
@@ -29,5 +30,6 @@ class User(object):
             'is_removed': self.is_removed,
             "achievements": self.achievements,
             "projects": self.projects,
-            "tasks": self.tasks
+            "tasks": self.tasks,
+            "connections": self.connections
         }

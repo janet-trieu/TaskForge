@@ -1,8 +1,8 @@
-from global_counters import *
-import sys
-from error import InputError, AccessError
-from helper import *
-from notifications import does_nid_exists
+from .global_counters import *
+from .error import InputError
+from .helper import check_valid_uid
+from .notifications import does_nid_exists
+from .profile_page import is_valid_user
 import firestore
 
 def connection_request_respond(uid, nid, response):
