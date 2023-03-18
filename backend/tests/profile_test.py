@@ -27,7 +27,7 @@ def test_create_user():
     print(uid)
     assert uid == auth.get_user_by_email(email1).uid
     assert auth.get_user_by_email(email1).display_name == display_name1
-    assert db.collection('users').document(uid).get().get('projects') == []
+    assert db.collection('users').document(uid).get().get("projects") == []
     assert db.collection('users').document(uid).get().get('role') == ""
     assert db.collection('users').document(uid).get().get('tasks') == []
     assert db.collection('users').document(uid).get().get('achievements') == []

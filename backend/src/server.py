@@ -183,6 +183,17 @@ def flask_invite_to_project():
             uid_list.append(uid)
 
     res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
+
+    # Send email to all users in uid_list
+    for uid, data in res.items():
+        receipient_email = data[0]
+        msg_title = data[1]
+        msg_body = data[2]
+
+        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+        msg.body = msg_body
+        mail.send(msg)
+
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #

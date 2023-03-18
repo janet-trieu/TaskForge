@@ -170,7 +170,10 @@ def test_revive_completed_project():
     assert revive_resp.status_code == 200
 
     proj_ref = db.collection("projects").document(str(create_json))
+<<<<<<< HEAD:backend/http_tests/server_proj_master_test.py
     print(proj_ref.get().get("name"))
+=======
+>>>>>>> c267f6512f99d333660ef7575a3f83ad174ce354:backend/tests/server_proj_master_test.py
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
