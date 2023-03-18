@@ -12,7 +12,7 @@ TODO notes:
 '''
 from firebase_admin import firestore
 from datetime import datetime
-
+from error import *
 from helper import *
 
 db = firestore.client()
@@ -39,6 +39,16 @@ def create_nid(uid, type):
         nid = f'{type}{count}'
 
     return nid
+
+def is_connected(uid1, uid2):
+    '''
+    Assume uids have already been checked as existing
+    '''
+    connections = db.collection('users').document(uid1).get().to_dict().get('connections')
+    if (uid2 in connections): return True
+    return False
+    
+
 
 # ============ FUNCTIONS ============ #
 def get_notifications(uid):
@@ -90,7 +100,7 @@ def notification_connection_request(uid, uid_sender):
     '''
     check_valid_uid(uid)
     check_valid_uid(uid_sender)
-
+    if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
     notification_type = 'connection_request'
     nid = create_nid(uid, notification_type) # create notification ID
     sender_name = get_display_name(uid_sender)
