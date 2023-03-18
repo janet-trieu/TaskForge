@@ -94,6 +94,7 @@ def search_project(uid, query):
         pm_uid = doc.to_dict().get("uid")
         pm_name = auth.get_user(pm_uid).display_name
         proj_name = doc.to_dict().get("name")
+        status = doc.to_dict().get("status")
 
         description = doc.to_dict().get("description")
         project_members = doc.to_dict().get("project_members")
@@ -104,7 +105,8 @@ def search_project(uid, query):
                     "name": proj_name,
                     "description": description,
                     "project_members": project_members,
-                    "tasks": []
+                    "tasks": [],
+                    "status": status
                 }
             else:
                 return_dict = {

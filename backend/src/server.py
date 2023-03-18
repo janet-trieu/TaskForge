@@ -227,6 +227,11 @@ def flask_view_project():
     data = request.get_json()
     return dumps(view_project(data["pid"], data["uid"]))
 
+@app.route("/projects/search", methods=["GET"])
+def flask_search_project():
+    data = request.get_json()
+    return dumps(search_project(data["uid"], data["query"]))
+
 if __name__ == "__main__":
     app.run()
 

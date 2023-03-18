@@ -105,6 +105,7 @@ def test_search_project_simple():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         }
     ]
@@ -128,6 +129,7 @@ def test_search_project_upper_lower():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         }
     ]
@@ -152,6 +154,7 @@ def test_search_project_pm_name():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         }
     ]
@@ -185,6 +188,7 @@ def test_search_project_verbose():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         }
     ]
@@ -199,6 +203,7 @@ def test_search_project_verbose():
             "name": proj2.get().get("name"),
             "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
+            "status": proj2.get().get("status"),
             "tasks": []
         }
     ]
@@ -212,6 +217,7 @@ def test_search_project_verbose():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         },
         {
@@ -219,6 +225,7 @@ def test_search_project_verbose():
             "name": proj2.get().get("name"),
             "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
+            "status": proj2.get().get("status"),
             "tasks": []
         },
         {
@@ -226,6 +233,7 @@ def test_search_project_verbose():
             "name": proj3.get().get("name"),
             "project_master": pm_name,
             "project_members": proj3.get().get("project_members"),
+            "status": proj3.get().get("status"),
             "tasks": []
         }
     ]
@@ -256,6 +264,7 @@ def test_search_partial_member():
             "name": proj1.get().get("name"),
             "project_master": pm_name,
             "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
             "tasks": []
         },
         {
@@ -263,6 +272,7 @@ def test_search_partial_member():
             "name": proj2.get().get("name"),
             "project_master": pm_name,
             "project_members": proj2.get().get("project_members"),
+            "status": proj2.get().get("status"),
             "tasks": []
         },
         {
