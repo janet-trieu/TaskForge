@@ -366,7 +366,13 @@ def test_invite_to_project():
         "receiver_uids": [tm1_email]
     })
 
+    invite_json = invite_resp.json()
     assert invite_resp.status_code == 200
+
+    assert invite_json == {
+        tm1_uid: ["projecttest.tm1@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master1, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."]
+    }
 
     reset_projects() 
 
@@ -392,7 +398,18 @@ def test_multiple_invite_to_project():
         "receiver_uids": [tm1_email, tm2_email, tm3_email]
     })
 
+    invite_json = invite_resp.json()
     assert invite_resp.status_code == 200
+
+    assert invite_json == {
+        tm1_uid: ["projecttest.tm1@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master1, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."],
+        tm2_uid: ["projecttest.tm2@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master2, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."],
+        tm3_uid: ["projecttest.tm3@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master3, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."]
+    }
+    
 
     reset_projects() 
 
