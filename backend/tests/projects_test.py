@@ -161,7 +161,6 @@ def test_search_project_pm_name():
 
     reset_projects()
 
-
 def test_search_project_verbose():
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
@@ -310,6 +309,7 @@ def test_leave_project():
 
     assert res == {
         "receipient_email": "projectmaster@gmail.com",
+        "sender_email": "projecttest.tm1@gmail.com",
         "msg_title": "Request to leave Project Alpha",
         "msg_body": msg
     }

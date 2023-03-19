@@ -120,6 +120,58 @@ def search_project(uid, query):
     return_list = list(filter(None, return_list))
 
     return return_list
-        
 
+
+'''
+Request to leave a project 
+Cannot request if the user is not in that project
+
+Arguments:
+- pid (project id)
+- uid (task master id)
+- msg (string, message of the reason to request to leave the project)
+
+Returns:
+A dictionary of:
+ - project master email
+ - the requesting task master's email
+ - msg title
+ - msg body
+
+Raises:
+- AccessError for uid not in project
+- InputError for invalid pid, invalid uid, no msg
+'''
+def request_leave_project(pid, uid, msg):
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+    
+    # check whether the specified uid exists
+    check_valid_uid(uid)
+
+    if uid not in proj_ref.get().get("project_members"):
+        raise AccessError("Cannot request to leave a project the user is not a part of")
+
+    if len(msg) <= 0:
+        raise InputError("Need a message to request to leave project")
+
+    pm_uid = proj_ref.get().get("uid")
+    pm_name = auth.get_user(pm_uid).display_name
+    pm_email = auth.get_user(pm_uid).email
+    sender_email = auth.get_user(uid).email
+    proj_name = proj_ref.get().get("name")
+
+    return_dict = {
+        "receipient_email": pm_email,
+        "sender_email": sender_email,
+        "msg_title": f"Request to leave {proj_name}",
+        "msg_body": msg
+    }
+
+    return return_dict
         
