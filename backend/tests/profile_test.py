@@ -102,3 +102,6 @@ def test_update_role():
 
     assert db.collection('users').document(uid).get().get('role') == "software developer"
     delete_user(uid)
+
+# Reset database
+reset_firestore_database()

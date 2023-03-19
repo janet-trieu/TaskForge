@@ -527,3 +527,9 @@ def test_update_project_not_project_master():
     with pytest.raises(AccessError):
         update_project(pid, tm1_uid, {"name": "Project X"})
 
+# Reset database
+delete_user(pm_uid)
+delete_user(tm1_uid)
+delete_user(tm2_uid)
+delete_user(tm3_uid)
+reset_firestore_database()

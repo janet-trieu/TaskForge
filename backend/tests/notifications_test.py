@@ -37,19 +37,6 @@ db.collection('tasks').document(str(tid_expected)).set({'name':'Task Notificatio
 db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
 db.collection('reviews').document(str(rid_expected)).set({'uid':'notifytestid1'}) """
 
-def remove_test_data():
-    '''
-    Helper function to remove all test data from database
-    '''
-    delete_user(user_id0)
-    delete_user(user_id1)
-    delete_user(user_id2)
-    reset_projects()
-    # reset_project_count()
-    """db.collection('tasks').document(str(tid_expected)).delete()
-    db.collection('achievements').document('night_owl').delete()
-    db.collection('reviews').document(str(rid_expected)).delete()"""
-
 # ============ TESTS ============ #
 def test_welcome_notification():
     '''
@@ -92,7 +79,11 @@ def test_project_invite_notification():
     assert actual_notification.get('uid_sender') == user_id0
     assert actual_notification.get('nid') == 'project_invite0'
 
-    remove_test_data()
+# Reset database
+delete_user(user_id0)
+delete_user(user_id1)
+delete_user(user_id2)
+reset_firestore_database()
 
 # COMMENTED OUT TESTS THAT ARE WAITING FOR IT'S PARENT FUNCTION TO BE IMPLEMENTED
 
