@@ -2,7 +2,7 @@
 File for authentication user-invoked reset password
 '''
 from firebase_admin import auth
-from error import *
+from .error import *
 
 def get_reset_password_link(uid):
 

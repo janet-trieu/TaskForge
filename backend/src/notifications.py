@@ -13,7 +13,7 @@ TODO notes:
 from firebase_admin import firestore
 from datetime import datetime
 
-from helper import *
+from src.helper import *
 
 db = firestore.client()
 
@@ -29,6 +29,8 @@ def does_nid_exists(uid, nid):
         return False
 
 def create_nid(uid, type):
+
+    print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
     nid = f'{type}{count}'
@@ -383,7 +385,7 @@ if __name__ == "__main__":
     """ db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
     db.collection('users').document('notifytestid1').set({'display_name':'Jane Doe'})
     db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
-    db.collection('projects').document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
+    db.collection("projects").document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
     db.collection('tasks').document('1337').set({'name':'Task Notification !!! NOTIFICATION TEST'})
     db.collection('reviews').document('1337').set({'uid':'notifytestid1'})
     notification_welcome('notifytestid')

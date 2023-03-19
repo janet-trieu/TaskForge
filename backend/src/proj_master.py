@@ -5,44 +5,51 @@ Functionalities:
  - remove_project_member()
  - request_leave_project()
  - invite_to_project()
+ - update_project()
 '''
 from firebase_admin import firestore, auth
-# from src.global_counters import *
-# from src.error import *
-# from src.notifications import *
-from global_counters import *
-from error import *
-from notifications import *
+from .global_counters import *
+from .error import *
+from .notifications import *
+from .helper import *
 
 db = firestore.client()
 
 '''
-Create a project with supplied arguments
+Create a project with the given arguments
+* project status is initialised to Not Started
+
+Arguments:
+- uid (user that creates the project, also becomes the project master)
+- name (project name)
+- description (project description)
+- due_date (project due date, can be None)
+- team_strength (can be None)
+- picture (can be None)
+
 Returns:
- - pid of newly generated project if successful
- - error if failed to create project
+- pid (project id) when successful
+
+Raises:
+- InputError for any incorrect values
 '''
-def create_project(uid, name, description, status, due_date, team_strength, picture):
+def create_project(uid, name, description, due_date, team_strength, picture):
 
     # setting default values 
-    if status == None:
-        status = "Not Started"
     if due_date == None:
         due_date = None
     if team_strength == None:
         team_strength = None
     if picture == None:
         picture = "bleh.png"
+    
+    check_valid_uid(uid)
 
     # check for invalid type inputs:
-    if not type(uid) == str:
-        raise InputError("uid has to be type of string!!!")
     if not type(name) == str:
         raise InputError("Project name has to be type of string!!!")
     if not type(description) == str:
         raise InputError("Project description has to be type of string!!!")
-    if not type(status) == str:
-        raise InputError("Project status has to be type of string!!!")
     # if not due_date == None:
     #     if not isinstance(due_date, date):
     #         raise InputError("Project due date has to be type of date!!!")
@@ -54,8 +61,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         raise InputError("Project picture has to be type of string!!!")
 
     # check for invalid value inputs:
-    if not len(uid) == 28:
-        raise AccessError("Invalid uid entered!!!")
     if len(name) >= 50:
         raise InputError("Project name is too long. Please keep it below 50 characters.")
     if len(name) <= 0:
@@ -65,8 +70,6 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     if len(description) <= 0:
         raise InputError("Project requies a description!!!")
     
-    if not status in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
-        raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
     # TO-DO: check for due date being less than 1 day away from today
     if not team_strength == None:
         if team_strength < 0:
@@ -76,7 +79,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
         "uid": uid,
         "name": name,
         "description": description,
-        "status": status,
+        "status": "Not Started",
         "due_date": due_date,
         "team_strength": team_strength,
         "picture": picture,
@@ -86,12 +89,7 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     # get the current pid to return
     curr_pid = get_curr_pid()
 
-    db.collection("projects_test").document(str(curr_pid)).set(data)
-
-    data = {
-        "pid": curr_pid
-    }
-    db.collection("counters").document("project").set(data)
+    db.collection("projects").document(str(curr_pid)).set(data)
     
     # update the pid after creating a project
     update_pid()
@@ -99,14 +97,22 @@ def create_project(uid, name, description, status, due_date, team_strength, pict
     return curr_pid
 
 '''
+Helper function for project master:
 Checks whether the uid given is the project master id of the specified project
+
+Arguments:
+- pid (project id)
+- uid (user id)
+
 Returns:
- - 0 if True
- - error if False
+- 0 if the supplied uid is a project master of the specified project
+
+Raises:
+- AccessError if the supplied user id is not the project master
 '''
 def is_user_project_master(pid, uid):
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     proj_master_id = proj_ref.get().get("uid")
 
     if uid == proj_master_id:
@@ -115,10 +121,20 @@ def is_user_project_master(pid, uid):
         raise AccessError(f"ERROR: Supplied user id:{uid} is not the project master of project:{pid}")
 
 '''
-Revives a project where its status has been set to complete,
-but have be able to bring it back into progress
-pid = project id
-uid = user id
+Revives a project where its status has been set to Completed
+The new status can be anything except Completed
+
+Arguments:
+- pid (project id)
+- uid (user id)
+- new_status (new status of the project)
+
+Returns:
+- 0 if the revival was successful
+
+Raises:
+- AccessError for incorrect uid
+- InputError for invalid pid, or invalid project status value
 '''
 def revive_completed_project(pid, uid, new_status):
 
@@ -129,15 +145,13 @@ def revive_completed_project(pid, uid, new_status):
 
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}" )
-
     
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
     
-    '''
-    check if uid exists, assuming exists for now
-    '''
+    # check whether the specified uid exists
+    check_valid_uid(uid)
 
     if not proj_ref.get().get("status") == "Completed":
         raise InputError(f"ERROR: Cannot revive a project that is not Completed")
@@ -152,10 +166,19 @@ def revive_completed_project(pid, uid, new_status):
     return 0
 
 '''
-Remove a specific member within the project
+Removes a specific project member within the project
+
+Arguments:
+- pid (project id)
+- uid (user id)
+- uid_to_be_removed (user id of the member to be removed)
+
 Returns:
- - 0 for successful remove
- - Error for failed removal
+- 0 if the removal was successful
+
+Raises:
+- AccessError for incorrect uid
+- InputError for invalid pid, or invalid uid_to_be_removed
 '''
 def remove_project_member(pid, uid, uid_to_be_removed):
     '''
@@ -169,14 +192,12 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid:{uid} is not the project master of project:{pid}")
 
-
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    '''
-    check if uid exists, assuming exists for now
-    '''
+    # check whether the specified uid exists
+    check_valid_uid(uid)
 
     # check if the uid_to_be_removed is in the project
     project_members = proj_ref.get().get("project_members")
@@ -191,17 +212,21 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     })
 
     return 0
-    
 
-# Below shouldnt be in proj_master, but keeping it here till we find somewhere more appropriate
-# def reqeust_leave_project():
-#     pass
-
-''''
+'''
 Invite a specific user to a project
+
+Arguments:
+- pid (project id)
+- sender_uid (project master id)
+- receiver_uids (list of the uids to be invited to project)
+
 Returns:
- - 0 for successful invite
- - Error for failed invite
+- Dict of the data required to send the invite via email
+
+Raises:
+- AccessError for incorrect uid
+- InputError for invalid pid, or invalid receiver_uids, or inviting a user thats already in the project
 '''
 def invite_to_project(pid, sender_uid, receiver_uids):
     
@@ -213,7 +238,7 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects_test").document(str(pid))
+    proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
@@ -221,25 +246,119 @@ def invite_to_project(pid, sender_uid, receiver_uids):
 
     return_dict = {}
     for uid in receiver_uids:
-        try:
-            auth.get_user(uid)
-        except InputError:
-            print(f"ERROR: Supplied receiver uid: {uid} does not exist")
-        else:
-            if uid in project_members:
-                raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
+
+        # check whether the specified uid exists
+        check_valid_uid(uid)
+
+        if uid in project_members:
+            raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
 
         receipient_name = auth.get_user(uid).display_name
         sender_name = auth.get_user(sender_uid).display_name
         project_name = proj_ref.get().get("name")
 
-        # notification_project_invite(uid, sender_uid, pid)
+        # Add project invitation notification data in database
+        notification_project_invite(uid, sender_uid, pid)
 
         receipient_email = auth.get_user(uid).email
-        msg_title = f"Hi {receipient_name}, {sender_name} is inviting you to this project: {project_name}"
-        msg_body = "Please follow the link below to accept or reject this request: https://will_be_added.soon"
+        msg_title = f"TaskForge: Project Invitation to {project_name}"
+        msg_body = f"Hi {receipient_name}, \n{sender_name} is inviting you to project {project_name}.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."
 
         return_dict[uid] = [receipient_email, msg_title, msg_body]
 
     return return_dict
+
+'''
+Update a specific project's details
+- Can update any detail except the project master uid
+
+Arguments:
+- pid (project id)
+- uid (project master id)
+- updates (dictionary, containing the key (project detail type) and the value (new project detail)
+
+Returns:
+- 0 for successful update
+
+Raises:
+- AccessError for incorrect uid
+- InputError for invalid pid, or invalid new project details
+'''
+def update_project(pid, uid, updates):
     
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    if updates == {}:
+        raise InputError(f"ERROR: Cannot call this function without making any updates")
+
+    for key, val in updates.items():
+        if key == "name":
+            if not type(val) == str:
+                raise InputError("Project name has to be type of string")
+            elif len(val) >= 50:
+                raise InputError("Project name is too long. Please keep it below 50 characters.")
+            elif len(val) <= 0:
+                raise InputError("Project requires a name!!!")
+            else:
+                proj_ref.update({
+                    "name": val
+                })
+        elif key == "description":
+            if not type(val) == str:
+                raise InputError("Project description has to be type of string")
+            elif len(val) >= 1000:
+                raise InputError("Project description is too long. Please keep it below 1000 characters.")
+            elif len(val) <= 0:
+                raise InputError("Project requies a description!!!")
+            else:
+                proj_ref.update({
+                    "description": val
+                })
+        elif key == "status":
+            if not type(val) == str:
+                raise InputError("Project status has to be type of string")
+            elif not val in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
+                raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
+            elif val == proj_ref.get().get("status"):
+                raise InputError("Cannot update the status of the project to its current status")
+            elif proj_ref.get().get("status") == "Completed":
+                raise AccessError(f"ERROR: Cannot update the status of a completed project. Please use revive_completed_project instead")
+            else:
+                proj_ref.update({
+                    "status": val
+                })
+        elif key == "due_date":
+            if not type(val) == str:
+                raise InputError("Project due date has to be type of string")
+            proj_ref.update({
+                    "due_date": val
+            })
+        elif key == "team_strength":
+            if not type(val) == int:
+                raise InputError("Project team strength has to be type of int")
+            elif val < 0:
+                raise InputError("Team strength cannot be less than 0!!!")
+            else:
+                proj_ref.update({
+                    "team_strength": val
+                })
+        elif key == "picture":
+            if not type(val) == str:
+                raise InputError("Project picture url has to be type of string")
+            proj_ref.update({
+                "picture": val
+            })
+        else:
+            raise InputError(f"Specified project detail {key} does not exist")
+    
+    return 0
