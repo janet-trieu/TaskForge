@@ -1,25 +1,14 @@
 '''
-Feature: Global ID counters (Project, Epic, Task)
-
-Functionalities:
-    - init_?id
-        > Resets ID to 0
-    - get_curr_?id
-        > Returns currrent amount of ID
-    - update_?id
-        > Increments ID
+IMPORTANT: Frontend needs to ensure the documents 'total_projects', 'total_epics', 'total_tasks' and 'total_user' exist
+by calling init at the VERY START of the system's life
 '''
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 
-cred = credentials.Certificate('taskforge-9aea9-firebase-adminsdk-xaffr-c80ed6513a.json')
-app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-p_doc = db.collection("counters").document("project")
-e_doc = db.collection("counters").document("epic")
-t_doc = db.collection("counters").document("task")
+p_doc = db.collection("counters").document("total_projects")
+e_doc = db.collection("counters").document("total_epics")
+t_doc = db.collection("counters").document("total_tasks")
 
 ### ========= Project ID ========= ###
 def init_pid():
@@ -68,3 +57,29 @@ def update_tid():
     value = get_curr_tid() + 1
 
     t_doc.update({"tid": value})
+
+
+### ========= Total User ID ========= ###
+def init_tuid():
+    tu_doc = db.collection("counters").document("total_user")
+    data = {
+        "tuid": 0
+    }
+    
+    tu_doc.set(data)
+
+def get_curr_tuid():
+    tu_doc = db.collection("counters").document("total_user")
+    doc = tu_doc.get()
+    if not (doc.exists):
+        init_tuid()
+    return tu_doc.get().get("tuid")
+
+def update_tuid():
+    tu_doc = db.collection("counters").document("total_user")
+    doc = tu_doc.get()
+    if not (doc.exists):
+        init_tuid()
+    value = get_curr_tuid() + 1
+
+    tu_doc.update({"tuid": value})

@@ -25,3 +25,10 @@ In our Tutorial we clarified more questions regarding to the proposal. We gained
 I helped the User Stories, including making a visual supplementary diagram to assist the marker. This includes a product backlog, minimum viable product, and user stories. I also added the screenshots of the user stories in larger fonts for added visibility.
 
 I also started on the formatting of the proposal. Including the title page, table of contents and spacing. I will add some references in APA style to finalise formatting.
+
+Week 4
+Assigned with Profile functionalities. I first started with blackbox testing based on the schema provided and following the user stories provided. Testing firebase.auth functions for creating and updating user.  I finished generic testing but white box testing was not created yet. I then started on implementation of profile, however, due to a miscommunication, I basically created backend auth function for create user which was in the profile user stories but should have been an authentication user story. This was not a waste of time as it could be used for backend testing. 
+
+I experienced many difficulties using python as many imports and modules were failing to work. This was resolved after searching online. 
+
+For Sprint 2, I will be assigned a new functionality but as of right now, profile implementation is complete but more testing is required.
