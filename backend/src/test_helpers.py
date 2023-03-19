@@ -63,18 +63,29 @@ Args:
 Returns:
     None
 """
+
+############################################################
+#                      Reset Database                      #
+############################################################
+
 def delete_user(uid):
+    '''
+    Deletes user from auth db & existing user data in firestore db
+    '''
     try:
         auth.delete_user(uid)
         # tuid = get_user_ref(uid).get("tuid")
         db.collection("users").document(str(uid)).delete()
         db.collection('notifications').document(uid).delete()
+        # TODO: Remove user data from following stuff, if we need to:
+        # REMOVE user from projects
+        # REMOVE user from connections
+        # REMOVE user from assigned tasks
+        # REMOVE user from reviews
+        # REMOVE user from achievements
+        # REMOVE other data that isnt listed here that should be removed
     except:
         print("uid does not correspond to a current user")
-
-############################################################
-#                      Reset Database                      #
-############################################################
 
 def reset_projects():
     project_count = get_curr_pid()
@@ -85,3 +96,19 @@ def reset_projects():
     counter_ref = db.collection("counters").document("total_projects")
 
     counter_ref.update({"pid": 0})
+
+def reset_firestore_database():
+    '''
+    Purges firestore database completely and resets global counters
+    '''
+    # Delete collections
+    db.collection('users').delete()
+    db.collection('notifications').delete()
+    db.collection('projects').delete()
+    # TODO: Add more if you have created more collections!
+
+    # Reset counters
+    init_tuid()
+    init_pid()
+    init_eid()
+    init_tid()
