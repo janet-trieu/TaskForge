@@ -7,6 +7,7 @@ import requests
 
 from src.profile_page import *
 from src.helper import *
+from src.test_helpers import *
  
 url = 'http://127.0.0.1:5000'
 
@@ -119,3 +120,8 @@ def test_readd_user_failure():
     resp = requests.post(url + '/admin/readd_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
+
+# Reset database
+delete_user(admin_uid)
+delete_user(user_uid)
+reset_firestore_database()

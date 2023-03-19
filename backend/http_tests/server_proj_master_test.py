@@ -688,3 +688,10 @@ def test_update_project_not_project_master():
     assert update_resp.status_code == 403
 
     reset_projects() 
+
+# Reset database
+delete_user(pm_uid)
+delete_user(tm1_uid)
+delete_user(tm2_uid)
+delete_user(tm3_uid)
+reset_firestore_database()

@@ -587,3 +587,10 @@ def test_leave_project_not_in_project():
     assert leave_resp.status_code == 403
 
     reset_projects()
+
+# Reset database
+delete_user(pm_uid)
+delete_user(tm1_uid)
+delete_user(tm2_uid)
+delete_user(tm3_uid)
+reset_firestore_database()
