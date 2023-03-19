@@ -88,6 +88,32 @@ def test_view_project_not_in_project():
 #                   Test for search_project                #
 ############################################################
 
+def test_search_empty_query():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    add_tm_to_project(pid1, tm1_uid)
+    proj1 = db.collection("projects").document(str(pid1))
+
+    query = ""
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+
 def test_search_project_simple():
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
@@ -160,7 +186,6 @@ def test_search_project_pm_name():
     ]
 
     reset_projects()
-
 
 def test_search_project_verbose():
 
@@ -274,10 +299,6 @@ def test_search_partial_member():
             "project_members": proj2.get().get("project_members"),
             "status": proj2.get().get("status"),
             "tasks": []
-        },
-        {
-            "name": proj3.get().get("name"),
-            "project_master": pm_name,
         }
     ]
 
@@ -289,3 +310,71 @@ def test_search_return_nothing():
     res = search_project(tm1_uid, query)
 
     assert res == []
+
+############################################################
+#                    Test for leave_project                #
+############################################################
+
+def test_leave_project():
+
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+    res = request_leave_project(pid, tm1_uid, msg)
+
+    pm_name = auth.get_user(pm_uid).display_name
+    proj_ref = db.collection("projects").document(str(pid))
+    proj_name = proj_ref.get().get("name")
+
+    assert res == {
+        "receipient_email": "projectmaster@gmail.com",
+        "sender_email": "projecttest.tm1@gmail.com",
+        "msg_title": "Request to leave Project Alpha",
+        "msg_body": msg
+    }
+
+    reset_projects()
+
+def test_leave_project_invalid_pid():
+
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(InputError):
+        request_leave_project(-1, tm1_uid, msg)
+
+    reset_projects()
+
+def test_leave_project_invalid_uid():
+    
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(InputError):
+        request_leave_project(pid, "invalid", msg)
+
+    reset_projects()
+
+def test_leave_project_not_in_project():
+    
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 is not a part of project 
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(AccessError):
+        request_leave_project(pid, tm1_uid, msg)
+
+    reset_projects()

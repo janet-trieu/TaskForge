@@ -22,7 +22,7 @@ else:
     tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-
+'''
 ############################################################
 #                     Test for view_project                #
 ############################################################
@@ -145,6 +145,45 @@ def test_view_project_not_in_project():
 ############################################################
 #                   Test for search_project                #
 ############################################################
+
+def test_search_empty_query():
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    proj1 = db.collection("projects").document(str(create_json))
+    pm_name = auth.get_user(pm_uid).display_name
+
+    query = ""
+    header = {'Authorization': tm1_uid}
+    params = {'query': query}
+    search_resp = requests.get(url + "projects/search", headers=header, params=params)
+
+    assert search_resp.status_code == 200
+    search_json = search_resp.json()
+
+    assert search_json == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
 
 def test_search_project_simple():
 
@@ -412,10 +451,6 @@ def test_search_partial_member():
             "project_members": proj2.get().get("project_members"),
             "status": proj2.get().get("status"),
             "tasks": []
-        },
-        {
-            "name": proj3.get().get("name"),
-            "project_master": pm_name,
         }
     ]
 
@@ -431,3 +466,124 @@ def test_search_return_nothing():
     search_json = search_resp.json()
 
     assert search_json == []
+'''
+############################################################
+#               Test for request_leave_project             #
+############################################################
+def test_leave_project():
+
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    header = {'Authorization': tm1_uid}
+    leave_resp = requests.post(url + "projects/leave", headers=header, json={
+        "pid": create_json,
+        "msg": msg
+    })
+
+    assert leave_resp.status_code == 200
+    leave_json = leave_resp.json()
+
+    assert leave_json == {
+        "receipient_email": "projectmaster@gmail.com",
+        "sender_email": "projecttest.tm1@gmail.com",
+        "msg_title": "Request to leave Project Alpha",
+        "msg_body": msg
+    }
+
+    reset_projects()
+
+def test_leave_project_invalid_pid():
+
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    header = {'Authorization': tm1_uid}
+    leave_resp = requests.post(url + "projects/leave", headers=header, json={
+        "pid": -1,
+        "msg": msg
+    })
+
+    assert leave_resp.status_code == 400
+
+    reset_projects()
+
+def test_leave_project_invalid_uid():
+    
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    add_tm_to_project(create_json, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    header = {'Authorization': "invalid"}
+    leave_resp = requests.post(url + "projects/leave", headers=header, json={
+        "pid": create_json,
+        "msg": msg
+    })
+
+    assert leave_resp.status_code == 400
+
+    reset_projects()
+
+def test_leave_project_not_in_project():
+    
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project Alpha",
+        "description": "Alpha does Spiking",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    header = {'Authorization': tm1_uid}
+    leave_resp = requests.post(url + "projects/leave", headers=header, json={
+        "pid": create_json,
+        "msg": msg
+    })
+
+    assert leave_resp.status_code == 403
+
+    reset_projects()

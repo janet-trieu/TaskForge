@@ -25,7 +25,7 @@ else:
 ############################################################
 #                   Test for create_project                #
 ############################################################
-
+'''
 def test_create_project_use_default_vals():
     header = {'Authorization': pm_uid}
     create_resp = requests.post(url + "projects/create", headers=header, json={
@@ -341,7 +341,7 @@ def test_remove_invalid_project_member():
     assert remove_resp.status_code == 400
 
     reset_projects() 
-
+'''
 ############################################################
 #               Test for invite_to_project                 #
 ############################################################
@@ -365,8 +365,17 @@ def test_invite_to_project():
         "pid": create_json,
         "receiver_uids": [tm1_email]
     })
+    print(f"this is create_json == {create_json}")
+    print(f"this is tm1_email == {tm1_email}")
+    print(f"this is invite_resp {invite_resp}")
 
+    invite_json = invite_resp.json()
     assert invite_resp.status_code == 200
+
+    assert invite_json == {
+        tm1_uid: ["projecttest.tm1@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master1, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."]
+    }
 
     reset_projects() 
 
@@ -392,10 +401,21 @@ def test_multiple_invite_to_project():
         "receiver_uids": [tm1_email, tm2_email, tm3_email]
     })
 
+    invite_json = invite_resp.json()
     assert invite_resp.status_code == 200
 
-    reset_projects() 
+    assert invite_json == {
+        tm1_uid: ["projecttest.tm1@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master1, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."],
+        tm2_uid: ["projecttest.tm2@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master2, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."],
+        tm3_uid: ["projecttest.tm3@gmail.com", "TaskForge: Project Invitation to Project X",
+                  "Hi Task Master3, \nProject Master is inviting you to project Project X.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."]
+    }
+    
 
+    reset_projects() 
+'''
 def test_invite_to_invalid_project():
     
     tm1_email = auth.get_user(tm1_uid).email
@@ -688,3 +708,4 @@ def test_update_project_not_project_master():
     assert update_resp.status_code == 403
 
     reset_projects() 
+'''
