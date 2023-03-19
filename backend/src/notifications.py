@@ -10,12 +10,10 @@ TODO notes:
 - When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
 - ASSUMPTION should be covered by the function the notfiication is called in
 '''
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from datetime import datetime
 from .error import *
 from .helper import *
-
-from src.helper import *
 
 db = firestore.client()
 
@@ -83,9 +81,8 @@ def notification_welcome(uid):
         uid (string): User being notified
     ASSUMPTION that this function is called ONCE per user.
     '''
-    check_valid_uid(uid)
 
-    name = get_display_name(uid)
+    name = auth.get_user(uid).display_name
 
     notification = {
         'welcome' : {
@@ -106,12 +103,10 @@ def notification_connection_request(uid, uid_sender):
         uid_sender (string): User who requests to connect
     ASSUMPTION that the users are not connected + do not have an existing request
     '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
     if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
     notification_type = 'connection_request'
     nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
+    sender_name = auth.get_user(uid_sender).display_name
 
     notification = {
         nid : {
@@ -126,7 +121,8 @@ def notification_connection_request(uid, uid_sender):
         }
     }
 
-    db.collection("notifications").document(uid).update(notification)
+    db.collection("notifications").document(str(uid)).update(notification)
+    return nid
 
 def notification_project_invite(uid, uid_sender, pid):
     '''
@@ -137,14 +133,11 @@ def notification_project_invite(uid, uid_sender, pid):
         pid (int): Project being invited to
     ASSUMPTION that the user sending is in project + user receiving is not in project + do not have an existing request (+ possibly need to be connected?)
     '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-    check_valid_pid(pid)
 
     notification_type = 'project_invite'
     nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
-    project_name = get_project_name(pid)
+    sender_name =  auth.get_user(uid_sender).display_name
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
 
     notification = {
         nid : {
@@ -171,13 +164,12 @@ def notification_assigned_task(uid, pid, tid):
         tid (int): Task being assigned
     ASSUMPTION that the user is in project + task is in project
     '''
-    check_valid_uid(uid)
     check_valid_pid(pid)
     check_valid_tid(tid)
 
     notification_type = 'assigned_task'
     nid = create_nid(uid, notification_type) # create notification ID
-    project_name = get_project_name(pid)
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
     task_name = get_task_name(tid)
 
     notification = {
