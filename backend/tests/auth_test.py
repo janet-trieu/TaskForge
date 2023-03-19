@@ -5,9 +5,14 @@ import pytest
 from src.authentication import *
 from src.test_helpers import *
 
-def test_reset_password():
+try:
+    create_user_email("authtest0@gmail.com", "password123", "Auth Doe")
+except auth.EmailAlreadyExistsError:
+    pass
 
-    user_id = "rFoLiVMvWwaahFGpQTsb9jtZKT53"
+user_id = auth.get_user_by_email("authtest0@gmail.com").uid
+
+def test_reset_password():
 
     res = get_reset_password_link(user_id)
 
@@ -15,12 +20,12 @@ def test_reset_password():
 
 def test_reset_password_invalid_uid():
 
-    user_id = "3TssNFyM70OtTGarpRtAZzVrOd72"
+    invalid_user_id = "my name is invalid uid and i hate being valid"
 
     # with pytest.raises(auth.UserNotFoundError):
     # with pytest.raises(AccessError):
-    assert get_reset_password_link(user_id) == -1
+    assert get_reset_password_link(invalid_user_id) == -1
 
 # Reset database
-# IMPORTANT: Ensure you delete auth db data with delete_user(uid) as well
+delete_user(user_id)
 reset_firestore_database()
