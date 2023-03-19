@@ -259,7 +259,7 @@ def get_email(uid):
     return auth.get_user(uid).email
 
 ### ========= Get Role ========= ###
-def get_projects(uid):  
+def get_role(uid):  
     """
     Gets role of the User from firestore database
 
@@ -268,7 +268,7 @@ def get_projects(uid):
 
     Returns:
         A string that corresponds to the role of the user
-    """  
+    """
     return get_user_ref(uid).get("role")
 
 ### ========= Get DOB ========= ###
