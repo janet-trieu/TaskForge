@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Connections from '../pages/Connections.jsx';
 import CreateProject from '../pages/CreateProject.jsx';
-import Home from '../Pages/Home.jsx'
+import Home from '../pages/Home.jsx'
 import Profile from '../pages/Profile.jsx';
 import Projects from '../pages/Projects.jsx';
 import Settings from '../pages/Settings.jsx';

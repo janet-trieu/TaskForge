@@ -116,7 +116,7 @@
 
 #project-invite {
   background-image: url('assets/search.png');
-  background-position: calc(30vw - 20px) 0px;
+  background-position: calc(30vw - 20px);
   background-repeat: no-repeat;
 }
 
