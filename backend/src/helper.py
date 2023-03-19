@@ -88,17 +88,3 @@ def create_admin(uid):
     }
 
     db.collection('users').document(uid).set(data)
-
-############################################################
-#                      Reset Database                      #
-############################################################
-
-def reset_projects():
-    project_count = get_curr_pid()
-
-    for i in range(0, project_count):
-        db.collection("projects").document(str(i)).delete()
-
-    counter_ref = db.collection("counters").document("total_projects")
-
-    counter_ref.update({"pid": 0})

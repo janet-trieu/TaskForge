@@ -71,3 +71,17 @@ def delete_user(uid):
         db.collection('notifications').document(uid).delete()
     except:
         print("uid does not correspond to a current user")
+
+############################################################
+#                      Reset Database                      #
+############################################################
+
+def reset_projects():
+    project_count = get_curr_pid()
+
+    for i in range(0, project_count):
+        db.collection("projects").document(str(i)).delete()
+
+    counter_ref = db.collection("counters").document("total_projects")
+
+    counter_ref.update({"pid": 0})
