@@ -8,7 +8,7 @@ export const makeRequest = async (path, method, body, uid) => {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `${uid}`,
+        'Authorization': `${uid}`,
       },
       body: JSON.stringify(body)
     });
@@ -19,7 +19,7 @@ export const makeRequest = async (path, method, body, uid) => {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${uid}`,
+        'Authorization': `${uid}`,
       }
     });
     const data = await response.json();
