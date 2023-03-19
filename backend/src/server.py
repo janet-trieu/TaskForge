@@ -37,33 +37,21 @@ app.config['MAIL_PASSWORD'] = "gqjtjsnnaxwqeeeg"
 
 sending_email = "compgpt3900@gmail.com"
 
-
-# Example
-@app.route("/echo", methods=['GET'])
-def echo():
-    data = request.args.get('data')
-    if data == 'echo':
-        pass #raise InputError(description='Cannot echo "echo"')
-    return dumps({
-        'data': data
-    })
-
 #--- Authentication Routes ---#
 @app.route("/authentication/reset_password", methods=["POST"])
 def flask_reset_password():
-    data = request.get_json()
-    res = get_reset_password_link(data["uid"])
+    uid = request.headers.get('Authorization')
+    res = get_reset_password_link(uid)
     if res == -1:
         return Response(status=400)
     else:
         return dumps(res)
     
 #Profile Routes#
-@app.route('/user/details', methods=['GET'])
+@app.route('/profile/details', methods=['GET'])
 def user_details():
-    #name, email, role, photo_url, num_connections, rating
-    data = request.get_json()
-    uid = data["uid"]
+    # name, email, role, photo_url, num_connections, rating
+    uid = request.headers.get('Authorization')
     if is_valid_user(uid) == False:
         return Response(status=400)
     else:
@@ -76,7 +64,7 @@ def user_details():
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
     data = request.get_json()
-    uid = data["uid"]
+    uid = request.headers.get('Authorization')
     if is_valid_user(uid) == False:
         return Response(status=400)
     else:
@@ -91,19 +79,17 @@ def profile_update():
         update_photo(uid, photo_url)
         return Response(status=200)
 
-@app.route('/get/tasks', methods=['GET'])
+@app.route('/profile/tasks', methods=['GET'])
 def get_user_tasks():
-    data = request.get_json()
-    uid = data["uid"]
+    uid = request.headers.get('Authorization')
     if is_valid_user(uid) == False:
         return Response(status=400)
     else:
         return Response(get_tasks(uid), status=200)
 
-@app.route('/create/user', methods=['PUTS'])
+@app.route('/profile/create', methods=['PUT'])
 def create_user():
-    data = request.get_json()
-    uid = data["uid"]
+    uid = request.headers.get('Authorization')
     create_user_firestore(uid)
 
 
@@ -114,15 +100,17 @@ def admin_give_admin():
     give_admin flask
     """
     data = request.get_json()
-    return dumps(give_admin(data["uid_admin"], data["uid_user"]))
-    
+    uid_user = request.headers.get('Authorization')
+    return dumps(give_admin(data["uid_admin"], uid_user))
+
 @app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
     """
     ban_user flask
     """
     data = request.get_json()
-    return dumps(ban_user(data["uid_admin"], data["uid_user"]))
+    uid_user = request.headers.get('Authorization')
+    return dumps(ban_user(data["uid_admin"], uid_user))
     
 @app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
@@ -130,7 +118,8 @@ def admin_unban_user():
     unban_user flask
     """
     data = request.get_json()
-    return dumps(unban_user(data["uid_admin"], data["uid_user"]))
+    uid_user = request.headers.get('Authorization')
+    return dumps(unban_user(data["uid_admin"], uid_user))
     
 @app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
@@ -138,38 +127,45 @@ def admin_remove_user():
     remove_user flask
     """
     data = request.get_json()
-    return dumps(remove_user(data["uid_admin"], data["uid_user"]))
-    
+    uid_user = request.headers.get('Authorization')
+    return dumps(remove_user(data["uid_admin"], uid_user))
+
 @app.route("/admin/readd_user", methods=["POST"])
 def admin_readd_user():
     """
     readd_user flask
     """
     data = request.get_json()
-    return dumps(readd_user(data["uid_admin"], data["uid_user"]))
+    uid_user = request.headers.get('Authorization')
+    return dumps(readd_user(data["uid_admin"], uid_user))
+
 
 #PROJECT ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
-    pid = create_project(data["uid"], data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
+    uid = request.headers.get('Authorization')
+    pid = create_project(uid, data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])
 def flask_revive_project():
     data = request.get_json()
-    res = revive_completed_project(data["pid"], data["uid"], data["new_status"])
+    uid = request.headers.get('Authorization')
+    res = revive_completed_project(data["pid"], uid, data["new_status"])
     return dumps(res)
 
 @app.route("/projects/remove", methods=["POST"])
 def flask_remove_project_member():
     data = request.get_json()
-    res = remove_project_member(data["pid"], data["uid"], data["uid_to_be_removed"])
+    uid = request.headers.get('Authorization')
+    res = remove_project_member(data["pid"], uid, data["uid_to_be_removed"])
     return dumps(res)
 
 @app.route("/projects/invite", methods=["POST"])
 def flask_invite_to_project():
     data = request.get_json()
+    sender_uid = request.headers.get('Authorization')
 
     uid_list = []
     for email in data["receiver_uids"]:
@@ -184,7 +180,7 @@ def flask_invite_to_project():
         else:
             uid_list.append(uid)
 
-    res = invite_to_project(data["pid"], data["sender_uid"], uid_list)
+    res = invite_to_project(data["pid"], sender_uid, uid_list)
 
     # Send email to all users in uid_list
     for uid, data in res.items():
@@ -201,37 +197,41 @@ def flask_invite_to_project():
 @app.route("/projects/update", methods=["POST"])
 def flask_update_project():
     data = request.get_json()
-
-    res = update_project(data["pid"], data["uid"], data["updates"])
-
+    uid = request.headers.get('Authorization')
+    res = update_project(data["pid"], uid, data["updates"])
     return dumps(res)
 
-# NOTIFICATIONS ROUTES #
-@app.route('/notification/get/notifications', methods=['GET'])
-def get_notifications():
-    data = request.get_json()
-    return dumps(get_notifications(data['uid']))
 
-@app.route('/notification/clear/notification', methods=['DELETE'])
+# NOTIFICATIONS ROUTES #
+@app.route('/notifications/get', methods=['GET'])
+def get_notifications():
+    uid = request.headers.get('Authorization')
+    return dumps(get_notifications(uid))
+
+@app.route('/notifications/clear', methods=['DELETE'])
 def clear_notification():
     data = request.get_json()
-    return dumps(clear_notification(data['uid'], data['notf_dict']))
+    uid = request.headers.get('Authorization')
+    return dumps(clear_notification(uid, data['notf_dict']))
 
-@app.route('/notification/clear/all/notifications', methods=['DELETE'])
+@app.route('/notifications/clearall', methods=['DELETE'])
 def clear_all_notifications():
-    data = request.get_json()
-    return dumps(clear_all_notifications(data['uid']))
+    uid = request.headers.get('Authorization')
+    return dumps(clear_all_notifications(uid))
+
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
 def flask_view_project():
-    data = request.get_json()
-    return dumps(view_project(data["pid"], data["uid"]))
+    pid = int(request.args.get('pid'))
+    uid = request.headers.get('Authorization')
+    return dumps(view_project(pid, uid))
 
 @app.route("/projects/search", methods=["GET"])
 def flask_search_project():
-    data = request.get_json()
-    return dumps(search_project(data["uid"], data["query"]))
+    uid = request.headers.get('Authorization')
+    query = request.args.get('query')
+    return dumps(search_project(uid, query))
 
 if __name__ == "__main__":
     app.run()

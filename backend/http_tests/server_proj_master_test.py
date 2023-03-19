@@ -27,9 +27,8 @@ else:
 ############################################################
 
 def test_create_project_use_default_vals():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -42,9 +41,8 @@ def test_create_project_use_default_vals():
     reset_projects()
 
 def test_create_project_use_all_vals():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": "2023-12-31",
@@ -57,9 +55,8 @@ def test_create_project_use_all_vals():
     reset_projects() 
 
 def test_create_multiple_projects():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -69,8 +66,7 @@ def test_create_multiple_projects():
 
     assert create_resp.status_code == 200
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project1",
         "description": "Creating Project1 for testing",
         "due_date": "2023-12-31",
@@ -83,9 +79,8 @@ def test_create_multiple_projects():
     reset_projects() 
 
 def test_create_project_TypeError():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": -1,
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -98,9 +93,8 @@ def test_create_project_TypeError():
     reset_projects()
 
 def test_create_project_ValueError():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "",
         "due_date": None,
@@ -113,9 +107,8 @@ def test_create_project_ValueError():
     reset_projects()
 
 def test_create_project_invalid_uid():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": "invalid",
+    header = {'Authorization': "invalid"}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -132,9 +125,8 @@ def test_create_project_invalid_uid():
 ############################################################
 
 def test_revive_completed_project():
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -146,9 +138,8 @@ def test_revive_completed_project():
     create_json = create_resp.json()
     proj_ref = db.collection("projects").document(str(create_json))
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": {"status": "Completed"}
     })
 
@@ -156,9 +147,8 @@ def test_revive_completed_project():
     assert proj_ref.get().get("status") == "Completed"
 
     # revive completed project back into "In Progress"
-    revive_resp = requests.post(url + "projects/revive", json={
+    revive_resp = requests.post(url + "projects/revive", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "new_status": "In Progress"
     })
 
@@ -171,9 +161,8 @@ def test_revive_completed_project():
 def test_revive_completed_project_not_proj_master():
 
     incorrect_uid = tm1_uid
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -185,18 +174,17 @@ def test_revive_completed_project_not_proj_master():
     create_json = create_resp.json()
     proj_ref = db.collection("projects").document(str(create_json))
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": {"status": "Completed"}
     })
 
     assert update_resp.status_code == 200
     assert proj_ref.get().get("status") == "Completed"
 
-    revive_resp = requests.post(url + "projects/revive", json={
+    header = {'Authorization': incorrect_uid}
+    revive_resp = requests.post(url + "projects/revive", headers=header, json={
         "pid": create_json,
-        "uid": incorrect_uid,
         "new_status": "In Progress"
 
     })
@@ -210,8 +198,8 @@ def test_revive_completed_project_not_proj_master():
 
 def test_revive_non_completed_project():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -225,9 +213,8 @@ def test_revive_non_completed_project():
 
     assert proj_ref.get().get("status") == "Not Started"
 
-    revive_resp = requests.post(url + "projects/revive", json={
+    revive_resp = requests.post(url + "projects/revive", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "new_status": "In Review"
 
     })
@@ -243,8 +230,8 @@ def test_revive_non_completed_project():
 
 def test_remove_project_member():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -259,9 +246,8 @@ def test_remove_project_member():
     add_tm_to_project(create_json, tm2_uid)
     add_tm_to_project(create_json, tm3_uid)
 
-    remove_resp = requests.post(url + "projects/remove", json={
+    remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "uid_to_be_removed": tm1_uid
     })
 
@@ -275,8 +261,8 @@ def test_remove_project_member():
 
 def test_remove_project_member_not_proj_master():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -289,9 +275,9 @@ def test_remove_project_member_not_proj_master():
 
     add_tm_to_project(create_json, tm1_uid)
 
-    remove_resp = requests.post(url + "projects/remove", json={
+    header = {'Authorization': tm2_uid}
+    remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": create_json,
-        "uid": tm2_uid,
         "uid_to_be_removed": tm1_uid
     })
 
@@ -305,8 +291,8 @@ def test_remove_project_member_not_proj_master():
 
 def test_remove_project_member_invalid_pid():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -321,9 +307,8 @@ def test_remove_project_member_invalid_pid():
     add_tm_to_project(create_json, tm2_uid)
     add_tm_to_project(create_json, tm3_uid)
 
-    remove_resp = requests.post(url + "projects/remove", json={
+    remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": -1,
-        "uid": pm_uid,
         "uid_to_be_removed": tm1_uid
     })
 
@@ -336,8 +321,8 @@ def test_remove_project_member_invalid_pid():
 
 def test_remove_invalid_project_member():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -348,9 +333,8 @@ def test_remove_invalid_project_member():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    remove_resp = requests.post(url + "projects/remove", json={
+    remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "uid_to_be_removed": tm1_uid
     })
 
@@ -365,9 +349,8 @@ def test_remove_invalid_project_member():
 def test_invite_to_project():
 
     tm1_email = auth.get_user(tm1_uid).email
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -378,9 +361,8 @@ def test_invite_to_project():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    invite_resp = requests.post(url + "projects/invite", json={
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,
-        "sender_uid": pm_uid,
         "receiver_uids": [tm1_email]
     })
 
@@ -393,9 +375,8 @@ def test_multiple_invite_to_project():
     tm1_email = auth.get_user(tm1_uid).email
     tm2_email = auth.get_user(tm2_uid).email
     tm3_email = auth.get_user(tm3_uid).email
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -406,9 +387,8 @@ def test_multiple_invite_to_project():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    invite_resp = requests.post(url + "projects/invite", json={
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,
-        "sender_uid": pm_uid,
         "receiver_uids": [tm1_email, tm2_email, tm3_email]
     })
 
@@ -419,9 +399,8 @@ def test_multiple_invite_to_project():
 def test_invite_to_invalid_project():
     
     tm1_email = auth.get_user(tm1_uid).email
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -432,9 +411,8 @@ def test_invite_to_invalid_project():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    invite_resp = requests.post(url + "projects/invite", json={
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": -1,
-        "sender_uid": pm_uid,
         "receiver_uids": [tm1_email]
     })
 
@@ -443,9 +421,9 @@ def test_invite_to_invalid_project():
     reset_projects() 
 
 def test_invite_invalid_receiver_uid():
-    
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -456,9 +434,8 @@ def test_invite_invalid_receiver_uid():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
-    invite_resp = requests.post(url + "projects/invite", json={
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,
-        "sender_uid": pm_uid,
         "receiver_uids": ["doesnt.exist@gmail.com"]
     })
 
@@ -469,9 +446,8 @@ def test_invite_invalid_receiver_uid():
 def test_invite_uid_already_in_project():
 
     tm1_email = auth.get_user(tm1_uid).email
-
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -488,9 +464,8 @@ def test_invite_uid_already_in_project():
 
     assert tm1_uid in proj_ref.get().get("project_members")
 
-    invite_resp = requests.post(url + "projects/invite", json={
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,
-        "sender_uid": pm_uid,
         "receiver_uids": [tm1_email]
     })
 
@@ -504,8 +479,8 @@ def test_invite_uid_already_in_project():
 
 def test_update_project():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -527,9 +502,8 @@ def test_update_project():
         "picture": "testing.png"
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -553,8 +527,8 @@ def test_update_project():
 
 def test_update_project_invalid_type():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -576,9 +550,8 @@ def test_update_project_invalid_type():
         "picture": -1
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -588,8 +561,8 @@ def test_update_project_invalid_type():
 
 def test_update_project_invalid_value():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -611,9 +584,8 @@ def test_update_project_invalid_value():
         "picture": "hi"
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -623,8 +595,8 @@ def test_update_project_invalid_value():
 
 def test_update_project_completed():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -641,9 +613,8 @@ def test_update_project_completed():
         "status": "Completed",
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -654,9 +625,8 @@ def test_update_project_completed():
         "status": "In Progress",
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -665,9 +635,9 @@ def test_update_project_completed():
     reset_projects() 
 
 def test_update_project_invalid_pid():
-    
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -682,9 +652,8 @@ def test_update_project_invalid_pid():
         "status": "Completed",
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": -1,
-        "uid": pm_uid,
         "updates": updates
     })
 
@@ -694,8 +663,8 @@ def test_update_project_invalid_pid():
 
 def test_update_project_not_project_master():
 
-    create_resp = requests.post(url + "projects/create", json={
-        "uid": pm_uid,
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
@@ -710,9 +679,9 @@ def test_update_project_not_project_master():
         "status": "Completed",
     }
 
-    update_resp = requests.post(url + "projects/update", json={
+    header = {'Authorization': tm1_uid}
+    update_resp = requests.post(url + "projects/update", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "updates": updates
     })
 
