@@ -7,6 +7,7 @@ from src.test_helpers import *
 from src.helper import *
 port = 5000
 url = f"http://localhost:{port}/"
+
 reset_projects() 
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
@@ -31,7 +32,6 @@ def test_create_project_use_default_vals():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -47,7 +47,6 @@ def test_create_project_use_all_vals():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Not Started",
         "due_date": "2023-12-31",
         "team_strength": 5,
         "picture": "test1.jpg"
@@ -63,7 +62,6 @@ def test_create_multiple_projects():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -75,7 +73,6 @@ def test_create_multiple_projects():
         "uid": pm_uid,
         "name": "Project1",
         "description": "Creating Project1 for testing",
-        "status": "Not Started",
         "due_date": "2023-12-31",
         "team_strength": 5,
         "picture": "test1.jpg"
@@ -91,7 +88,6 @@ def test_create_project_TypeError():
         "uid": pm_uid,
         "name": -1,
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -107,7 +103,6 @@ def test_create_project_ValueError():
         "uid": pm_uid,
         "name": "Project0",
         "description": "",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -123,7 +118,6 @@ def test_create_project_invalid_uid():
         "uid": "invalid",
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -143,7 +137,6 @@ def test_revive_completed_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Completed",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -151,6 +144,16 @@ def test_revive_completed_project():
 
     assert create_resp.status_code == 200
     create_json = create_resp.json()
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": {"status": "Completed"}
+    })
+
+    assert update_resp.status_code == 200
+    assert proj_ref.get().get("status") == "Completed"
 
     # revive completed project back into "In Progress"
     revive_resp = requests.post(url + "projects/revive", json={
@@ -160,8 +163,7 @@ def test_revive_completed_project():
     })
 
     assert revive_resp.status_code == 200
-
-    proj_ref = db.collection("projects").document(str(create_json))
+    
     assert proj_ref.get().get("status") == "In Progress"
 
     reset_projects()
@@ -174,7 +176,6 @@ def test_revive_completed_project_not_proj_master():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Completed",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -182,6 +183,16 @@ def test_revive_completed_project_not_proj_master():
 
     assert create_resp.status_code == 200
     create_json = create_resp.json()
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    update_resp = requests.post(url + "projects/update", json={
+        "pid": create_json,
+        "uid": pm_uid,
+        "updates": {"status": "Completed"}
+    })
+
+    assert update_resp.status_code == 200
+    assert proj_ref.get().get("status") == "Completed"
 
     revive_resp = requests.post(url + "projects/revive", json={
         "pid": create_json,
@@ -203,7 +214,6 @@ def test_revive_non_completed_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -211,6 +221,9 @@ def test_revive_non_completed_project():
 
     assert create_resp.status_code == 200
     create_json = create_resp.json()
+    proj_ref = db.collection("projects").document(str(create_json))
+
+    assert proj_ref.get().get("status") == "Not Started"
 
     revive_resp = requests.post(url + "projects/revive", json={
         "pid": create_json,
@@ -220,9 +233,7 @@ def test_revive_non_completed_project():
     })
 
     assert revive_resp.status_code == 400
-
-    proj_ref = db.collection("projects").document(str(create_json))
-    assert proj_ref.get().get("status") == "In Progress"
+    assert proj_ref.get().get("status") == "Not Started"
 
     reset_projects()
 
@@ -236,7 +247,6 @@ def test_remove_project_member():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -269,7 +279,6 @@ def test_remove_project_member_not_proj_master():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -300,7 +309,6 @@ def test_remove_project_member_invalid_pid():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -332,7 +340,6 @@ def test_remove_invalid_project_member():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -363,7 +370,6 @@ def test_invite_to_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -392,7 +398,6 @@ def test_multiple_invite_to_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -419,7 +424,6 @@ def test_invite_to_invalid_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -444,7 +448,6 @@ def test_invite_invalid_receiver_uid():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -471,7 +474,6 @@ def test_invite_uid_already_in_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "In Progress",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -506,7 +508,6 @@ def test_update_project():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -556,7 +557,6 @@ def test_update_project_invalid_type():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -592,7 +592,6 @@ def test_update_project_invalid_value():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": None,
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -628,7 +627,6 @@ def test_update_project_completed():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Not Started",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -672,7 +670,6 @@ def test_update_project_invalid_pid():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Not Started",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -701,7 +698,6 @@ def test_update_project_not_project_master():
         "uid": pm_uid,
         "name": "Project0",
         "description": "Creating Project0 for testing",
-        "status": "Not Started",
         "due_date": None,
         "team_strength": None,
         "picture": None

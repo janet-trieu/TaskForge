@@ -9,6 +9,7 @@ from .authentication import *
 from .admin import *
 from .proj_master import *
 from .profile_page import *
+from .projects import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -150,7 +151,7 @@ def admin_readd_user():
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
-    pid = create_project(data["uid"], data["name"], data["description"], data["status"], data["due_date"], data["team_strength"], data["picture"])
+    pid = create_project(data["uid"], data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])
@@ -219,6 +220,17 @@ def clear_notification():
 def clear_all_notifications():
     data = request.get_json()
     return dumps(clear_all_notifications(data['uid']))
+
+# PROJECT MANAGEMENT ROUTES #
+@app.route("/projects/view", methods=["GET"])
+def flask_view_project():
+    data = request.get_json()
+    return dumps(view_project(data["pid"], data["uid"]))
+
+@app.route("/projects/search", methods=["GET"])
+def flask_search_project():
+    data = request.get_json()
+    return dumps(search_project(data["uid"], data["query"]))
 
 if __name__ == "__main__":
     app.run()
