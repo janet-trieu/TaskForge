@@ -224,7 +224,7 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     - receiver_uids (list of the uids to be invited to project)
 
     Returns:
-    - Dict of the data required to send the invite via email
+    - 0 for success
 
     Raises:
     - AccessError for incorrect uid
@@ -245,7 +245,6 @@ def invite_to_project(pid, sender_uid, receiver_uids):
 
     project_members = proj_ref.get().get("project_members")
 
-    return_dict = {}
     for uid in receiver_uids:
 
         # check whether the specified uid exists
@@ -254,20 +253,10 @@ def invite_to_project(pid, sender_uid, receiver_uids):
         if uid in project_members:
             raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
 
-        receipient_name = auth.get_user(uid).display_name
-        sender_name = auth.get_user(sender_uid).display_name
-        project_name = proj_ref.get().get("name")
-
         # Add project invitation notification data in database
         notification_project_invite(uid, sender_uid, pid)
 
-        receipient_email = auth.get_user(uid).email
-        msg_title = f"TaskForge: Project Invitation to {project_name}"
-        msg_body = f"Hi {receipient_name}, \n{sender_name} is inviting you to project {project_name}.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."
-
-        return_dict[uid] = [receipient_email, msg_title, msg_body]
-
-    return return_dict
+    return 0
 
 def update_project(pid, uid, updates):
     '''

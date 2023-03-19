@@ -166,8 +166,7 @@ def flask_remove_project_member():
 def flask_invite_to_project():
     data = request.get_json()
     sender_uid = request.headers.get('Authorization')
-    print(f"this is sender_uid == {sender_uid}")
-    print(f"this is receiver_uids: {data['receiver_uids']}")
+
     uid_list = []
     for email in data["receiver_uids"]:
 
@@ -183,15 +182,15 @@ def flask_invite_to_project():
 
     res = invite_to_project(data["pid"], sender_uid, uid_list)
 
-    # Send email to all users in uid_list
-    for uid, data in res.items():
-        receipient_email = data[0]
-        msg_title = data[1]
-        msg_body = data[2]
+    # # Send email to all users in uid_list
+    # for uid, data in res.items():
+    #     receipient_email = data[0]
+    #     msg_title = data[1]
+    #     msg_body = data[2]
 
-        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
-        msg.body = msg_body
-        mail.send(msg)
+    #     msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+    #     msg.body = msg_body
+    #     mail.send(msg)
 
     return dumps(res)
 
