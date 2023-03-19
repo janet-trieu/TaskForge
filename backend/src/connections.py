@@ -23,14 +23,13 @@ def connection_request_respond(uid, nid, response):
 def get_connection_requests(uid):
     check_valid_uid(uid)
     conn_list = []
-    notis = db.collections('notifications').where('uid', '==', uid).stream()
+    notis = db.collection('notifications').document(uid).get().to_dict()
     for noti in notis:
-        result = noti.to_dict()
-        if (result.get('notification_type') == 'connection_request'):
-            conn_list.append(result)
+        if (notis.get(noti).get('type') == 'connection_request'):
+            conn_list.append(notis.get(noti))
     return conn_list
 
 def get_connected_taskmasters(uid):
     check_valid_uid(uid)
-    user_ref = db.collections('users').document(uid)
+    user_ref = db.collection('users').document(uid)
     return user_ref.get().get('connections')
