@@ -51,8 +51,8 @@ def test_get_tasks_success():
     """
     Succeeding in getting a user's tasks
     """
-    json_dict = {'uid': 'sklzNex5udNeOd65uvsuGAYBNkH2'}
-    resp = requests.get(url + '/get/tasks', json=json_dict)
+    json_dict = {'Authorization': 'sklzNex5udNeOd65uvsuGAYBNkH2'}
+    resp = requests.get(url + '/profile/tasks', headers=json_dict)
 
     assert resp.status_code == 200
 
@@ -60,7 +60,7 @@ def test_get_tasks_success():
     """
     Failing in getting a user's tasks
     """
-    json_dict = {'uid': 'sklzNex5udNeOd65usvsuGAYBNkH2'}
-    resp = requests.get(url + '/get/tasks', json=json_dict)
+    json_dict = {'Authorization': 'sklzNex5udNeOd65usvsuGAYBNkH2'}
+    resp = requests.get(url + '/profile/tasks', headers=json_dict)
 
     assert resp.status_code == 400

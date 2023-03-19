@@ -223,7 +223,7 @@ def clear_all_notifications():
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
 def flask_view_project():
-    pid = request.args.get('pid')
+    pid = int(request.args.get('pid'))
     uid = request.headers.get('Authorization')
     return dumps(view_project(pid, uid))
 
