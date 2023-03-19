@@ -1,0 +1,69 @@
+### Week 1 ###
+
+We formed our project group, and begun setup of Jira, Github, and a group chat for internal communication.
+We held an online meeting and discussed the following:
+- How to use Jira, or how "we" will use it
+- Confirm our project, discuss everyone's experience with task managers
+- Start delegation of task for Project Proposal
+- Start looking into backend/frontend
+- Grasp the overall scope of our project, possibly come up with our MVP (Minimum Viable Product)
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 2 ###
+
+# What was planned for the period since the last work diary entry #
+
+Read through the project ideas and decide on one.
+
+# What was finished #
+
+Read through the project ideas and decide on one. We decided on the Task Management System project.
+Jira and github setup were completed.
+Delegated project proposal tasks.
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Finding times for regular meetings. Overcame this by documenting regular inavailabilities and choosing a time that suited everyone.
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+N/A
+
+# What is planned for the next period (e.g., next week) #
+
+Brainstorm all the features + user stories
+Complete the proposal
+Discuss the questions sent to the tutor
+Start working on the project
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 3 ###
+
+# What was planned for the period since the last work diary entry #
+
+Brainstorm all the features + user stories
+Complete the proposal
+Discuss the questions sent to the tutor
+Start working on the project
+
+# What was finished #
+
+Brainstorm all the features + user stories
+Discuss the questions sent to the tutor
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+N/A
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+Complete the proposal, pushed back to completion on Sunday.
+Start working on the project, pushed back til after completion of proposal
+
+# What is planned for the next period (e.g., next week) #
+
+Complete proposal.
+Begin working on implementation
+Research how to integrate Firestore and Firebase Authentication.

@@ -1,0 +1,34 @@
+Week 1
+
+I was absent to the tutorial on Week One but I was already acquainted with two of the group members, Dabin and Janet. Dabin filled me in and communicated on my behalf
+during the tutorial and group formation where I would be joined by Vincent and Joseph. I contributed in choosing the name and Dabin was elected to be scrum master since he has
+experience working with Jira and Kanban.
+
+During the first meeting, we discussed our grievances including: to finalise our choice, questions regarding the specifications of the assignment and possible roles.
+Questions unresolved would be asked to the tutor in Week 2. We planned to read the specifications more after the meeting to familarise ourselves and think of possible features
+to implement in the project, including novel ideas which would be proposed to the tutor.
+
+Week 2
+
+We had our tutorial where we asked numerous questions regarding specifications of the assignment. Afterwards, we had another meeting in which we delegated tasks
+in the proposal. I was tasked User Stories with Dabin. We also brainstormed additional features in which I contributed similar to spotify wrapped but morphed
+into more Steam Achievements. 
+
+After the meeting, I began working on the User stories but found the wording of Functionality/Objectives/Features confusing which would be brought up in the next meeting.
+After finalising our definitons, I helped Dabin and Vincent with the User Stories by essentially translating our preconceived features.
+
+
+Week 3
+
+In our Tutorial we clarified more questions regarding to the proposal. We gained informative criticism specifically our novel functionality, Reputation. We brain stormed possible additions to Reputation and new ideas in general. One included Hardcore mode. 
+
+I helped the User Stories, including making a visual supplementary diagram to assist the marker. This includes a product backlog, minimum viable product, and user stories. I also added the screenshots of the user stories in larger fonts for added visibility.
+
+I also started on the formatting of the proposal. Including the title page, table of contents and spacing. I will add some references in APA style to finalise formatting.
+
+Week 4
+Assigned with Profile functionalities. I first started with blackbox testing based on the schema provided and following the user stories provided. Testing firebase.auth functions for creating and updating user.  I finished generic testing but white box testing was not created yet. I then started on implementation of profile, however, due to a miscommunication, I basically created backend auth function for create user which was in the profile user stories but should have been an authentication user story. This was not a waste of time as it could be used for backend testing. 
+
+I experienced many difficulties using python as many imports and modules were failing to work. This was resolved after searching online. 
+
+For Sprint 2, I will be assigned a new functionality but as of right now, profile implementation is complete but more testing is required.
