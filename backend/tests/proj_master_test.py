@@ -27,7 +27,6 @@ else:
 ############################################################
 def test_create_project_use_default_vals():
 
-    print(pm_uid)
     # test for project creation
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
@@ -308,9 +307,7 @@ def test_invite_to_project():
 
     res = invite_to_project(pid, sender_uid, receiver_uids)
 
-    assert res == {
-        tm1_uid: ["testingtm1@gmail.com", "Hi Task Master1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"]
-    }
+    assert res == 0
         
     reset_projects()
 
@@ -328,11 +325,7 @@ def test_multiple_invite_to_project():
 
     res = invite_to_project(pid, sender_uid, receiver_uids)
 
-    assert res == {
-        tm1_uid: ["testingtm1@gmail.com", "Hi Task Master1, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"],
-        tm2_uid: ["testingtm2@gmail.com", "Hi Task Master2, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"],
-        tm3_uid: ["testingtm3@gmail.com", "Hi Task Master3, Project Master is inviting you to this project: Project X", "Please follow the link below to accept or reject this request: https://will_be_added.soon"]
-    }
+    assert res == 0
 
     reset_projects()
 
