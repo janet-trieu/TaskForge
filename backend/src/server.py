@@ -9,6 +9,7 @@ from .authentication import *
 from .admin import *
 from .proj_master import *
 from .profile_page import *
+from .projects import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -69,7 +70,8 @@ def user_details():
         display_name = str(get_display_name(uid))
         email = str(get_email(uid))
         photo_url = str(get_photo(uid))
-        return dumps({"display_name": display_name, "email": email, "photo_url": photo_url, "num_connections": int(0), "rating": int(0)}), 200
+        role = str(get_role(uid))
+        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": int(0), "rating": int(0)}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
@@ -150,7 +152,7 @@ def admin_readd_user():
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
-    pid = create_project(data["uid"], data["name"], data["description"], data["status"], data["due_date"], data["team_strength"], data["picture"])
+    pid = create_project(data["uid"], data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])
@@ -196,6 +198,14 @@ def flask_invite_to_project():
 
     return dumps(res)
 
+@app.route("/projects/update", methods=["POST"])
+def flask_update_project():
+    data = request.get_json()
+
+    res = update_project(data["pid"], data["uid"], data["updates"])
+
+    return dumps(res)
+
 # NOTIFICATIONS ROUTES #
 @app.route('/notification/get/notifications', methods=['GET'])
 def get_notifications():
@@ -211,6 +221,17 @@ def clear_notification():
 def clear_all_notifications():
     data = request.get_json()
     return dumps(clear_all_notifications(data['uid']))
+
+# PROJECT MANAGEMENT ROUTES #
+@app.route("/projects/view", methods=["GET"])
+def flask_view_project():
+    data = request.get_json()
+    return dumps(view_project(data["pid"], data["uid"]))
+
+@app.route("/projects/search", methods=["GET"])
+def flask_search_project():
+    data = request.get_json()
+    return dumps(search_project(data["uid"], data["query"]))
 
 if __name__ == "__main__":
     app.run()
