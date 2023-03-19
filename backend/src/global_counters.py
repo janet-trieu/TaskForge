@@ -44,6 +44,7 @@ def update_eid():
 
 ### ========= Task ID ========= ###
 def init_tid():
+    t_doc = db.collection("counters").document("total_tasks")
     data = {
         "tid": 0
     }
@@ -51,9 +52,11 @@ def init_tid():
     t_doc.set(data)
 
 def get_curr_tid():
+    t_doc = db.collection("counters").document("total_tasks")
     return t_doc.get().get("tid")
 
 def update_tid():
+    t_doc = db.collection("counters").document("total_tasks")
     value = get_curr_tid() + 1
 
     t_doc.update({"tid": value})
