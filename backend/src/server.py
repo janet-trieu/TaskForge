@@ -10,6 +10,7 @@ from .admin import *
 from .proj_master import *
 from .profile_page import *
 from .projects import *
+from .connections import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -219,6 +220,11 @@ def clear_all_notifications():
     return dumps(clear_all_notifications(uid))
 
 
+@app.route('/notification/connection/request', methods=['POST'])
+def flask_notification_connection_request():
+    data = request.get_json()
+    return dumps(notification_connection_request(data["uid"], data["uid_sender"]))
+
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
 def flask_view_project():
@@ -239,6 +245,33 @@ def flask_request_leave_projedct():
     res = request_leave_project(data["pid"], uid, data["msg"])
     return dumps(res)
 
+
+# CONNECTION ROUTES #
+
+@app.route("/connections/request_respond", methods=["POST"])
+def flask_connection_request_respond():
+    """
+    connection_request_respond flask
+    """
+    data = request.get_json()
+    return dumps(connection_request_respond(data["uid"], data["nid"], data["response"]))
+    
+@app.route("/connections/get_connection_requests", methods=["GET", "POST"])
+def flask_get_connection_requests():
+    """
+    get_connection_requests flask
+    """
+    data = request.get_json()
+    return dumps(get_connection_requests(data["uid"]), indent=4, sort_keys=True, default=str)
+
+@app.route("/connections/get_connected_taskmasters", methods=["GET", "POST"])
+def flask_get_connected_taskmasters():
+    """
+    get_connection_requests flask
+    """
+    data = request.get_json()
+    return dumps(get_connected_taskmasters(data["uid"]))
+    
+    
 if __name__ == "__main__":
     app.run()
-

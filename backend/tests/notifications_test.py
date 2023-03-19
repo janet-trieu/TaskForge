@@ -96,7 +96,7 @@ def test_project_invite_notification():
 
 # COMMENTED OUT TESTS THAT ARE WAITING FOR IT'S PARENT FUNCTION TO BE IMPLEMENTED
 
-""" def test_connection_request_notification():
+def test_connection_request_notification():
     notification_connection_request(user_id0, user_id1)
 
     doc_data = db.collection('notifications').document(user_id0).get().to_dict()
@@ -240,4 +240,4 @@ def test_no_dupe_nid():
     notification_comment(user_id0, user_id1, pid_expected, tid_expected)
     notf_list = get_notifications(user_id0)
     assert notf_list[0]['nid'] == 'comment3'
-    remove_test_data() """
+    remove_test_data()
