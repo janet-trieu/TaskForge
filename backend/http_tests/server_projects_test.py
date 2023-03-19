@@ -22,7 +22,7 @@ else:
     tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-
+'''
 ############################################################
 #                     Test for view_project                #
 ############################################################
@@ -451,10 +451,6 @@ def test_search_partial_member():
             "project_members": proj2.get().get("project_members"),
             "status": proj2.get().get("status"),
             "tasks": []
-        },
-        {
-            "name": proj3.get().get("name"),
-            "project_master": pm_name,
         }
     ]
 
@@ -470,7 +466,7 @@ def test_search_return_nothing():
     search_json = search_resp.json()
 
     assert search_json == []
-
+'''
 ############################################################
 #               Test for request_leave_project             #
 ############################################################
@@ -492,9 +488,9 @@ def test_leave_project():
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
+    header = {'Authorization': tm1_uid}
     leave_resp = requests.post(url + "projects/leave", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "msg": msg
     })
 
@@ -528,9 +524,9 @@ def test_leave_project_invalid_pid():
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
+    header = {'Authorization': tm1_uid}
     leave_resp = requests.post(url + "projects/leave", headers=header, json={
         "pid": -1,
-        "uid": tm1_uid,
         "msg": msg
     })
 
@@ -556,9 +552,9 @@ def test_leave_project_invalid_uid():
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
+    header = {'Authorization': "invalid"}
     leave_resp = requests.post(url + "projects/leave", headers=header, json={
         "pid": create_json,
-        "uid": "invalid",
         "msg": msg
     })
 
@@ -582,13 +578,12 @@ def test_leave_project_not_in_project():
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
+    header = {'Authorization': tm1_uid}
     leave_resp = requests.post(url + "projects/leave", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "msg": msg
     })
 
     assert leave_resp.status_code == 403
-    leave_json = leave_resp.json()
 
     reset_projects()

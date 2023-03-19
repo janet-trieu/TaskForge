@@ -140,7 +140,7 @@ def admin_readd_user():
     return dumps(readd_user(data["uid_admin"], uid_user))
 
 
-#PROJECT ROUTES
+#PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
@@ -201,7 +201,6 @@ def flask_update_project():
     res = update_project(data["pid"], uid, data["updates"])
     return dumps(res)
 
-
 # NOTIFICATIONS ROUTES #
 @app.route('/notifications/get', methods=['GET'])
 def get_notifications():
@@ -232,6 +231,14 @@ def flask_search_project():
     uid = request.headers.get('Authorization')
     query = request.args.get('query')
     return dumps(search_project(uid, query))
+
+@app.route("/projects/leave", methods=["POST"])
+def flask_request_leave_projedct():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    print(f"THIS IS UID: {uid}")
+    res = request_leave_project(data["pid"], uid, data["msg"])
+    return dumps(res)
 
 if __name__ == "__main__":
     app.run()

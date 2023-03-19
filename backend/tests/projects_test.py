@@ -91,7 +91,7 @@ def test_view_project_not_in_project():
 def test_search_empty_query():
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    
+
     add_tm_to_project(pid1, tm1_uid)
     proj1 = db.collection("projects").document(str(pid1))
 
@@ -299,10 +299,6 @@ def test_search_partial_member():
             "project_members": proj2.get().get("project_members"),
             "status": proj2.get().get("status"),
             "tasks": []
-        },
-        {
-            "name": proj3.get().get("name"),
-            "project_master": pm_name,
         }
     ]
 

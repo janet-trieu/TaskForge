@@ -98,6 +98,7 @@ def search_project(uid, query):
 
         description = doc.to_dict().get("description")
         project_members = doc.to_dict().get("project_members")
+
         if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == "":
             if uid in project_members:
                 return_dict = {
@@ -107,11 +108,6 @@ def search_project(uid, query):
                     "project_members": project_members,
                     "tasks": [],
                     "status": status
-                }
-            else:
-                return_dict = {
-                    "project_master": pm_name,
-                    "name": proj_name
                 }
         
         return_list.append(return_dict)
@@ -165,6 +161,11 @@ def request_leave_project(pid, uid, msg):
     pm_email = auth.get_user(pm_uid).email
     sender_email = auth.get_user(uid).email
     proj_name = proj_ref.get().get("name")
+
+    print("================")
+    print(f"THIS IS RECEIVER EMAIL:::: {pm_email}")
+    print(f"THIS IS SENDER EMAIL:::: {sender_email}")
+    print("================")
 
     return_dict = {
         "receipient_email": pm_email,
