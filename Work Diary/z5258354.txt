@@ -131,3 +131,31 @@ What was not finished, why this happened, how this affects the overall project p
 
 What is planned for the next period (e.g., next week)
 - Complete the demo, start working on sprint 2
+
+=== Week 5 ===
+
+General Content:
+- Demo 1 complete
+- Retro for sprint 1 complete
+- Started working on Project Management feature, completed:
+    - view project
+    - update project
+    - search project
+    - request to leave project
+
+What was planned for the period since the last work diary entry
+- Complete the demo and start working on sprint 2
+
+What was finished
+- Demo was complete
+- team making progress with sprint 2
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- Biggest issue was the repo structure and how it messed up with the imports of different files from different directories
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Half of sprint 1 frontend features
+    - have communicated with Joseph, will also get Janet on board for frontend
+
+What is planned for the next period (e.g., next week)
+- Continue working on sprint 2, finish sprint 1 frontend ASAP
