@@ -96,8 +96,7 @@ def notification_welcome(uid):
         nid (string): Notification ID of newly created notification
     ASSUMPTION that this function is called ONCE per user.
     '''
-    notification_type = 'welcome'
-    nid = create_nid(uid, notification_type) # create notification ID
+    nid = 'welcome'
     name = get_display_name(uid)
 
     notification = {
@@ -105,7 +104,7 @@ def notification_welcome(uid):
             "has_read": False,
             "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
             "time_sent": datetime.now(),
-            "type": notification_type,
+            "type": nid,
             "nid": nid
         }
     }

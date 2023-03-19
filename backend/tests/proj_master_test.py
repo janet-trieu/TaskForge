@@ -7,6 +7,9 @@ from src.projects import *
 from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
+
+# ============ SET UP ============ #
+reset_database() # Ensure database is clear for testing
 reset_projects()
 
 try:
@@ -21,6 +24,15 @@ else:
     tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+
+# ============ HELPERS ============ #
+def remove_test_data():
+    # Reset database, call at bottom of last test
+    delete_user(pm_uid)
+    delete_user(tm1_uid)
+    delete_user(tm2_uid)
+    delete_user(tm3_uid)
+    reset_database()
 
 ############################################################
 #                   Test for create_project                #
@@ -526,10 +538,5 @@ def test_update_project_not_project_master():
 
     with pytest.raises(AccessError):
         update_project(pid, tm1_uid, {"name": "Project X"})
-
-# Reset database
-delete_user(pm_uid)
-delete_user(tm1_uid)
-delete_user(tm2_uid)
-delete_user(tm3_uid)
-reset_firestore_database()
+    
+    remove_test_data()

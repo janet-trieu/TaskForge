@@ -35,4 +35,4 @@ def test_reset_password_invalid_uid():
 
 # Reset database
 delete_user(user_id)
-reset_firestore_database()
+reset_database()

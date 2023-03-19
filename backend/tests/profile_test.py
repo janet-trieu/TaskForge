@@ -15,7 +15,8 @@ from src.error import *
 from src.profile_page import *
 from src.test_helpers import *
 
-# Set up
+# ============ SET UP ============ #
+reset_database() # Ensure database is clear for testing
 db = firestore.client()
 
 # ============ HELPERS ============ #
@@ -23,6 +24,7 @@ email1 = "johndoe1@gmail.com"
 password1 = "password123"
 display_name1 = "john doe"
 
+# ============ TESTS ============ #
 def test_create_user():
     uid = create_user_email(email1, password1, display_name1)
     print(uid)
@@ -103,5 +105,5 @@ def test_update_role():
     assert db.collection('users').document(uid).get().get('role') == "software developer"
     delete_user(uid)
 
-# Reset database
-reset_firestore_database()
+    # Reset database
+    reset_database()

@@ -7,6 +7,9 @@ from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
 from src.projects import *
+
+# ============ SET UP ============ #
+reset_database() # Ensure database is clear for testing
 reset_projects()
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
@@ -20,6 +23,15 @@ else:
     tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
     tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
     tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+
+# ============ HELPERS ============ #
+def remove_test_data():
+    # Reset database, call at bottom of last test
+    delete_user(pm_uid)
+    delete_user(tm1_uid)
+    delete_user(tm2_uid)
+    delete_user(tm3_uid)
+    reset_database()
 
 ############################################################
 #                    Test for view_project                 #
@@ -378,11 +390,4 @@ def test_leave_project_not_in_project():
         request_leave_project(pid, tm1_uid, msg)
 
     reset_projects()
-
-# Reset database
-# Reset database
-delete_user(pm_uid)
-delete_user(tm1_uid)
-delete_user(tm2_uid)
-delete_user(tm3_uid)
-reset_firestore_database()
+    remove_test_data()

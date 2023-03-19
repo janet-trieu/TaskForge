@@ -9,6 +9,9 @@ from src.error import *
 from src.helper import *
 from src.test_helpers import *
 
+# ============ SET UP ============ #
+reset_database() # Ensure database is clear for testing
+
 try:
     admin_uid = create_user_email("admin@gmail.com", "admin123", "Admin Admin")
     user_uid = create_user_email("admintest.tm1@gmail.com", "taskmaster1", "Task Master1")
@@ -19,6 +22,14 @@ else:
     admin_uid = auth.get_user_by_email("admin@gmail.com").uid
     user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
 
+# ============ HELPERS ============ #
+def remove_test_data():
+    # Reset database, call at bottom of last test
+    delete_user(admin_uid)
+    delete_user(user_uid)
+    reset_database()
+
+# ============ TESTS ============ #
 def test_give_admin_type():
     try:
         give_admin(1, 2)
@@ -140,8 +151,4 @@ def test_readd_normal_user():
         pass
     assert(not is_removed(admin_uid))
 
-# Reset database
-# IMPORTANT: Ensure you delete auth db data with delete_user(uid) as well
-delete_user(admin_uid)
-delete_user(user_uid)
-reset_firestore_database()
+    remove_test_data()

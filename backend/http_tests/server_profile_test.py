@@ -76,4 +76,4 @@ def test_get_tasks_success():
 
 # Reset database
 delete_user(user_id)
-reset_firestore_database()
+reset_database()

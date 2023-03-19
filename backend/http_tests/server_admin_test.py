@@ -124,4 +124,4 @@ def test_readd_user_failure():
 # Reset database
 delete_user(admin_uid)
 delete_user(user_uid)
-reset_firestore_database()
+reset_database()
