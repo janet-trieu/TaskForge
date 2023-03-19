@@ -52,3 +52,22 @@ def add_tm_to_project(pid, new_uid):
     proj_ref.update({
         "project_members": project_members
     })
+
+### ========= Delete User ========= ###
+"""
+Deletes User from auth and firestore database
+
+Args:
+    uid (str): uid of the user that can be found in auth database
+
+Returns:
+    None
+"""
+def delete_user(uid):
+    try:
+        auth.delete_user(uid)
+        # tuid = get_user_ref(uid).get("tuid")
+        db.collection("users").document(str(uid)).delete()
+        db.collection('notifications').document(uid).delete()
+    except:
+        print("uid does not correspond to a current user")

@@ -13,6 +13,7 @@ from firebase_admin import firestore
 from firebase_admin import auth
 from src.error import *
 from src.profile_page import *
+from src.test_helpers import *
 
 # Set up
 db = firestore.client()
