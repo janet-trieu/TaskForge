@@ -29,6 +29,7 @@ user_id2 = auth.get_user_by_email("notificationtest2@gmail.com").uid
 init_pid()
 
 pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
+pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
 
 """
 tid_expected = 1010
@@ -45,7 +46,7 @@ def remove_test_data():
     delete_user(user_id1)
     delete_user(user_id2)
     reset_projects()
-    # reset_project_count()
+    #reset_project_count()
     """db.collection('tasks').document(str(tid_expected)).delete()
     db.collection('achievements').document('night_owl').delete()
     db.collection('reviews').document(str(rid_expected)).delete()"""
