@@ -18,17 +18,6 @@ from .helper import *
 db = firestore.client()
 
 # ============ HELPERS ============ #
-
-def does_nid_exists(uid, nid):
-    doc_ref = db.collection('notifications').document(uid)
-
-    # Check if field name exists in document
-    if (doc_ref.get().to_dict() is None): return False
-    if nid in doc_ref.get().to_dict():
-        return True
-    else:
-        return False
-
 def create_nid(uid, type):
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     if (doc_dict is None):

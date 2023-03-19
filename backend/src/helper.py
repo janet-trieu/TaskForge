@@ -54,6 +54,15 @@ def check_valid_achievement(achievement_str):
     if not doc.exists:
         raise InputError(f'achievement_str {achievement_str} does not exist in database')
     
+def does_nid_exists(uid, nid):
+    doc_ref = db.collection('notifications').document(uid)
+
+    # Check if field name exists in document
+    if nid in doc_ref.get().to_dict():
+        return True
+    else:
+        return False
+    
 ############################################################
 #                          Getters                         #
 ############################################################
