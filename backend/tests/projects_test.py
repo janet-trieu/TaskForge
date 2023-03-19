@@ -88,6 +88,32 @@ def test_view_project_not_in_project():
 #                   Test for search_project                #
 ############################################################
 
+def test_search_empty_query():
+
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    
+    add_tm_to_project(pid1, tm1_uid)
+    proj1 = db.collection("projects").document(str(pid1))
+
+    query = ""
+    res = search_project(tm1_uid, query)
+
+    pm_name = auth.get_user(pm_uid).display_name
+
+    assert res == [
+        {
+            "description": proj1.get().get("description"),
+            "name": proj1.get().get("name"),
+            "project_master": pm_name,
+            "project_members": proj1.get().get("project_members"),
+            "status": proj1.get().get("status"),
+            "tasks": []
+        }
+    ]
+
+    reset_projects()
+
+
 def test_search_project_simple():
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)

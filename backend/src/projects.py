@@ -98,7 +98,7 @@ def search_project(uid, query):
 
         description = doc.to_dict().get("description")
         project_members = doc.to_dict().get("project_members")
-        if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower():
+        if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == "":
             if uid in project_members:
                 return_dict = {
                     "project_master": pm_name,
