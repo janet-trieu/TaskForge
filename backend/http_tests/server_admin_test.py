@@ -24,8 +24,9 @@ def test_give_admin_success():
     """
     Successfully giving admin to another user
     """
-    json_dict = {'uid_admin': admin_uid, 'uid_user': user_uid}
-    resp = requests.post(url + '/admin/give_admin', json=json_dict)
+    headers_dict = {'Authorization': user_uid}
+    json_dict = {'uid_admin': admin_uid}
+    resp = requests.post(url + '/admin/give_admin', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
 
@@ -33,8 +34,9 @@ def test_give_admin_failure():
     """
     Giving an int instead of a string
     """
-    json_dict = {'uid_admin': 'hi', 'uid_user': 'aye'}
-    resp = requests.post(url + '/admin/give_admin', json=json_dict)
+    headers_dict = {'Authorization': 'aye'}
+    json_dict = {'uid_admin': 'hi'}
+    resp = requests.post(url + '/admin/give_admin', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
 
@@ -42,8 +44,9 @@ def test_ban_user_success():
     """
     Successfully banning user by an admin
     """
-    json_dict = {'uid_admin': admin_uid, 'uid_user': user_uid}
-    resp = requests.post(url + '/admin/ban_user', json=json_dict)
+    headers_dict = {'Authorization': user_uid}
+    json_dict = {'uid_admin': admin_uid}
+    resp = requests.post(url + '/admin/ban_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
@@ -51,8 +54,9 @@ def test_ban_user_failure():
     """
     Giving an int instead of a string
     """
-    json_dict = {'uid_admin': 0, 'uid_user': 1}
-    resp = requests.post(url + '/admin/ban_user', json=json_dict)
+    headers_dict = {'Authorization': '1'}
+    json_dict = {'uid_admin': 0}
+    resp = requests.post(url + '/admin/ban_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
     
@@ -60,8 +64,9 @@ def test_unban_user_success():
     """
     Successfully unbanning user by an admin
     """
-    json_dict = {'uid_admin': admin_uid, 'uid_user': user_uid}
-    resp = requests.post(url + '/admin/unban_user', json=json_dict)
+    headers_dict = {'Authorization': user_uid}
+    json_dict = {'uid_admin': admin_uid}
+    resp = requests.post(url + '/admin/unban_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
@@ -69,8 +74,9 @@ def test_unban_user_failure():
     """
     Giving an int instead of a string
     """
-    json_dict = {'uid_admin': 0, 'uid_user': 1}
-    resp = requests.post(url + '/admin/unban_user', json=json_dict)
+    headers_dict = {'Authorization': '1'}
+    json_dict = {'uid_admin': 0}
+    resp = requests.post(url + '/admin/unban_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
 
@@ -78,8 +84,9 @@ def test_remove_user_success():
     """
     Successfully removing user by an admin
     """
-    json_dict = {'uid_admin': admin_uid, 'uid_user': user_uid}
-    resp = requests.post(url + '/admin/remove_user', json=json_dict)
+    headers_dict = {'Authorization': user_uid}
+    json_dict = {'uid_admin': admin_uid}
+    resp = requests.post(url + '/admin/remove_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
    
@@ -87,8 +94,9 @@ def test_remove_user_failure():
     """
     Giving an int instead of a string
     """
-    json_dict = {'uid_admin': 0, 'uid_user': 1}
-    resp = requests.post(url + '/admin/remove_user', json=json_dict)
+    headers_dict = {'Authorization': '1'}
+    json_dict = {'uid_admin': 0}
+    resp = requests.post(url + '/admin/remove_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
    
@@ -96,9 +104,9 @@ def test_readd_user_success():
     """
     Successfully readding user by an admin
     """
-    json_dict = {'uid_admin': admin_uid, 'uid_user': user_uid}
-    resp = requests.post(url + '/admin/readd_user', json=json_dict)
-
+    headers_dict = {'Authorization': user_uid}
+    json_dict = {'uid_admin': admin_uid}
+    resp = requests.post(url + '/admin/readd_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
@@ -106,7 +114,8 @@ def test_readd_user_failure():
     """
     Giving an int instead of a string
     """
-    json_dict = {'uid_admin': 0, 'uid_user': 1}
-    resp = requests.post(url + '/admin/readd_user', json=json_dict)
+    headers_dict = {'Authorization': '1'}
+    json_dict = {'uid_admin': 0}
+    resp = requests.post(url + '/admin/readd_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400

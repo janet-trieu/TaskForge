@@ -268,7 +268,7 @@ Args:
 Returns:
     A string that corresponds to the role of the user
 """
-def get_projects(uid):    
+def get_role(uid):    
     return get_user_ref(uid).get("role")
 
 ### ========= Get DOB ========= ###
