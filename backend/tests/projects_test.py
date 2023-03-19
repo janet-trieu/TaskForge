@@ -289,3 +289,70 @@ def test_search_return_nothing():
     res = search_project(tm1_uid, query)
 
     assert res == []
+
+############################################################
+#                    Test for leave_project                #
+############################################################
+
+def test_leave_project():
+
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+    res = request_leave_project(pid, tm1_uid, msg)
+
+    pm_name = auth.get_user(pm_uid).display_name
+    proj_ref = db.collection("projects").document(str(pid))
+    proj_name = proj_ref.get().get("name")
+
+    assert res == {
+        "receipient_email": "projectmaster@gmail.com",
+        "msg_title": "Request to leave Project Alpha",
+        "msg_body": msg
+    }
+
+    reset_projects()
+
+def test_leave_project_invalid_pid():
+
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(InputError):
+        request_leave_project(-1, tm1_uid, msg)
+
+    reset_projects()
+
+def test_leave_project_invalid_uid():
+    
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 into project
+    add_tm_to_project(pid, tm1_uid)
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(InputError):
+        request_leave_project(pid, "invalid", msg)
+
+    reset_projects()
+
+def test_leave_project_not_in_project():
+    
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+
+    # add tm1 is not a part of project 
+
+    msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
+
+    with pytest.raises(AccessError):
+        request_leave_project(pid, tm1_uid, msg)
+
+    reset_projects()

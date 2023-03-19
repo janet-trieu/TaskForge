@@ -1,5 +1,5 @@
 '''
-Feature: Project Master
+Feature: Project Management
 Functionalities:
  - view_project()
  - request_leave_project()
