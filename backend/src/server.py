@@ -236,7 +236,6 @@ def flask_search_project():
 def flask_request_leave_projedct():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    print(f"THIS IS UID: {uid}")
     res = request_leave_project(data["pid"], uid, data["msg"])
     return dumps(res)
 

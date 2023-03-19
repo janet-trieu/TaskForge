@@ -13,23 +13,21 @@ from .helper import *
 
 db = firestore.client()
 
-'''
-Takes in project id, and a user id, to view the specified project
-If the specified user is not a part of the project, they have restricted views
- - only project master name, and project name
-
-Arguments:
-- pid (project id)
-- uid (user id)
-
-Returns:
-- full project details if user is part of the project
-- restrictied details if user is not part of the project
-
-Raises:
-- InputError for any incorrect values
-'''
 def view_project(pid, uid):
+    '''
+    Takes in project id, and a user id, to view the specified project
+    If the specified user is not a part of the project, they cannot view the project
+
+    Arguments:
+    - pid (project id)
+    - uid (user id)
+
+    Returns:
+    - full project details if user is part of the project
+
+    Raises:
+    - InputError for any incorrect values
+    '''
 
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
@@ -65,25 +63,21 @@ def view_project(pid, uid):
 
     return return_dict
 
-'''
-Takes in user id and a search query (string)
-Returns the project details of all the projects that the user is a part of
-Any project the user is not a part of, has restricted information
- - only project master name, and project name
-
-Arguments:
-- uid (user id)
-- query (string)
-
-Returns:
-- full project details if user is part of the project
-- restrictied details if user is not part of the project
-Above are returned as a list of dictionary
-
-Raises:
-'''
 def search_project(uid, query):
+    '''
+    Takes in user id and a search query (string)
+    Returns the project details of all the projects that the user is a part of
 
+    Arguments:
+    - uid (user id)
+    - query (string)
+
+    Returns:
+    - full project details if user is part of the project (dictionary)
+
+    Raises:
+    '''
+    
     check_valid_uid(uid)
 
     docs = db.collection("projects").stream()
@@ -117,28 +111,27 @@ def search_project(uid, query):
 
     return return_list
 
-
-'''
-Request to leave a project 
-Cannot request if the user is not in that project
-
-Arguments:
-- pid (project id)
-- uid (task master id)
-- msg (string, message of the reason to request to leave the project)
-
-Returns:
-A dictionary of:
- - project master email
- - the requesting task master's email
- - msg title
- - msg body
-
-Raises:
-- AccessError for uid not in project
-- InputError for invalid pid, invalid uid, no msg
-'''
 def request_leave_project(pid, uid, msg):
+    '''
+    Request to leave a project 
+    Cannot request if the user is not in that project
+
+    Arguments:
+    - pid (project id)
+    - uid (task master id)
+    - msg (string, message of the reason to request to leave the project)
+
+    Returns:
+    A dictionary of:
+    - project master email
+    - the requesting task master's email
+    - msg title
+    - msg body
+
+    Raises:
+    - AccessError for uid not in project
+    - InputError for invalid pid, invalid uid, no msg
+    '''
 
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
@@ -157,15 +150,9 @@ def request_leave_project(pid, uid, msg):
         raise InputError("Need a message to request to leave project")
 
     pm_uid = proj_ref.get().get("uid")
-    pm_name = auth.get_user(pm_uid).display_name
     pm_email = auth.get_user(pm_uid).email
     sender_email = auth.get_user(uid).email
     proj_name = proj_ref.get().get("name")
-
-    print("================")
-    print(f"THIS IS RECEIVER EMAIL:::: {pm_email}")
-    print(f"THIS IS SENDER EMAIL:::: {sender_email}")
-    print("================")
 
     return_dict = {
         "receipient_email": pm_email,
