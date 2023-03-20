@@ -9,6 +9,7 @@ from src.helper import *
 from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
+from src.test_helpers import delete_user, reset_database
 
 try:
     uid1 = create_user_email("conn1@gmail.com", "conn112312321", "conn1123123")
@@ -94,3 +95,7 @@ def test_clean_up():
         delete_user(uid3)
     except:
         pass
+
+@pytest.mark.run_last
+def test_reset_database():
+    reset_database()

@@ -527,3 +527,6 @@ def test_update_project_not_project_master():
     with pytest.raises(AccessError):
         update_project(pid, tm1_uid, {"name": "Project X"})
 
+@pytest.mark.run_last
+def test_reset_database():
+    reset_database()

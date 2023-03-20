@@ -378,3 +378,7 @@ def test_leave_project_not_in_project():
         request_leave_project(pid, tm1_uid, msg)
 
     reset_projects()
+
+@pytest.mark.run_last
+def test_reset_database():
+    reset_database()
