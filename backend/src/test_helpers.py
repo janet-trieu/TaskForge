@@ -66,7 +66,7 @@ def delete_user(uid):
     except:
         print("uid does not correspond to a current user")
 
-def reset_projects():
+""" def reset_projects():
     project_count = get_curr_pid()
 
     for i in range(0, project_count):
@@ -75,7 +75,7 @@ def reset_projects():
     counter_ref = db.collection("counters").document("total_projects")
 
     counter_ref.update({"pid": 0})
-
+ """
 def reset_database():
     '''
     Purges firestore & auth database completely and resets global counters

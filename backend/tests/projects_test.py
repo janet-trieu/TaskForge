@@ -2,6 +2,7 @@
 Unit test file for Project Management feature
 '''
 import pytest
+from operator import itemgetter
 from src.projects import *
 from src.proj_master import *
 from src.test_helpers import *
@@ -9,35 +10,21 @@ from src.helper import *
 from src.projects import *
 
 # ============ SET UP ============ #
-reset_database() # Ensure database is clear for testing
-reset_projects()
-try:
+@pytest.fixture
+def set_up():
+    reset_database() # Ensure database is clear for testing
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
     tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
     tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
-except:
-    print("project master and users already created")
-else:
-    pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-    tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-    tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-    tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-
-# ============ HELPERS ============ #
-def remove_test_data():
-    # Reset database, call at bottom of last test
-    delete_user(pm_uid)
-    delete_user(tm1_uid)
-    delete_user(tm2_uid)
-    delete_user(tm3_uid)
-    reset_database()
+    return {'pm_uid': pm_uid, 'tm1_uid': tm1_uid, 'tm2_uid': tm2_uid, 'tm3_uid': tm3_uid}
 
 ############################################################
 #                    Test for view_project                 #
 ############################################################
 
-def test_view_project():
+def test_view_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
     
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
@@ -58,9 +45,8 @@ def test_view_project():
         "tasks": []
     }
 
-    reset_projects()
-
-def test_view_project_invalid_pid():
+def test_view_project_invalid_pid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
@@ -69,19 +55,17 @@ def test_view_project_invalid_pid():
 
     with pytest.raises(InputError):
         view_project(-1, tm1_uid)
-        
-    reset_projects()
 
-def test_view_project_invalid_uid():
+def test_view_project_invalid_uid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
     with pytest.raises(InputError):
         view_project(pid, "invalid")
 
-    reset_projects()
-
-def test_view_project_not_in_project():
+def test_view_project_not_in_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
@@ -93,14 +77,13 @@ def test_view_project_not_in_project():
         "project_master": pm_name,
         "name": "Project0"
     }
-        
-    reset_projects()
 
 ############################################################
 #                   Test for search_project                #
 ############################################################
 
-def test_search_empty_query():
+def test_search_empty_query(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     
@@ -123,10 +106,9 @@ def test_search_empty_query():
         }
     ]
 
-    reset_projects()
 
-
-def test_search_project_simple():
+def test_search_project_simple(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     add_tm_to_project(pid1, tm1_uid)
@@ -148,9 +130,8 @@ def test_search_project_simple():
         }
     ]
 
-    reset_projects()
-
-def test_search_project_upper_lower():
+def test_search_project_upper_lower(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     add_tm_to_project(pid1, tm1_uid)
@@ -172,10 +153,9 @@ def test_search_project_upper_lower():
         }
     ]
 
-    reset_projects()
-
-def test_search_project_pm_name():
-
+def test_search_project_pm_name(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     add_tm_to_project(pid1, tm1_uid)
@@ -197,10 +177,9 @@ def test_search_project_pm_name():
         }
     ]
 
-    reset_projects()
-
-def test_search_project_verbose():
-
+def test_search_project_verbose(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
     pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
@@ -275,9 +254,9 @@ def test_search_project_verbose():
         }
     ]
 
-    reset_projects()
-
-def test_search_partial_member():
+def test_search_partial_member(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
     pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
@@ -314,10 +293,9 @@ def test_search_partial_member():
         }
     ]
 
-    reset_projects()
-
-def test_search_return_nothing():
-
+def test_search_return_nothing(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     query = "asdwqdasd"
     res = search_project(tm1_uid, query)
 
@@ -327,8 +305,9 @@ def test_search_return_nothing():
 #                    Test for leave_project                #
 ############################################################
 
-def test_leave_project():
-
+def test_leave_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     # add tm1 into project
@@ -348,10 +327,9 @@ def test_leave_project():
         "msg_body": msg
     }
 
-    reset_projects()
-
-def test_leave_project_invalid_pid():
-
+def test_leave_project_invalid_pid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     # add tm1 into project
@@ -362,9 +340,8 @@ def test_leave_project_invalid_pid():
     with pytest.raises(InputError):
         request_leave_project(-1, tm1_uid, msg)
 
-    reset_projects()
-
-def test_leave_project_invalid_uid():
+def test_leave_project_invalid_uid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
     
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
@@ -376,9 +353,8 @@ def test_leave_project_invalid_uid():
     with pytest.raises(InputError):
         request_leave_project(pid, "invalid", msg)
 
-    reset_projects()
-
-def test_leave_project_not_in_project():
+def test_leave_project_not_in_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
     
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
@@ -388,6 +364,3 @@ def test_leave_project_not_in_project():
 
     with pytest.raises(AccessError):
         request_leave_project(pid, tm1_uid, msg)
-
-    reset_projects()
-    remove_test_data()

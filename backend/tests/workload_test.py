@@ -1,12 +1,14 @@
+import pytest
+
+from operator import itemgetter
+
 from src.test_helpers import *
 
 # ============ SET UP ============ #
-reset_database() # Ensure database is clear for testing
-
-# ============ HELPERS ============ #
-def remove_test_data():
-    # Reset database, call at bottom of last test
-    # IMPORTANT: Ensure you delete auth db data with delete_user(uid) as well
-    reset_database()
+@pytest.fixture
+def set_up():
+    reset_database() # Ensure database is clear for testing
+    # Create users, projects etc.
+    # Return as a dictionary, using itemgetter to use return data
 
 # ============ TESTS ============ #

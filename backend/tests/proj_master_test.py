@@ -3,61 +3,43 @@ Blackbox testing of Project Master Feature
 '''
 
 import pytest
+from operator import itemgetter
 from src.projects import *
 from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
 
 # ============ SET UP ============ #
-reset_database() # Ensure database is clear for testing
-reset_projects()
-
-try:
+@pytest.fixture
+def set_up():
+    reset_database() # Ensure database is clear for testing
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
     tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
     tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
-except:
-    print("project master and users already created")
-else:
-    pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-    tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-    tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-    tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-
-# ============ HELPERS ============ #
-def remove_test_data():
-    # Reset database, call at bottom of last test
-    delete_user(pm_uid)
-    delete_user(tm1_uid)
-    delete_user(tm2_uid)
-    delete_user(tm3_uid)
-    reset_database()
+    return {'pm_uid': pm_uid, 'tm1_uid': tm1_uid, 'tm2_uid': tm2_uid, 'tm3_uid': tm3_uid}
 
 ############################################################
 #                   Test for create_project                #
 ############################################################
-def test_create_project_use_default_vals():
+def test_create_project_use_default_vals(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
     assert pid == 0
 
-    # reset database
-    reset_projects()
+def test_create_project_every_args(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
-def test_create_project_every_args():
-    
     # test for project creation
     pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023-12-31", 5, "test1.jpg")
 
     assert pid == 0
 
-    # reset database
-    reset_projects()
-
-def test_create_multiple_projects():
+def test_create_multiple_projects(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project1 creation
     pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None, None)
@@ -69,85 +51,73 @@ def test_create_multiple_projects():
 
     assert pid == 1
 
-    reset_projects()
-
-def test_create_project_invalid_uid():
+def test_create_project_invalid_uid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project("Invalid", "Project1", "Creating Project1 for testing", None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_uid_type():
+def test_create_project_invalid_uid_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(-1, "Project1", "Creating Project1 for testing", None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_name_type():
+def test_create_project_invalid_name_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, 1, "Creating Project1 for testing", None, None, None)
 
-    reset_projects()
-
-def test_create_project_empty_name():
+def test_create_project_empty_name(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, "", "Creating Project1 for testing", None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_name_length():
+def test_create_project_invalid_name_length(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, "A"*51, "Creating Project1 for testing", None, None, None)
 
-    reset_projects()
-
-def test_create_project_empty_description():
+def test_create_project_empty_description(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, "Project1", "", None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_description_type():
+def test_create_project_invalid_description_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, "Project1", 1, None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_description_length():
+def test_create_project_invalid_description_length(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     # test for project creation with invalid input
     with pytest.raises(InputError):
         create_project(pm_uid, "Project1", "A"*1001, None, None, None)
 
-    reset_projects()
-
-def test_create_project_invalid_team_strength():
+def test_create_project_invalid_team_strength(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     with pytest.raises(InputError):
         create_project(pm_uid, "Project1", "Creating Project1 for testing", None, -1, None)
 
-    reset_projects()
-
-def test_create_project_invalid_team_strength_type():
-
+def test_create_project_invalid_team_strength_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     with pytest.raises(InputError):
         create_project(pm_uid, "Project1", "Creating Project1 for testing", None, "None", None)
-
-    reset_projects()
 
 #TO-DO: test for invalid picture input
 
@@ -155,8 +125,9 @@ def test_create_project_invalid_team_strength_type():
 #           Test for revive_completed_project              #
 ############################################################
 
-def test_revive_completed_project_not_proj_master():
-    
+def test_revive_completed_project_not_proj_master(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+
     incorrect_uid = tm1_uid
 
     pid = create_project(pm_uid, "Project 123", "description", None, None, None)
@@ -166,9 +137,8 @@ def test_revive_completed_project_not_proj_master():
     with pytest.raises(AccessError):
         revive_completed_project(pid, incorrect_uid, "In Review")
 
-    reset_projects()
-
-def test_revive_completed_project_invalid_pid():
+def test_revive_completed_project_invalid_pid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     invalid_pid = -1
 
@@ -179,9 +149,8 @@ def test_revive_completed_project_invalid_pid():
     with pytest.raises(InputError):
         revive_completed_project(invalid_pid, pm_uid, "In Progress")
 
-    reset_projects()
-
-def test_revive_completed_project():
+def test_revive_completed_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 123", "description", None, None, None)
 
@@ -199,9 +168,8 @@ def test_revive_completed_project():
 
     assert proj_ref.get().get("status") == "In Progress"
 
-    reset_projects()
-
-def test_revive_non_completed_project():
+def test_revive_non_completed_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project X", "description", None, None, None)
 
@@ -214,13 +182,12 @@ def test_revive_non_completed_project():
     with pytest.raises(InputError):
         revive_completed_project(pid, pm_uid, "In Review")
 
-    reset_projects()
-
 ############################################################
 #             Test for remove_project_member               #
 ############################################################
 
-def test_remove_project_member_not_proj_master():
+def test_remove_project_member_not_proj_master(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     incorrect_uid = tm1_uid
 
@@ -232,9 +199,8 @@ def test_remove_project_member_not_proj_master():
     with pytest.raises(AccessError):
         remove_project_member(pid, incorrect_uid, uid_to_be_removed)
 
-    reset_projects()
-
-def test_remove_project_member_invalid_pid():
+def test_remove_project_member_invalid_pid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project X", "description", None, None, None)
 
@@ -244,13 +210,12 @@ def test_remove_project_member_invalid_pid():
     with pytest.raises(InputError):
         remove_project_member(invalid_pid, pm_uid, uid_to_be_removed)
 
-    reset_projects()
-
-def test_remove_project_member():
+def test_remove_project_member(set_up):
     '''
     Assumption: project already has members
     '''
-
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid = create_project(pm_uid, "Project X", "description", None, None, None)
 
     proj_ref = db.collection("projects").document(str(pid))
@@ -273,9 +238,8 @@ def test_remove_project_member():
     print(project_members)
     assert tm1_uid not in project_members
 
-    reset_projects()
-
-def test_remove_invalid_project_member():
+def test_remove_invalid_project_member(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project X", "description", None, None, None)
 
@@ -284,13 +248,12 @@ def test_remove_invalid_project_member():
     with pytest.raises(InputError):
         remove_project_member(pid, pm_uid, uid_to_be_removed)
 
-    reset_projects()
-
 ############################################################
 #               Test for invite_to_project                 #
 ############################################################
 
-def test_invite_to_project_not_proj_master():
+def test_invite_to_project_not_proj_master(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     receiver_uids = []
 
@@ -305,10 +268,9 @@ def test_invite_to_project_not_proj_master():
     with pytest.raises(AccessError):
         invite_to_project(pid, incorrect_uid, receiver_uids)
 
-    reset_projects()
+def test_invite_to_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
-def test_invite_to_project():
-    
     receiver_uids = []
 
     sender_uid = pm_uid
@@ -320,10 +282,9 @@ def test_invite_to_project():
     res = invite_to_project(pid, sender_uid, receiver_uids)
 
     assert res == 0
-        
-    reset_projects()
 
-def test_multiple_invite_to_project():
+def test_multiple_invite_to_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     receiver_uids = []
 
@@ -339,9 +300,8 @@ def test_multiple_invite_to_project():
 
     assert res == 0
 
-    reset_projects()
-
-def test_invite_to_invalid_project():
+def test_invite_to_invalid_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     receiver_uids = []
 
@@ -358,9 +318,8 @@ def test_invite_to_invalid_project():
     with pytest.raises(InputError):
         invite_to_project(incorrect_pid, sender_uid, receiver_uids)
 
-    reset_projects()
-
-def test_invite_invalid_receiver_uid():
+def test_invite_invalid_receiver_uid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     receiver_uids = []
 
@@ -375,9 +334,8 @@ def test_invite_invalid_receiver_uid():
     with pytest.raises(InputError):
         invite_to_project(pid, sender_uid, receiver_uids)
 
-    reset_projects()
-
-def test_invite_uid_already_in_project():
+def test_invite_uid_already_in_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     receiver_uids = []
 
@@ -394,13 +352,12 @@ def test_invite_uid_already_in_project():
     with pytest.raises(InputError):    
         invite_to_project(pid, sender_uid, receiver_uids)
 
-    reset_projects()
-
 ############################################################
 #                   Test for update_project                #
 ############################################################
 
-def test_update_project():
+def test_update_project(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
@@ -432,49 +389,56 @@ def test_update_project():
     assert team_strength == 5
     assert picture == "testing.png"
 
-def test_update_project_invalid_name_type():
+def test_update_project_invalid_name_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"name": -1})
 
-def test_update_project_invalid_name_value():
+def test_update_project_invalid_name_value(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"name": "A"*200})
 
-def test_update_project_invalid_description_type():
+def test_update_project_invalid_description_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"description": 200})
 
-def test_update_project_invalid_description_value():
+def test_update_project_invalid_description_value(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"description": "A"*2001})
 
-def test_update_project_invalid_status_type():
-
+def test_update_project_invalid_status_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
+    
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"status": -1})
 
-def test_update_project_invalid_status_value():
+def test_update_project_invalid_status_value(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"status": "abc"})
 
-def test_update_project_completed():
+def test_update_project_completed(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
@@ -490,53 +454,58 @@ def test_update_project_completed():
     with pytest.raises(AccessError):
         update_project(pid, pm_uid, {"status": "In Progress"})
 
-def test_update_project_invalid_due_date_type():
+def test_update_project_invalid_due_date_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"due_date": -1})
 
-# def test_update_project_invalid_due_date_value():
-
+# def test_update_project_invalid_due_date_value(set_up):
+#     pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 #     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
 #     with pytest.raises(InputError):
 #         update_project(pid, pm_uid, {"due_date": "1999-01-01"})
 
-def test_update_project_invalid_team_strength_type():
+def test_update_project_invalid_team_strength_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"team_strength": "5"})
 
-def test_update_project_invalid_team_strength_value():
+def test_update_project_invalid_team_strength_value(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"team_strength": -1})
 
-def test_update_project_invalid_picture_type():
+def test_update_project_invalid_picture_type(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(pid, pm_uid, {"picture": -1})
 
-def test_update_project_invalid_pid():
+def test_update_project_invalid_pid(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
     
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
         update_project(-1, pm_uid, {"name": "Project X"})
 
-def test_update_project_not_project_master():
+def test_update_project_not_project_master(set_up):
+    pm_uid, tm1_uid, tm2_uid, tm3_uid = itemgetter('pm_uid', 'tm1_uid', 'tm2_uid', 'tm3_uid')(set_up)
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(AccessError):
         update_project(pid, tm1_uid, {"name": "Project X"})
     
-    remove_test_data()

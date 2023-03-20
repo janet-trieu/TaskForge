@@ -1,9 +1,6 @@
 import pytest
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import auth
+from operator import itemgetter
 
 from src.profile_page import *
 from src.notifications import *
@@ -13,34 +10,22 @@ from src.global_counters import *
 from src.test_helpers import *
 
 # ============ SET UP ============ #
-reset_database() # Ensure database is clear for testing
-
-try:
-    create_user_email("notificationtest0@gmail.com", "password123", "John Doe")
-    create_user_email("notificationtest1@gmail.com", "password123", "Jane Doe")
-    create_user_email("notificationtest2@gmail.com", "password123", "Richard Roe")
-except auth.EmailAlreadyExistsError:
-    pass
-
-user_id0 = auth.get_user_by_email("notificationtest0@gmail.com").uid
-user_id1 = auth.get_user_by_email("notificationtest1@gmail.com").uid
-user_id2 = auth.get_user_by_email("notificationtest2@gmail.com").uid
-
-pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
-
-# ============ HELPERS ============ #
-def remove_test_data():
-    # Reset database, call at bottom of last test
-    delete_user(user_id0)
-    delete_user(user_id1)
-    delete_user(user_id2)
-    reset_database()
+@pytest.fixture
+def set_up():
+    reset_database() # Ensure database is clear for testing
+    user_id0 = create_user_email("notificationtest0@gmail.com", "password123", "John Doe")
+    user_id1 = create_user_email("notificationtest1@gmail.com", "password123", "Jane Doe")
+    user_id2 = create_user_email("notificationtest2@gmail.com", "password123", "Richard Roe")
+    pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
+    return {'user_id0': user_id0, 'user_id1': user_id1, 'user_id2': user_id2, 'pid_expected': pid_expected}
 
 # ============ TESTS ============ #
-def test_welcome_notification():
+def test_welcome_notification(set_up):
     '''
     Test to ensure create_user_email() adds a welcome notification in the database
     '''
+    user_id0 = itemgetter('user_id0')(set_up)
+
     doc_data = db.collection('notifications').document(user_id0).get().to_dict()
     actual_notification = doc_data.get('welcome')
 
@@ -48,10 +33,12 @@ def test_welcome_notification():
     assert actual_notification.get('notification_msg') == "Welcome to TaskForge, John Doe. You can view future notifications here!"
     assert isinstance(actual_notification.get('time_sent'), datetime)
     
-def test_project_invite_notification():
+def test_project_invite_notification(set_up):
     '''
     Test to ensure invite_to_project() adds invite notifications in the database
     '''
+    user_id0, user_id1, user_id2, pid_expected = itemgetter('user_id0', 'user_id1', 'user_id2', 'pid_expected')(set_up)
+
     receiver_uids = [user_id1, user_id2]
     invite_to_project(pid_expected, user_id0, receiver_uids)
 
@@ -77,4 +64,3 @@ def test_project_invite_notification():
     assert actual_notification.get('pid') == pid_expected
     assert actual_notification.get('uid_sender') == user_id0
     assert actual_notification.get('nid') == 'project_invite0'
-    remove_test_data()

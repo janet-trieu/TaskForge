@@ -2,6 +2,7 @@ import pytest
 import firebase_admin
 from firebase_admin import credentials, auth
 from firebase_admin import firestore
+from operator import itemgetter
 
 # from src.profile_page import *
 from src.admin import *
@@ -10,40 +11,35 @@ from src.helper import *
 from src.test_helpers import *
 
 # ============ SET UP ============ #
-reset_database() # Ensure database is clear for testing
-
-try:
+@pytest.fixture
+def set_up():
+    reset_database() # Ensure database is clear for testing
     admin_uid = create_user_email("admin@gmail.com", "admin123", "Admin Admin")
     user_uid = create_user_email("admintest.tm1@gmail.com", "taskmaster1", "Task Master1")
     create_admin(admin_uid)
-except:
-    print("admin and user already created")
-else:
-    admin_uid = auth.get_user_by_email("admin@gmail.com").uid
-    user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
-
-# ============ HELPERS ============ #
-def remove_test_data():
-    # Reset database, call at bottom of last test
-    delete_user(admin_uid)
-    delete_user(user_uid)
-    reset_database()
+    return {'admin_uid': admin_uid, 'user_uid': user_uid}
 
 # ============ TESTS ============ #
-def test_give_admin_type():
+def test_give_admin_type(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     try:
         give_admin(1, 2)
     except InputError:
         pass
 
-def test_give_admin():
+def test_give_admin(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
 
     assert(not is_admin(user_uid))
     give_admin(admin_uid, user_uid)
     assert(is_admin(user_uid))
 
-def test_give_admin_to_admin():
+def test_give_admin_to_admin(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(is_admin(user_uid))
     try:
@@ -52,13 +48,17 @@ def test_give_admin_to_admin():
         pass
     assert(is_admin(user_uid))
 
-def test_ban_user_type():
+def test_ban_user_type(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     try:
         ban_user(1, 2)
     except InputError:
         pass
 
-def test_ban_user():
+def test_ban_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(not is_banned(user_uid))
     
@@ -66,7 +66,9 @@ def test_ban_user():
     assert(is_banned(user_uid))
 
 #@pytest.mark.order4
-def test_ban_banned_user():
+def test_ban_banned_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))
     
@@ -76,7 +78,9 @@ def test_ban_banned_user():
         pass
     assert(is_banned(user_uid))
 
-def test_unban_user_type():
+def test_unban_user_type(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+    
     try:
         unban_user(1, 2)
     except InputError:
@@ -84,14 +88,18 @@ def test_unban_user_type():
 
 #user is still banned from last test
 #@pytest.mark.order5
-def test_unban_user():
+def test_unban_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))
     
     unban_user(admin_uid, user_uid)
     assert(not is_banned(user_uid))
 
-def test_unban_notbanned_user():
+def test_unban_notbanned_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(not is_banned(user_uid))
     
@@ -101,13 +109,17 @@ def test_unban_notbanned_user():
         pass
     assert(not is_banned(admin_uid))
 
-def test_remove_usertype():
+def test_remove_usertype(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     try:
         remove_user(1, 2)
     except InputError:
         pass
 
-def test_remove_user():
+def test_remove_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(not is_removed(user_uid))
     
@@ -116,7 +128,9 @@ def test_remove_user():
 
 
 #user still removed
-def test_remove_removed_user():
+def test_remove_removed_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(is_removed(user_uid))
     
@@ -126,14 +140,18 @@ def test_remove_removed_user():
         pass
     assert(is_removed(user_uid))
 
-def test_readd_user_type():
+def test_readd_user_type(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     try:
         readd_user(1, 2)
     except InputError:
         pass
 
 #user still removed from last test
-def test_readd_removed_user():
+def test_readd_removed_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+
     assert(is_admin(admin_uid))
     assert(is_removed(user_uid))
     
@@ -141,7 +159,9 @@ def test_readd_removed_user():
     assert(not is_removed(user_uid))
 
 #@pytest.mark.order10
-def test_readd_normal_user():
+def test_readd_normal_user(set_up):
+    admin_uid, user_uid = itemgetter('admin_uid', 'user_uid')(set_up)
+    
     assert(is_admin(admin_uid))
     assert(not is_removed(user_uid))
     
@@ -150,5 +170,3 @@ def test_readd_normal_user():
     except InputError:
         pass
     assert(not is_removed(admin_uid))
-
-    remove_test_data()
