@@ -4,7 +4,6 @@ Test file for authentication user-invoked reset password
 import pytest
 from src.authentication import *
 from src.profile_page import *
-from src.test_helpers import reset_database
 
 try:
     create_user_email("authtest0@gmail.com", "password123", "Auth Doe")
@@ -26,7 +25,3 @@ def test_reset_password_invalid_uid():
     # with pytest.raises(auth.UserNotFoundError):
     # with pytest.raises(AccessError):
     assert get_reset_password_link(invalid_user_id) == -1
-
-@pytest.mark.order("last")
-def test_reset_database():
-    reset_database()

@@ -7,7 +7,6 @@ from firebase_admin import firestore
 from src.admin import *
 from src.error import *
 from src.helper import *
-from src.test_helpers import *
 
 try:
     admin_uid = create_user_email("admin@gmail.com", "admin123", "Admin Admin")
@@ -139,7 +138,3 @@ def test_readd_normal_user():
     except InputError:
         pass
     assert(not is_removed(admin_uid))
-
-@pytest.mark.order("last")
-def test_reset_database():
-    reset_database()

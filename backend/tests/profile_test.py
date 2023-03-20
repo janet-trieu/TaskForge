@@ -13,7 +13,7 @@ from firebase_admin import firestore
 from firebase_admin import auth
 from src.error import *
 from src.profile_page import *
-from src.test_helpers import delete_user, reset_database
+from src.test_helpers import delete_user
 
 # Set up
 db = firestore.client()
@@ -102,7 +102,3 @@ def test_update_role():
 
     assert db.collection('users').document(uid).get().get('role') == "software developer"
     delete_user(uid)
-
-@pytest.mark.order("last")
-def test_reset_database():
-    reset_database()

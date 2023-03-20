@@ -26,10 +26,6 @@ user_id0 = auth.get_user_by_email("notificationtest0@gmail.com").uid
 user_id1 = auth.get_user_by_email("notificationtest1@gmail.com").uid
 user_id2 = auth.get_user_by_email("notificationtest2@gmail.com").uid
 
-init_pid()
-
-pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
-
 # ============ TESTS ============ #
 def test_welcome_notification():
     '''
@@ -46,6 +42,8 @@ def test_project_invite_notification():
     '''
     Test to ensure invite_to_project() adds invite notifications in the database
     '''
+
+    pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
     receiver_uids = [user_id1, user_id2]
     invite_to_project(pid_expected, user_id0, receiver_uids)
 
@@ -72,9 +70,7 @@ def test_project_invite_notification():
     assert actual_notification.get('uid_sender') == user_id0
     assert actual_notification.get('nid') == 'project_invite0'
 
-@pytest.mark.order("last")
-def test_reset_database():
-    reset_database()
+    reset_projects()
 
 # COMMENTED OUT TESTS THAT ARE WAITING FOR IT'S PARENT FUNCTION TO BE IMPLEMENTED
 
