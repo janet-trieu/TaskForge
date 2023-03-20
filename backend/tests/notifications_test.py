@@ -72,7 +72,7 @@ def test_project_invite_notification():
     assert actual_notification.get('uid_sender') == user_id0
     assert actual_notification.get('nid') == 'project_invite0'
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()
 

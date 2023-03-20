@@ -103,6 +103,6 @@ def test_update_role():
     assert db.collection('users').document(uid).get().get('role') == "software developer"
     delete_user(uid)
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()

@@ -96,6 +96,6 @@ def test_clean_up():
     except:
         pass
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()

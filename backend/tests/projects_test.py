@@ -379,6 +379,6 @@ def test_leave_project_not_in_project():
 
     reset_projects()
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()

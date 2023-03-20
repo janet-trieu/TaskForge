@@ -140,6 +140,6 @@ def test_readd_normal_user():
         pass
     assert(not is_removed(admin_uid))
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()

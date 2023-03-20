@@ -27,6 +27,6 @@ def test_reset_password_invalid_uid():
     # with pytest.raises(AccessError):
     assert get_reset_password_link(invalid_user_id) == -1
 
-@pytest.mark.run_last
+@pytest.mark.order("last")
 def test_reset_database():
     reset_database()
