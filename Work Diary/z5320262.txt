@@ -1,4 +1,4 @@
-Week 1
+## Week 1 ##
 
 Group formed. I created my Jira account and joined the group. My role in the group is a developer.
 
@@ -12,3 +12,125 @@ We decided to use Python for backend, React for frontend and SQL for our databas
 An issue raised was that Joseph is the only person who has experience with frontend and that it'll be difficult for one person to work on frontend. It was decided that I will learn frontend during the term to help our frontend additonally with backend.
 
 We gave ourselves the tasks of reading the scope of the project more throughly and maybe look through existing task management softwares. This is due week 2 Wednesday.
+
+///////////////////////////////////////////
+
+## Week 2 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Understand the spec and requirements more clearly for our project and proposal
+- Study up on frontend with COMP6080 lectures + online resources (week 1-2 content, avaliable on YouTube)
+
+??? What was finished ???
+- Understanding the spec and requirements more deeply
+- Listed out features from spec. and our own ideas
+- Delegated tasks for our proposal
+  > I am working on interface and storyboards with Figma
+- Week 1-2 lectures of COMP6080 to learn frontend
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- NON-TECHNICAL: Needed clarification on what features were specifically, Dab asked on forums and we understand what classifies as a feature better now
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- N/A
+
+??? What is planned for the next period (e.g., next week) ???
+- Work on our delegated proposal tasks
+  > Through Figma, I will create a low-fidelity prototype. Once done, other members can go through it and see if any changes are required. If sufficent, I can convert the prototype to a storyboard with our user stories.
+- COMP6080 Week 3-9 lectures to learn frontend
+  > 6 weeks of content may or may not be doable, the lectures seem short-ish and I can skip through some lectures but we'll see
+
+///////////////////////////////////////////
+
+## Week 3 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Work through delegated proposal task
+- Study frontend
+
+??? What was finished ???
+- Delegated proposal task; I finish creating our interactive prototype and had the team review it.
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Our novel feature idea for Reputation was not complex enough, we either have to add more into it or create another novel idea. We decided to add an additional feature for Reputation by allowing users to examine graphs of a profile's reputation so they can visualise how the user has developed over the time.
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Studying frontend :[, I was too busy with building our interactive prototype so I couldn't focus on studying frontend that much. This is not a major problem as we have yet to start any programming yet and I am free to ask for frontend help :]
+- Adding storyboards to the proposal, this is currently being done by me right now and shouldn't take too long as I have all the wireframes/boards done - just need to link them up with user stories! :]
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish and submit our proposal
+- Get started planning our project design, tasks, database etc.
+
+///////////////////////////////////////////
+
+## Week 4 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Finish and submit our proposal
+- Get started planning our project design, tasks, database etc.
+- Finish notifications implementation for sprint 1
+
+??? What was finished ???
+- Submitted proposal
+- Create skeleton of project implementation
+- Basic global counters for project ID, task ID, epic ID
+- Notification testing
+- Notification implementation for all types of notifications + helpers
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- How to store Notification data? [TECHNICAL]
+	- I explored different ways, comparing advantages and disadvantages
+      - e.g. make a map of notifications in the Users document, having Notifications as it's own collection with uid identifiers
+	  - RESULT: Ultimately found having Notification as a collection more suited to our requirements due to potential performance and sizing issues when querying User documents
+
+- Should I make a Notification class? [TECHNICAL]
+	- RESULT: Ultimately decided it was best not to have them as a class as different notifications require different attributes which will create the class to be quite difficult and complex
+    - e.g. if i try making multiple inits for different Notifications, it would be very hard to really differentiate between them due to the attribute types
+    or creating one big init that takes in a bunch of attributes makes it also super complex
+
+- Learning Firestore and how it's database works
+	- I have not done databases so I watched and read firestore doc + videos which explained that it used NoSQL and how it works and techniques to create a database suited to our requirements
+  (https://www.youtube.com/watch?v=v_hR4K4auoQ&list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ)
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- get_notifications() which returns all the user's notification in descending timestamp order
+  - I am planning to get get_notifications() done today which should not affect the project progress at all
+- Create a function for sending emails for project invites
+  - Dabin needs a function to send an email notification when a user invites another to a project so project_invite implementation is not complete yet
+  - I need to set up a flask server to create this function which Joseph said he will make a skeleton for it which I will wait for while I do get_notifications()
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish off sprint 1 implementations
+- Plan and start sprint 2
+
+///////////////////////////////////////////
+
+## Week 5 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Finish off sprint 1 implementations
+- Plan and start sprint 2
+
+??? What was finished ???
+- Sprint 1 implementation & demo
+- Notification implementation for welcome and project_invite
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Email Notifications
+  - We initially thought one of the requirements for task management system required us to send an email notification to users who are being request to be connected but we realised we may have misinterpreted it
+    I sent out a question on the forum for further clarification. If sending emails are not required, we will scrap sending emails as it complicates our system too much within the scope of the course
+- Deadline Notifications
+  - We initially planned to send a deadline notification when an assigned task was due soon (e.g. a day away) but there was the issue of how we would be able to present it in demos and final implementation
+    as the system would only be used within a short amount of time, rather than days. We decided the work for it was too much within the scope of the course and scrapped deadline notifications.
+- Tests
+  - We had the mistake of forgetting to delete our test data from our database so I created a function to reset our database completely. However, this would break our tests if we were to test multiple test files
+  with 'pytest' as pytest tests in a random order, thereby some data would be deleted before they could be tested. This currently is being fixed.
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Clearing database
+  - Not a danger to our project for now as we still have plenty of time to work on sprint 2
+
+??? What is planned for the next period (e.g., next week) ???
+- Work on sprint 2 stuff
+- Finish retrospective report
