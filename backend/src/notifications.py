@@ -10,10 +10,10 @@ TODO notes:
 - When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
 - ASSUMPTION should be covered by the function the notfiication is called in
 '''
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from datetime import datetime
-
-from src.helper import *
+from .error import *
+from .helper import *
 
 db = firestore.client()
 
@@ -23,6 +23,7 @@ def does_nid_exists(uid, nid):
     doc_ref = db.collection('notifications').document(uid)
 
     # Check if field name exists in document
+    if (doc_ref.get().to_dict() is None): return False
     if nid in doc_ref.get().to_dict():
         return True
     else:
@@ -32,7 +33,10 @@ def create_nid(uid, type):
 
     print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
-    count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
+    if (doc_dict is None):
+        count = 0
+    else:
+        count = sum(type in key for key in doc_dict.keys()) # sum of existing notifications of same type
     nid = f'{type}{count}'
     
     # If nid exists, increment count and update nid and check again until unique
@@ -41,6 +45,17 @@ def create_nid(uid, type):
         nid = f'{type}{count}'
 
     return nid
+
+def is_connected(uid1, uid2):
+    '''
+    Assume uids have already been checked as existing
+    '''
+    connections = db.collection('users').document(uid1).get().to_dict().get('connections')
+    if (connections is None): return False
+    if (uid2 in connections): return True
+    return False
+    
+
 
 # ============ FUNCTIONS ============ #
 def get_notifications(uid):
@@ -51,7 +66,7 @@ def get_notifications(uid):
     Returns:
         sorted_notifications (list): List of user's notifications sorted by descending timestamps
     '''
-    check_valid_uid
+    check_valid_uid(uid)
 
     notf_data = db.collection('notifications').document(uid).get().to_dict()
 
@@ -67,9 +82,8 @@ def notification_welcome(uid):
         uid (string): User being notified
     ASSUMPTION that this function is called ONCE per user.
     '''
-    check_valid_uid(uid)
 
-    name = get_display_name(uid)
+    name = auth.get_user(uid).display_name
 
     notification = {
         'welcome' : {
@@ -90,12 +104,10 @@ def notification_connection_request(uid, uid_sender):
         uid_sender (string): User who requests to connect
     ASSUMPTION that the users are not connected + do not have an existing request
     '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-
+    if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
     notification_type = 'connection_request'
     nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
+    sender_name = auth.get_user(uid_sender).display_name
 
     notification = {
         nid : {
@@ -110,7 +122,8 @@ def notification_connection_request(uid, uid_sender):
         }
     }
 
-    db.collection("notifications").document(uid).update(notification)
+    db.collection("notifications").document(str(uid)).update(notification)
+    return nid
 
 def notification_project_invite(uid, uid_sender, pid):
     '''
@@ -121,14 +134,11 @@ def notification_project_invite(uid, uid_sender, pid):
         pid (int): Project being invited to
     ASSUMPTION that the user sending is in project + user receiving is not in project + do not have an existing request (+ possibly need to be connected?)
     '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-    check_valid_pid(pid)
 
     notification_type = 'project_invite'
     nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
-    project_name = get_project_name(pid)
+    sender_name =  auth.get_user(uid_sender).display_name
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
 
     notification = {
         nid : {
@@ -155,13 +165,12 @@ def notification_assigned_task(uid, pid, tid):
         tid (int): Task being assigned
     ASSUMPTION that the user is in project + task is in project
     '''
-    check_valid_uid(uid)
     check_valid_pid(pid)
     check_valid_tid(tid)
 
     notification_type = 'assigned_task'
     nid = create_nid(uid, notification_type) # create notification ID
-    project_name = get_project_name(pid)
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
     task_name = get_task_name(tid)
 
     notification = {
@@ -347,7 +356,7 @@ def get_notifications(uid):
     Returns:
         sorted_notifications (list): List of dictionaries of user's notifications sorted by descending timestamps
     '''
-    check_valid_uid
+    check_valid_uid(uid)
 
     notf_data = db.collection('notifications').document(uid).get().to_dict()
 

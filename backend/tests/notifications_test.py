@@ -28,7 +28,7 @@ user_id2 = auth.get_user_by_email("notificationtest2@gmail.com").uid
 
 init_pid()
 
-pid_expected = create_project(user_id0, "Project N", "Description", None, None, None, None)
+pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
 
 """
 tid_expected = 1010
@@ -45,7 +45,7 @@ def remove_test_data():
     delete_user(user_id1)
     delete_user(user_id2)
     reset_projects()
-    reset_project_count()
+    # reset_project_count()
     """db.collection('tasks').document(str(tid_expected)).delete()
     db.collection('achievements').document('night_owl').delete()
     db.collection('reviews').document(str(rid_expected)).delete()"""
@@ -96,7 +96,7 @@ def test_project_invite_notification():
 
 # COMMENTED OUT TESTS THAT ARE WAITING FOR IT'S PARENT FUNCTION TO BE IMPLEMENTED
 
-""" def test_connection_request_notification():
+def test_connection_request_notification():
     notification_connection_request(user_id0, user_id1)
 
     doc_data = db.collection('notifications').document(user_id0).get().to_dict()
@@ -240,4 +240,4 @@ def test_no_dupe_nid():
     notification_comment(user_id0, user_id1, pid_expected, tid_expected)
     notf_list = get_notifications(user_id0)
     assert notf_list[0]['nid'] == 'comment3'
-    remove_test_data() """
+    remove_test_data()
