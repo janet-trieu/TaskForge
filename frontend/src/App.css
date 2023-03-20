@@ -193,3 +193,12 @@
   background-color: #f3f3f3 ;
   border-radius: 10px;
 }
+
+#projects-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+  margin-left: 2.5vw;
+  margin-right: 2.5vw;
+  margin-top: 4vh;
+}

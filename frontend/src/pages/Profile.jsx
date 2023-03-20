@@ -13,7 +13,7 @@ const Profile = ({ firebaseApp }) => {
   const getInformation = async () => {
     if (location.pathname === '/profile') {
       const uid = await firebaseApp.auth().currentUser.uid;
-      const data = await makeRequest(`/user/details`, 'GET', null, uid);
+      const data = await makeRequest('/profile/details', 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
         setDetails(data);
@@ -39,7 +39,7 @@ const Profile = ({ firebaseApp }) => {
           <div id='profile-pic-container'><img id='profile-pic' src={defaultProfilePic}/></div>
           <div id='profile-info'>
             <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>{details.display_name}</div>
-            <div>Your Role</div>
+            <div>{details.role}</div>
             <div style={{display: 'flex', alignItems: 'center'}}>
               <div>{details.rating}</div>
               &nbsp;
