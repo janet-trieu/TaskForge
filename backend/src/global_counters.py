@@ -28,6 +28,7 @@ def update_pid():
 
 ### ========= Epic ID ========= ###
 def init_eid():
+    e_doc = db.collection("counters").document("total_epics")
     data = {
         "eid": 0
     }
@@ -35,9 +36,17 @@ def init_eid():
     e_doc.set(data)
 
 def get_curr_eid():
+    e_doc = db.collection("counters").document("total_epics")
+    doc = e_doc.get()
+    if not (doc.exists):
+        init_eid()
     return e_doc.get().get("eid")
 
 def update_eid():
+    e_doc = db.collection("counters").document("total_epics")
+    doc = e_doc.get()
+    if not (doc.exists):
+        init_eid()
     value = get_curr_eid() + 1
 
     e_doc.update({"eid": value})
@@ -53,13 +62,19 @@ def init_tid():
 
 def get_curr_tid():
     t_doc = db.collection("counters").document("total_tasks")
+    doc = t_doc.get()
+    if not (doc.exists):
+        init_tid()
     return t_doc.get().get("tid")
 
 def update_tid():
     t_doc = db.collection("counters").document("total_tasks")
+    doc = t_doc.get()
+    if not (doc.exists):
+        init_tid()
     value = get_curr_tid() + 1
 
-    t_doc.update({"tid": value})
+    e_doc.update({"eid": value})
 
 
 ### ========= Total User ID ========= ###
