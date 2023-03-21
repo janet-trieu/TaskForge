@@ -74,7 +74,33 @@ def update_tid():
         init_tid()
     value = get_curr_tid() + 1
 
-    e_doc.update({"eid": value})
+    t_doc.update({"tid": value})
+
+### ========= Subtask ID ========= ###
+def init_stid():
+    st_doc = db.collection("counters").document("total_subtasks")
+    data = {
+        "stid": 0
+    }
+    
+    st_doc.set(data)
+
+def get_curr_stid():
+    st_doc = db.collection("counters").document("total_subtasks")
+    doc = st_doc.get()
+    if not (doc.exists):
+        init_stid()
+    return st_doc.get().get("stid")
+
+def update_stid():
+    st_doc = db.collection("counters").document("total_subtasks")
+    doc = st_doc.get()
+    if not (doc.exists):
+        init_stid()
+    value = get_curr_stid() + 1
+
+    st_doc.update({"stid": value})
+
 
 
 ### ========= Total User ID ========= ###
@@ -101,3 +127,5 @@ def update_tuid():
     value = get_curr_tuid() + 1
 
     tu_doc.update({"tuid": value})
+
+    
