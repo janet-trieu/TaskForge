@@ -14,21 +14,11 @@ from firebase_admin import firestore, auth
 from datetime import datetime
 from .error import *
 from .helper import *
+from .helper import does_nid_exists
 
 db = firestore.client()
 
 # ============ HELPERS ============ #
-
-def does_nid_exists(uid, nid):
-    doc_ref = db.collection('notifications').document(uid)
-
-    # Check if field name exists in document
-    if (doc_ref.get().to_dict() is None): return False
-    if nid in doc_ref.get().to_dict():
-        return True
-    else:
-        return False
-
 def create_nid(uid, type):
 
     print(f"this is uid: {uid}")
