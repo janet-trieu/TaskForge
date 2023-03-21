@@ -17,9 +17,12 @@ class User(object):
         is_removed (boolean): removal status of the user
         achievements (list): list of achievements the user has obtained
         projects (list): list of project ids that the user has joined
+        epics (list): list of epic ids that the user has been assigned
         tasks (list): list of tasks ids that the user has been assigned
+        subtasks (list): list of subtask ids that the user has been assigned
+        connections (list): list of uids of users that the User has connected to
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, tasks, connections):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, epics, tasks, subtasks, connections):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -30,7 +33,9 @@ class User(object):
         self.is_removed = is_removed
         self.achievements = achievements
         self.projects = projects
+        self.epics = epics
         self.tasks = tasks
+        self.subtasks = subtasks
         self.connections = connections
         
         
@@ -46,7 +51,9 @@ class User(object):
             'is_removed': self.is_removed,
             "achievements": self.achievements,
             "projects": self.projects,
+            "epics": self.epics,
             "tasks": self.tasks,
+            "subtasks": self.subtasks,
             "connections": self.connections
         }
 
