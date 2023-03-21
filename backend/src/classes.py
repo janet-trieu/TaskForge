@@ -76,7 +76,7 @@ class Board_Object():
         self.priority = priority
         self.status = status
 
-    def to_dict(self, pid):
+    def to_dict(self):
         return {
             'pid': self.pid,
             'assignees': self.assignees,
