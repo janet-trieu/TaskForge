@@ -11,6 +11,7 @@ from .proj_master import *
 from .profile_page import *
 from .projects import *
 from .connections import *
+from .taskboard import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -272,6 +273,14 @@ def flask_get_connected_taskmasters():
     data = request.get_json()
     return dumps(get_connected_taskmasters(data["uid"]))
     
-    
+@app.route("/task/create", methods=["POST"])
+def flask_create_task():
+    """
+    Creates a task
+    """
+    data = request.get_json()
+    return create_task(data["uid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+                data["workload"], data["priority"], data["status"])
+
 if __name__ == "__main__":
     app.run()
