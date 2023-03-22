@@ -131,6 +131,25 @@ def get_task_ref(tid):
     check_valid_tid(tid)    
     return db.collection('tasks').document(str(tid)).get()
 
+
+### ========= Get Task Details ========= ###
+def get_task_details(tid):
+    """
+    Gets a Task's full details and returns in dict form
+
+    Args:
+        tid (int): id of the task that can be found in firestore database
+
+    Returns:
+        A dict with the full details of the task
+    """
+    check_valid_tid(tid)
+    doc = get_task_ref(tid)
+    task = Task(doc.get("tid"), doc.get("pid"), doc.get("eid"), doc.get("assignees"), doc.get("subtasks"), doc.get("title"), 
+                doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"), doc.get("comments"),
+                doc.get("flagged"), doc.get("completed"))
+    return task.to_dict
+
 ### ========= Delete Task ========= ###
 def delete_task(tid):
     """
@@ -199,6 +218,23 @@ def get_subtask_ref(stid):
     """    
     check_valid_stid(stid)
     return db.collection('subtasks').document(stid).get()
+
+### ========= Get Subtask Details ========= ###
+def get_subtask_details(stid):
+    """
+    Gets a Subtask's full details and returns in dict form
+
+    Args:
+        stid (int): id of the subtask that can be found in firestore database
+
+    Returns:
+        A dict with the full details of the task
+    """
+    check_valid_stid(stid)
+    doc = get_subtask_ref(stid)
+    subtask = Subtask(doc.get("stid"), doc.get("tid"), doc.get("pid"), doc.get("eid"),doc.get("assignees"), doc.get("title"), 
+                doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"))
+    return subtask.to_dict
 
 ### ========= Delete Subtask ========= ###
 def delete_subtask(stid):
