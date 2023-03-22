@@ -7,6 +7,7 @@ from .classes import Epic, Task, Subtask
 from .error import *
 from .notifications import *
 from .helper import *
+from .profile_page import *
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -150,6 +151,41 @@ def get_task_details(tid):
                 doc.get("flagged"), doc.get("completed"))
     return task.to_dict
 
+### ========= Get Assign Task ========= ###
+def assign_task(tid, new_assignees):
+    """
+    Assigns new users to a task
+
+    Args:
+        tid (int): id of the task that can be found in firestore database
+        new_assignees (list): a list of UIDs (str) that will become the new assignee list
+    
+    Returns:
+        None
+    """
+    # Check if all UIDs in new_assignee are valid and in the project
+    pid = get_task_ref(tid).get("pid")
+    old_assignees = get_task_ref(tid).get("assignees")
+    for uid in new_assignees:
+        check_valid_uid(uid)
+        check_user_in_project(uid, pid)
+    
+    removed_assignees = list(set(old_assignees) - set(new_assignees))
+    added_assignees = list(set(new_assignees) - set(old_assignees))
+
+    # remove task from assignees that are no longer assigned
+    for uid in removed_assignees:
+        user = get_user_ref(uid)
+        tasks = user.get("tasks")
+        user.update({"tasks": tasks.remove(tid)})
+
+    # add task to new assignees
+    for uid in added_assignees:
+        user = get_user_ref(uid)
+        tasks = user.get("tasks")
+        user.update({"tasks": tasks.append(tid)})
+    return
+
 ### ========= Delete Task ========= ###
 def delete_task(tid):
     """
@@ -235,6 +271,41 @@ def get_subtask_details(stid):
     subtask = Subtask(doc.get("stid"), doc.get("tid"), doc.get("pid"), doc.get("eid"),doc.get("assignees"), doc.get("title"), 
                 doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"))
     return subtask.to_dict
+
+### ========= Get Assign Subtask ========= ###
+def assign_subtask(stid, new_assignees):
+    """
+    Assigns new users to a subtask
+
+    Args:
+        stid (int): id of the subtask that can be found in firestore database
+        new_assignees (list): a list of UIDs (str) that will become the new assignee list
+    
+    Returns:
+        None
+    """
+    # Check if all UIDs in new_assignee are valid and in the project
+    pid = get_subtask_ref(stid).get("pid")
+    old_assignees = get_subtask_ref(stid).get("assignees")
+    for uid in new_assignees:
+        check_valid_uid(uid)
+        check_user_in_project(uid, pid)
+    
+    removed_assignees = list(set(old_assignees) - set(new_assignees))
+    added_assignees = list(set(new_assignees) - set(old_assignees))
+
+    # remove subtask from assignees that are no longer assigned
+    for uid in removed_assignees:
+        user = get_user_ref(uid)
+        subtasks = user.get("subtasks")
+        user.update({"subtasks": subtasks.remove(stid)})
+
+    # add subtask to new assignees
+    for uid in added_assignees:
+        user = get_user_ref(uid)
+        subtasks = user.get("subtasks")
+        user.update({"subtasks": subtasks.append(stid)})
+    return
 
 ### ========= Delete Subtask ========= ###
 def delete_subtask(stid):
