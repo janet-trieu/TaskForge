@@ -57,81 +57,38 @@ class User(object):
             "connections": self.connections
         }
 
-class Board_Object():
-    """
-    A Board Object class that will be stored in firestore. This is either an Epic, Task, Subtask
-
-    Attributes:
-        pid (int): an integer that corresponds to a specific project this task belongs to
-        assignees (list): a list of UIDs (str) corresponding to who is assigned to this task
-        tasks (list): a list of tuids (int) corresponding to the subtasks belonging to this task
-        title (str): a string that corresponds to the task's title
-        description (str): a string that corresponds to the task's description
-        deadline (int): an int that corresponds to the unix time the task is supposed to be finished
-        workload (int): an int that corresponds to the estimated number of days required to finish this task
-        priority (str): a string that corresponds to the prioty of the task. It is either "High", "Moderate", or "Low"
-        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing", or "Done"
-
-    """
-    def __init__(self, pid, assignees, title, description, deadline, workload, priority, status):
-        self.pid = pid
-        self.assignees = assignees
-        self.title = title
-        self.description = description
-        self.deadline = deadline
-        self.workload = workload
-        self.priority = priority
-        self.status = status
-
-    def to_dict(self):
-        return {
-            'pid': self.pid,
-            'assignees': self.assignees,
-            'title': self.title,
-            'description': self.description,
-            'deadline': self.deadline,
-            'workload': self.workload,
-            'priority': self.priority,
-            'status': self.status
-        }
-
-class Epic(Board_Object):
+class Epic():
     """
     An Epic class that will be stored in firestore.
 
     Attributes:
         eid (int): an integer that corresponds to a specific epic
         pid (int): an integer that corresponds to a specific project this task belongs to
-        assignees (list): a list of UIDs (str) corresponding to who is assigned to this task
-        tasks (list): a list of tuids (int) corresponding to the subtasks belonging to this task
         title (str): a string that corresponds to the task's title
+        tasks (list): a list of tuids (int) corresponding to the subtasks belonging to this task
         description (str): a string that corresponds to the task's description
-        deadline (int): an int that corresponds to the unix time the task is supposed to be finished
-        workload (int): an int that corresponds to the estimated number of days required to finish this task
-        priority (str): a string that corresponds to the prioty of the task. It is either "High", "Moderate", or "Low"
-        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing", or "Done"
+        colour (str): a string that corresponds to the hexadecimal code for the colour for the epic
 
     """
-    def __init__(self, eid, pid, assignees, tasks, title, description, deadline, workload, priority, status):
-        Board_Object.__init__(pid, assignees, title, description, deadline, workload, priority, status)
+    def __init__(self, eid, pid, tasks, title, description, colour):
         self.eid = eid
+        self.pid = pid
+        self.title = title
         self.tasks = tasks
+        self.description = description
+        self.colour = colour
 
     def to_dict(self):
         return {
             'eid': self.eid,
             'pid': self.pid,
-            'assignees': self.assignees,
-            'tasks': self.tasks,
             'title': self.title,
+            'tasks': self.tasks,
             'description': self.description,
-            'deadline': self.deadline,
-            'workload': self.workload,
-            'priority': self.priority,
-            'status': self.status
+            'colour': self.colour
         }    
 
-class Task(Board_Object):
+class Task():
     """
     A Task class that will be stored in firestore.
 
@@ -150,9 +107,16 @@ class Task(Board_Object):
 
     """
     def __init__(self, tid, pid, eid, assignees, subtasks, title, description, deadline, workload, priority, status):
-        Board_Object.__init__(pid, assignees, title, description, deadline, workload, priority, status)
         self.tid = tid
+        self.pid = pid
         self.eid = eid
+        self.assignees = assignees
+        self.title = title
+        self.description = description
+        self.deadline = deadline
+        self.workload = workload
+        self.priority = priority
+        self.status = status
         self.subtasks = subtasks
 
     def to_dict(self):
@@ -189,10 +153,17 @@ class Subtask(Board_Object):
 
     """
     def __init__(self, stid, tid, pid, eid, assignees, title, description, deadline, workload, priority, status):
-        Board_Object.__init__(pid, assignees, title, description, deadline, workload, priority, status)
         self.stid = stid
         self.tid = tid
+        self.pid = pid
         self.eid = eid
+        self.assignees = assignees
+        self.title = title
+        self.description = description
+        self.deadline = deadline
+        self.workload = workload
+        self.priority = priority
+        self.status = status
 
     def to_dict(self):
         return {
