@@ -31,7 +31,7 @@ def create_epic(uid, pid, title, description, colour):
     value = get_curr_eid()
     epic = Epic(value, pid, [], title, description, colour)
     epic_ref.document(value).set(epic.to_dict())
-    return
+    return value
 
 ### ========= Get Epic Ref ========= ###
 def get_epic_ref(eid):
@@ -116,7 +116,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     task = Task(value, pid, eid, assignees, [], title, description, deadline, workload, priority, status, [], False, "")
     task_ref.document(value).set(task.to_dict())
 
-    return
+    return value
 ### ========= Get Task Ref ========= ###
 def get_task_ref(tid):
     """
@@ -184,7 +184,7 @@ def create_subtask(tid, pid, eid, assignees, title, description, deadline, workl
     value = get_curr_stid()
     subtask = Subtask(value, tid, pid, eid, assignees, title, description, deadline, workload, priority, status)
     subtask_ref.document(value).set(subtask.to_dict())
-    return
+    return value
 
 ### ========= Get Task Ref ========= ###
 def get_subtask_ref(stid):
