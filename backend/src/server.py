@@ -274,6 +274,7 @@ def flask_get_connected_taskmasters():
     return dumps(get_connected_taskmasters(data["uid"]))
     
 # TASK MANAGEMENT #
+# CREATE #
 @app.route("/epic/create", methods=["POST"])
 def flask_create_epic():
     """
@@ -300,5 +301,29 @@ def flask_create_subtask():
     return create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
                           data["workload"], data["priority"], data["status"])
 
+# DETAILS #
+@app.route("/epic/details", methods=["GET"])
+def flask_epic_details():
+    """
+    Gets epic detail
+    """
+    data = request.get_json()
+    return get_epic_details(data["eid"])
+
+@app.route("/task/details", methods=["GET"])
+def flask_task_details():
+    """
+    Gets task detail
+    """
+    data = request.get_json()
+    return get_task_details(data["tid"])
+
+@app.route("/subtask/details", methods=["GET"])
+def flask_subtask_details():
+    """
+    Gets subtask detail
+    """
+    data = request.get_json()
+    return get_subtask_details(data["stid"])
 if __name__ == "__main__":
     app.run()
