@@ -91,6 +91,7 @@ def get_user_tasks():
 def create_user():
     uid = request.headers.get('Authorization')
     create_user_firestore(uid)
+    return Response(status=200)
 
 
 #ADMIN ROUTES#

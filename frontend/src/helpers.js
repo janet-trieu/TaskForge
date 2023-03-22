@@ -4,16 +4,28 @@ const URL = `http://localhost:${config.BACKEND_PORT}`;
 
 export const makeRequest = async (path, method, body, uid) => {
   if (body) {
-    const response = await fetch(`${URL}${path}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${uid}`,
-      },
-      body: JSON.stringify(body)
-    });
-    const data = await response.json();
-    return data;
+    if (method === 'GET') {
+      const response = await fetch(`${URL}${path}?` + new URLSearchParams(body), {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${uid}`,
+        }
+      });
+      const data = await response.json();
+      return data;
+    } else {
+      const response = await fetch(`${URL}${path}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${uid}`,
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      return data;
+    }
   } else {
     const response = await fetch(`${URL}${path}`, {
       method,

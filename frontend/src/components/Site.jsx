@@ -18,7 +18,7 @@ const Site = ({ firebaseApp }) => {
         <Header />
         <Routes>
           <Route path='/' element={<Home firebaseApp={firebaseApp} />} />
-          <Route path='/projects' element={<Projects />} />
+          <Route path='/projects' element={<Projects firebaseApp={firebaseApp} />} />
           <Route path='/projects/create' element={<CreateProject firebaseApp={firebaseApp}/>} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/profile' element={<Profile firebaseApp={firebaseApp}/>} />

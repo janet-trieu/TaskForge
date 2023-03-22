@@ -95,7 +95,7 @@ def search_project(uid, query):
         pm_name = auth.get_user(pm_uid).display_name
         proj_name = doc.to_dict().get("name")
         status = doc.to_dict().get("status")
-
+        picture = doc.to_dict().get("picture")
         description = doc.to_dict().get("description")
         project_members = doc.to_dict().get("project_members")
         if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower():
@@ -106,7 +106,9 @@ def search_project(uid, query):
                     "description": description,
                     "project_members": project_members,
                     "tasks": [],
-                    "status": status
+                    "status": status,
+                    "picture": picture,
+                    "pid": doc.id
                 }
             else:
                 return_dict = {

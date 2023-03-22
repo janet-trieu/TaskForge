@@ -6,4 +6,30 @@
     background-color: #f3f3f3;
     width: 14vw;
     padding: 2vh 0;
+    border-radius: 15px;
+}
+
+.project-card:hover {
+    cursor: pointer;
+}
+
+.not-started {
+    background-color: lightgray;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+}
+
+.completed {
+    background-color: lightgreen;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+}
+
+.ongoing {
+    background-color: red;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
 }

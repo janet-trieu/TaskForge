@@ -1,22 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ProjectCard from "../components/ProjectCard";
-import Searchbar from "../components/Searchbar";
+import ProjectSearchbar from "../components/ProjectSearchbar";
+import { makeRequest } from '../helpers';
 
-const Projects = () => {
-  
+const Projects = ({ firebaseApp }) => {
+  const [projects, setProjects] = useState();
+  const [isLoading, setIsLoading] = useState('Loading...');
+  useEffect(async () => {
+    const data = await makeRequest('/projects/search', 'GET', {query: ''}, firebaseApp.auth().currentUser.uid);
+    if (data.error) alert(data.error);
+    else {
+      setProjects(data);
+      setIsLoading(false);
+    }
+  }, [])
+
   return (
     <>
-      <Searchbar />
+      <ProjectSearchbar />
       <div id='projects-container'>
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
+        {isLoading || (
+          projects.map((details, idx) => {
+            return <ProjectCard name={details.name} description={details.description} status={details.status} picture={details.picture} pid={details.pid} key={idx} />
+          })
+        )}
       </div>
     </>
   )

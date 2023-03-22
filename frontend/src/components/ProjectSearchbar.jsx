@@ -1,7 +1,7 @@
 import React from "react";
 import './Searchbar.css';
 
-const Searchbar = () => {
+const ProjectSearchbar = () => {
   const handleSearch = (event) => {
     event.preventDefault();
     console.log(event, 'hi');
@@ -23,4 +23,4 @@ const Searchbar = () => {
   )
 }
 
-export default Searchbar;
+export default ProjectSearchbar;

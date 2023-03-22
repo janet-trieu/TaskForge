@@ -7,10 +7,15 @@
     margin-top: 4vh;
 }
 
-#searchbar-container div, form {
+#searchbar-container div, #searchbar-container form {
     display: flex;
     align-items: center;
     gap: 1vw;
+}
+
+#searchbar-container p {
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 #searchbar {
