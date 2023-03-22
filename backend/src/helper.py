@@ -78,6 +78,16 @@ def check_user_in_project(uid, pid):
     if uid not in project_members:
         raise InputError(f'UID {uid} does not belong in project {pid}')
     
+def does_nid_exists(uid, nid):
+    doc_ref = db.collection('notifications').document(uid)
+
+    # Check if field name exists in document
+    if (doc_ref.get().to_dict() is None): return False
+    if nid in doc_ref.get().to_dict():
+        return True
+    else:
+        return False
+    
 ############################################################
 #                          Getters                         #
 ############################################################
@@ -112,17 +122,3 @@ def create_admin(uid):
     }
 
     db.collection('users').document(uid).set(data)
-
-############################################################
-#                      Reset Database                      #
-############################################################
-
-def reset_projects():
-    project_count = get_curr_pid()
-
-    for i in range(0, project_count):
-        db.collection("projects").document(str(i)).delete()
-
-    counter_ref = db.collection("counters").document("total_projects")
-
-    counter_ref.update({"pid": 0})

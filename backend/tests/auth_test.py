@@ -3,10 +3,16 @@ Test file for authentication user-invoked reset password
 '''
 import pytest
 from src.authentication import *
+from src.profile_page import *
+
+try:
+    create_user_email("authtest0@gmail.com", "password123", "Auth Doe")
+except auth.EmailAlreadyExistsError:
+    pass
+
+user_id = auth.get_user_by_email("authtest0@gmail.com").uid
 
 def test_reset_password():
-
-    user_id = "rFoLiVMvWwaahFGpQTsb9jtZKT53"
 
     res = get_reset_password_link(user_id)
 
@@ -14,8 +20,8 @@ def test_reset_password():
 
 def test_reset_password_invalid_uid():
 
-    user_id = "3TssNFyM70OtTGarpRtAZzVrOd72"
+    invalid_user_id = "invalid uid"
 
     # with pytest.raises(auth.UserNotFoundError):
     # with pytest.raises(AccessError):
-    assert get_reset_password_link(user_id) == -1
+    assert get_reset_password_link(invalid_user_id) == -1
