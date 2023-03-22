@@ -35,7 +35,7 @@ def create_epic(uid, pid, title, description, colour):
     return value
 
 ### ========= Get Epic Ref ========= ###
-def get_epic_ref(eid):
+def get_epic_ref(uid, eid):
     """
     Gets an Epic reference from firestore database
 
@@ -49,7 +49,7 @@ def get_epic_ref(eid):
     return db.collection('epics').document(str(eid)).get()
 
 ### ========= Get Epic Details ========= ###
-def get_epic_details(eid):
+def get_epic_details(uid, eid):
     """
     Gets an Epic's full details and returns in dict form
 
@@ -64,7 +64,7 @@ def get_epic_details(eid):
     return epic.to_dict
 
 ### ========= Delete Epic ========= ###
-def delete_epic(eid):
+def delete_epic(uid, eid):
     """
     Deletes an epic from firestore database and removes eid from every task and subtask.
     The task and subtask will still exist, but just will not belong under an epic
@@ -75,6 +75,9 @@ def delete_epic(eid):
     Returns:
         None
     """
+    # Check if user is in project
+    check_valid_eid(eid)
+    check_user_in_project(uid, get_epic_ref(uid, eid).get("pid"))
     tasks = get_epic_ref(eid).get("tasks")
 
     # Remove eid in every child task and subtask
@@ -117,9 +120,10 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     task = Task(value, pid, eid, assignees, [], title, description, deadline, workload, priority, status, [], False, "")
     task_ref.document(value).set(task.to_dict())
 
+    assign_task(value, assignees)
     return value
 ### ========= Get Task Ref ========= ###
-def get_task_ref(tid):
+def get_task_ref(uid, tid):
     """
     Gets a task reference from firestore database
 
@@ -129,12 +133,14 @@ def get_task_ref(tid):
     Returns:
         A Task document from firestore that corresponds to the TID given. 
     """
-    check_valid_tid(tid)    
+    # Check if user is in project
+    check_valid_tid(tid)
+    check_user_in_project(uid, get_task_ref(uid, tid).get("pid")) 
     return db.collection('tasks').document(str(tid)).get()
 
 
 ### ========= Get Task Details ========= ###
-def get_task_details(tid):
+def get_task_details(uid, tid):
     """
     Gets a Task's full details and returns in dict form
 
@@ -144,7 +150,10 @@ def get_task_details(tid):
     Returns:
         A dict with the full details of the task
     """
+    # Check if user is in project
     check_valid_tid(tid)
+    check_user_in_project(uid, get_task_ref(uid, tid).get("pid"))
+
     doc = get_task_ref(tid)
     task = Task(doc.get("tid"), doc.get("pid"), doc.get("eid"), doc.get("assignees"), doc.get("subtasks"), doc.get("title"), 
                 doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"), doc.get("comments"),
@@ -152,7 +161,7 @@ def get_task_details(tid):
     return task.to_dict
 
 ### ========= Get Assign Task ========= ###
-def assign_task(tid, new_assignees):
+def assign_task(uid, tid, new_assignees):
     """
     Assigns new users to a task
 
@@ -163,6 +172,9 @@ def assign_task(tid, new_assignees):
     Returns:
         None
     """
+    # Check if user is in project
+    check_valid_tid(tid)
+    check_user_in_project(uid, get_task_ref(uid, tid).get("pid"))
     # Check if all UIDs in new_assignee are valid and in the project
     pid = get_task_ref(tid).get("pid")
     old_assignees = get_task_ref(tid).get("assignees")
@@ -187,7 +199,7 @@ def assign_task(tid, new_assignees):
     return
 
 ### ========= Delete Task ========= ###
-def delete_task(tid):
+def delete_task(uid, tid):
     """
     Deletes a task from firestore database and subsequent subtasks
 
@@ -197,7 +209,9 @@ def delete_task(tid):
     Returns:
         None
     """
+    # Check if user is in project
     check_valid_tid(tid)
+    check_user_in_project(uid, get_task_ref(uid, tid).get("pid"))
 
     # Delete all subtasks under it
     task_ref = get_task_ref(tid)
@@ -216,7 +230,7 @@ def delete_task(tid):
 
 ### ========= SUBTASKS ========= ###
 ### ========= Create Subtask ========= ###
-def create_subtask(tid, pid, eid, assignees, title, description, deadline, workload, priority, status):
+def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, workload, priority, status):
     """
     Creates a subtask and initialises the subtask into firestore database
 
@@ -234,15 +248,20 @@ def create_subtask(tid, pid, eid, assignees, title, description, deadline, workl
 
     Returns:
         An int that corresponds to the id to the subtask.
-    """ 
+    """
+    # Check if user is in project
+    check_user_in_project(uid, pid)
+
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
     subtask = Subtask(value, tid, pid, eid, assignees, title, description, deadline, workload, priority, status)
     subtask_ref.document(value).set(subtask.to_dict())
+
+    assign_subtask(value, assignees)
     return value
 
-### ========= Get Task Ref ========= ###
-def get_subtask_ref(stid):
+### ========= Get Subtask Ref ========= ###
+def get_subtask_ref(uid, stid):
     """
     Gets a subtask reference from firestore database
 
@@ -251,12 +270,14 @@ def get_subtask_ref(stid):
 
     Returns:
         A Subtask document from firestore that corresponds to the STID given. 
-    """    
+    """
+    # Check if user is in project
     check_valid_stid(stid)
+    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))    
     return db.collection('subtasks').document(stid).get()
 
 ### ========= Get Subtask Details ========= ###
-def get_subtask_details(stid):
+def get_subtask_details(uid, stid):
     """
     Gets a Subtask's full details and returns in dict form
 
@@ -266,6 +287,8 @@ def get_subtask_details(stid):
     Returns:
         A dict with the full details of the task
     """
+    # Check if user is in project
+    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))
     check_valid_stid(stid)
     doc = get_subtask_ref(stid)
     subtask = Subtask(doc.get("stid"), doc.get("tid"), doc.get("pid"), doc.get("eid"),doc.get("assignees"), doc.get("title"), 
@@ -273,7 +296,7 @@ def get_subtask_details(stid):
     return subtask.to_dict
 
 ### ========= Get Assign Subtask ========= ###
-def assign_subtask(stid, new_assignees):
+def assign_subtask(uid, stid, new_assignees):
     """
     Assigns new users to a subtask
 
@@ -284,6 +307,8 @@ def assign_subtask(stid, new_assignees):
     Returns:
         None
     """
+    # Check if user is in project
+    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))
     # Check if all UIDs in new_assignee are valid and in the project
     pid = get_subtask_ref(stid).get("pid")
     old_assignees = get_subtask_ref(stid).get("assignees")
@@ -308,7 +333,7 @@ def assign_subtask(stid, new_assignees):
     return
 
 ### ========= Delete Subtask ========= ###
-def delete_subtask(stid):
+def delete_subtask(uid, stid):
     """
     Deletes a subtask from firestore database
 
@@ -318,5 +343,6 @@ def delete_subtask(stid):
     Returns:
         None
     """
+    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))
     check_valid_stid(stid)
     return db.collection('subtasks').document(str(stid)).delete()
