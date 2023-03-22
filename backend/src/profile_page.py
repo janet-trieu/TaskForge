@@ -397,7 +397,7 @@ def get_user_ref(uid):
     Returns:
         A User document from firestore that corresponds to the UID given. 
     """
-    return db.collection('users').document(uid).get()
+    return db.collection('users').document(str(uid)).get()
 
 ### ========= is valid user ========= ###
 def is_valid_user(uid):
