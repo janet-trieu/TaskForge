@@ -325,5 +325,25 @@ def flask_subtask_details():
     """
     data = request.get_json()
     return get_subtask_details(data["stid"])
+
+# ASSIGNEES #
+@app.route("/task/assign", methods=["POST"])
+def flask_task_assign():
+    """
+    Assign new users to task
+    """
+    data = request.get_json()
+    assign_task(data["tid"], data["new_assignees"])
+    return
+
+@app.route("/subtask/assign", methods=["POST"])
+def flask_subtask_assign():
+    """
+    Assign new users to subtask
+    """
+    data = request.get_json()
+    assign_subtask(data["stid"], data["new_assignees"])
+    return
+
 if __name__ == "__main__":
     app.run()
