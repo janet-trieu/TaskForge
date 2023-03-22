@@ -379,7 +379,7 @@ def create_user_firestore(uid):
     """
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", "", False, False, False, [], [], [], [])
+    user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [])
     
     users_ref.document(uid).set(user.to_dict())
 
