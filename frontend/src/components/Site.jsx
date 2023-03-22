@@ -3,6 +3,7 @@ import Connections from '../pages/Connections.jsx';
 import CreateProject from '../pages/CreateProject.jsx';
 import Home from '../pages/Home.jsx'
 import Profile from '../pages/Profile.jsx';
+import Project from '../pages/Project.jsx';
 import Projects from '../pages/Projects.jsx';
 import Settings from '../pages/Settings.jsx';
 import Tasks from '../pages/Tasks.jsx';
@@ -20,6 +21,7 @@ const Site = ({ firebaseApp }) => {
           <Route path='/' element={<Home firebaseApp={firebaseApp} />} />
           <Route path='/projects' element={<Projects firebaseApp={firebaseApp} />} />
           <Route path='/projects/create' element={<CreateProject firebaseApp={firebaseApp}/>} />
+          <Route path='/projects/:pid' element={<Project firebaseApp={firebaseApp}/>} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/profile' element={<Profile firebaseApp={firebaseApp}/>} />
           <Route path='/profile/:uid' element={<Profile firebaseApp={firebaseApp} />} />

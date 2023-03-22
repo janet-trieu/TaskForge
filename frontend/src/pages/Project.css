@@ -1,0 +1,21 @@
+#project-container {
+    margin-left: 2.5vw;
+    margin-right: 2.5vw;
+    margin-top: 4vh;
+}
+
+#project-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2vh;
+}
+
+#project-buttons{
+    margin-bottom: 2vh;
+}
+
+#task-list-container {
+    display: flex;
+    overflow: auto;
+}
