@@ -25,8 +25,10 @@ def test_give_admin_type():
         pass
 
 def test_give_admin():
+    user_ref = db.collection("users").document(user_uid)
+    user_ref.update({'is_admin': False})
+    
     assert(is_admin(admin_uid))
-
     assert(not is_admin(user_uid))
     give_admin(admin_uid, user_uid)
     assert(is_admin(user_uid))
