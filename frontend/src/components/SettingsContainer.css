@@ -1,0 +1,36 @@
+.settings-container {
+    margin: 2vw;
+    padding: 2vh 2vh;
+    display: inline-flex;
+    background-color: #F4F4F4;
+    line-height: 0px;
+    flex-direction: column;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
+.divider {
+    display: block;
+    height: 2px;
+    background: #E3E3E3;
+    margin: 3px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
+    padding-top: 1.5vh;
+}
+
+.settings-container button {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    background-color: #FFFFFF;
+    color: #2E2E32;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
+img {
+    width: 2vw;
+}
