@@ -32,3 +32,14 @@ Assigned with Profile functionalities. I first started with blackbox testing bas
 I experienced many difficulties using python as many imports and modules were failing to work. This was resolved after searching online. 
 
 For Sprint 2, I will be assigned a new functionality but as of right now, profile implementation is complete but more testing is required.
+
+Week 5
+Finishing sprint 1 and starting sprint 2 was planned.
+
+Sprint 1 was implemented and the demo was done. 
+I finished backend implementation for profile.
+
+Flask and API was the main technical obstacle. Retrieving the correct status code was deeply routed in our backend implementation and which error should be returned. This was fixed by looking at old tests, using them as templates and create a solid foundation on how to properly create flask wrappers. 
+
+Sprint 2 is planned, where tasks was delegated to me. Retrospective report is also planned to be finished.
+
