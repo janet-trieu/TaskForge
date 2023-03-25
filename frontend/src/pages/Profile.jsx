@@ -4,11 +4,16 @@ import { makeRequest } from "../helpers";
 import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
 import taskIcon from '../assets/tasks.png';
+import { Modal } from "@mui/material";
+import ProfileModalContent from "../components/ProfileModalContent";
 
 const Profile = ({ firebaseApp }) => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState("Loading...");
   const [details, setDetails] = useState();
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => {setOpen(true)};
+  const handleClose = () => {setOpen(false)};
 
   const getInformation = async () => {
     if (location.pathname === '/profile') {
@@ -47,7 +52,11 @@ const Profile = ({ firebaseApp }) => {
             </div>
             <div>{details.num_connections} connection(s)</div>
           </div>
+          <button style={{marginLeft: '45vw'}} onClick={handleOpen}>Edit</button>
         </div>
+        <Modal open={open} onClose={handleClose}>
+          <ProfileModalContent details={details} setDetails={setDetails} setOpen={setOpen} firebaseApp={firebaseApp} />
+        </Modal>
         <div className="profile-row">
           <div className='profile-box'>
             <div className='profile-box-header'>

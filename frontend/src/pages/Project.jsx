@@ -12,16 +12,8 @@ const Project = ({ firebaseApp }) => {
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
-    if (!destination) {
-      return;
-    }
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
+    if (!destination) {return;}
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {return;}
 
     const start = state.columns[source.droppableId];
     const finish = state.columns[destination.droppableId];
@@ -73,6 +65,7 @@ const Project = ({ firebaseApp }) => {
     };
     setState(newState);
   };
+
   return (
     <>
       <div id='project-container'>

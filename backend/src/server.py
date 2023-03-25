@@ -71,12 +71,15 @@ def profile_update():
         email = data["email"]
         role = data["role"]
         photo_url = data["photo_url"]
-        try:
-            update_email(uid, email)
-        except ValueError:
-            return "Invalid Email"
-        update_role(uid, role)
-        update_photo(uid, photo_url)
+        display_name = data["display_name"]
+        if email:
+            try:
+                update_email(uid, email)
+            except ValueError:
+                return "Invalid Email"
+        if role: update_role(uid, role)
+        if photo_url: update_photo(uid, photo_url)
+        if display_name: update_display_name(uid, display_name)
         return Response(status=200)
 
 @app.route('/profile/tasks', methods=['GET'])

@@ -381,7 +381,7 @@ def create_user_firestore(uid):
     value = get_curr_tuid()
     user = User(uid, value, "", "", "", False, False, False, [], [], [])
     
-    users_ref.document(uid).set(user.to_dict())
+    print(users_ref.document(uid).set(user.to_dict()))
 
     # Add welcome notification to new user
     notification_welcome(uid)

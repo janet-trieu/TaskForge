@@ -19,3 +19,11 @@
     display: flex;
     overflow: auto;
 }
+
+#left-section {
+    width: 25vw;
+    height: calc(100% - 2vh);
+    background-color: red;
+    padding-left: 2vw;
+    padding-top: 2vh;
+}

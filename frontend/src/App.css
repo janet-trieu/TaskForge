@@ -104,7 +104,7 @@
   font-weight: bold;
 }
 
-#create-project-form input {
+input {
   background-color: white;
   color: black;
   padding: 1vh;
@@ -210,4 +210,25 @@
   margin-left: 2.5vw;
   margin-right: 2.5vw;
   margin-top: 4vh;
+}
+
+.task-modal {
+  background-color: white;
+  width: 50vw;
+  height: 50vh;
+  border: solid black 2px;
+  border-radius: 10px;
+}
+
+.MuiModal-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#profile-modal {
+  background-color: white;
+  border: solid black 2px;
+  border-radius: 10px;
+  padding: 2em;
 }

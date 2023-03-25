@@ -18,8 +18,10 @@ const Auth = () => {
     ],
     callbacks: {
       // Avoid redirects after sign-in.
-      signInSuccessWithAuthResult: () => {
-        makeRequest('/profile/create', 'PUT', null, firebase.auth().currentUser.uid)
+      signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+        if (authResult.additionalUserInfo.isNewUser) {
+          makeRequest('/profile/create', 'PUT', null, firebase.auth().currentUser.uid)
+        }
         return false;
       },
     },
