@@ -14,14 +14,13 @@ from firebase_admin import firestore, auth
 from datetime import datetime
 from .error import *
 from .helper import *
-from .helper import does_nid_exists
 
 db = firestore.client()
 
 # ============ HELPERS ============ #
 def create_nid(uid, type):
 
-    print(f"this is uid: {uid}")
+    # print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     if (doc_dict is None):
         count = 0
@@ -45,7 +44,6 @@ def is_connected(uid1, uid2):
     if (uid2 in connections): return True
     return False
     
-
 
 # ============ FUNCTIONS ============ #
 def get_notifications(uid):
@@ -138,8 +136,7 @@ def notification_project_invite(uid, uid_sender, pid):
             "time_sent": datetime.now(),
             "type": notification_type,
             "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s project invitation.",
-            "decline_msg": f"You declined {sender_name}'s project invitation.",
+            "response": False,
             "nid": nid
         }
     }

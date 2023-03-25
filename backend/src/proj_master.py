@@ -7,7 +7,8 @@ Functionalities:
  - invite_to_project()
  - update_project()
 '''
-from firebase_admin import firestore, auth
+from firebase_admin import firestore
+
 from .global_counters import *
 from .error import *
 from .notifications import *
@@ -43,6 +44,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     if picture == None:
         picture = "bleh.png"
     
+    print(f" THIS IS UID: {uid}")
+    print(f" THIS IS UID TYPE: {type(uid)}")
     check_valid_uid(uid)
 
     # check for invalid type inputs:

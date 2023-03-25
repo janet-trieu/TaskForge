@@ -6,10 +6,9 @@ Functionalities:
 '''
 
 from firebase_admin import firestore, auth
-from .global_counters import *
+
 from .error import *
 from .notifications import *
-from .helper import *
 
 db = firestore.client()
 
@@ -162,4 +161,41 @@ def request_leave_project(pid, uid, msg):
     }
 
     return return_dict
+
+
+def respond_project_invitation(pid, uid, msg):
+    '''
+    Respond to a project invitation
+    - either accept to be added to the project
+    - reject to not be added to the project
+
+    Arguments:
+    - pid (project id)
+    - uid (task master id)
+    - msg (string, msg to respond back to the project master)
+
+    Returns:
+    - 0 for successful response
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid, or invalid new project details
+    '''
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    check_valid_uid(uid)
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    if msg == "":
+        raise InputError("ERROR: Need to give response message to the invitation")
+
+    invite_ref = db.collection("notifications").document(uid).where("pid", "==", pid)
+
+    print(invite_ref)
+    assert pid == invite_ref.get().get("pid")
         

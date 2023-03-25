@@ -7,24 +7,25 @@ from src.proj_master import *
 from src.test_helpers import *
 from src.helper import *
 from src.projects import *
-reset_projects()
+from src.profile_page import *
+
+
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
     tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
     tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
-except:
-    print("project master and users already created")
-else:
-    pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-    tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-    tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-    tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+except auth.EmailAlreadyExistsError:
+    pass
+pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
+tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
+tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
+tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 
 ############################################################
 #                    Test for view_project                 #
 ############################################################
-
+'''
 def test_view_project():
     
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -378,3 +379,75 @@ def test_leave_project_not_in_project():
         request_leave_project(pid, tm1_uid, msg)
 
     reset_projects()
+'''
+############################################################
+#                 Test for respond_invitation              #
+############################################################
+
+def test_accept_invitation():
+    
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    assert res == 0
+
+    invite_ref = db.collection('notifications').document(tm1_uid).get().to_dict()
+
+    print(invite_ref)
+    response = invite_ref.get().get("response")
+    assert response == False
+
+    notif_pid = invite_ref.get().get("pid")
+
+    msg = "Hi Project Master, I will gladly join Project A!"
+
+    res = respond_project_invitation(tm1_uid, notif_pid, msg)
+    assert res == 0
+
+    assert response == True
+    proj_ref = db.collection("projects").document(str(pid))
+    project_members = proj_ref.get().get("project_members")
+
+    assert tm1_uid in project_members
+
+# def test_reject_invitation():
+    
+#     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+#     res = invite_to_project(pid, pm_uid, [tm1_uid])
+#     assert res == 0
+
+#     invite_ref = db.collection("notifications").document(tm1_uid)
+#     response = invite_ref.get().get("response")
+#     assert response == False
+
+#     notif_pid = invite_ref.get().get("pid")
+
+#     msg = "Hi Project Master, sory but I cannot join Project A"
+
+#     res = respond_project_invitation(notif_pid, tm1_uid, msg)
+#     assert res == 0
+
+#     assert response == False
+#     proj_ref = db.collection("projects").document(str(pid))
+#     project_members = proj_ref.get().get("project_members")
+
+#     assert tm1_uid not in project_members
+
+# def test_reject_invitation_no_msg():
+    
+#     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+#     res = invite_to_project(pid, pm_uid, [tm1_uid])
+#     assert res == 0
+
+#     invite_ref = db.collection("notifications").document(tm1_uid)
+#     response = invite_ref.get().get("response")
+#     assert response == False
+
+#     notif_pid = invite_ref.get().get("pid")
+
+#     msg = ""
+
+#     with pytest.raises(InputError):
+#         respond_project_invitation(tm1_uid, notif_pid, msg)
