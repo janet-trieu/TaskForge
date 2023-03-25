@@ -629,9 +629,8 @@ def test_accept_invitation():
     msg = "Hi Project Master, I will gladly join Project A!"
 
     header = {'Authorization': tm1_uid}
-    respond_resp = requests.post(url + "projects/invite_respond", headers=header, json={
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "accept": accept,
         "msg": msg
     })
@@ -689,9 +688,8 @@ def test_reject_invitation():
     msg = "Hi Project Master, I cannot join"
 
     header = {'Authorization': tm1_uid}
-    respond_resp = requests.post(url + "projects/invite_respond", headers=header, json={
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "accept": accept,
         "msg": msg
     })
@@ -749,9 +747,8 @@ def test_reject_invitation_no_msg():
     msg = ""
 
     header = {'Authorization': tm1_uid}
-    respond_resp = requests.post(url + "projects/invite_respond", headers=header, json={
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
         "pid": create_json,
-        "uid": tm1_uid,
         "accept": accept,
         "msg": msg
     })
@@ -761,6 +758,6 @@ def test_reject_invitation_no_msg():
     proj_ref = db.collection("projects").document(str(create_json))
     project_members = proj_ref.get().get("project_members")
 
-    assert tm1_uid in project_members
+    assert not tm1_uid in project_members
 
     reset_projects()
