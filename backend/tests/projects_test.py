@@ -9,7 +9,6 @@ from src.helper import *
 from src.projects import *
 from src.profile_page import *
 
-
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
@@ -25,7 +24,7 @@ tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 ############################################################
 #                    Test for view_project                 #
 ############################################################
-'''
+
 def test_view_project():
     
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -379,7 +378,7 @@ def test_leave_project_not_in_project():
         request_leave_project(pid, tm1_uid, msg)
 
     reset_projects()
-'''
+
 ############################################################
 #                 Test for respond_invitation              #
 ############################################################

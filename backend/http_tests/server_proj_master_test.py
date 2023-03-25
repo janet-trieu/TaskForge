@@ -5,6 +5,8 @@ import pytest
 import requests
 from src.test_helpers import *
 from src.helper import *
+from src.profile_page import *
+
 port = 5000
 url = f"http://localhost:{port}/"
 
