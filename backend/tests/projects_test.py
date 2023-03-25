@@ -391,63 +391,95 @@ def test_accept_invitation():
     res = invite_to_project(pid, pm_uid, [tm1_uid])
     assert res == 0
 
-    invite_ref = db.collection('notifications').document(tm1_uid).get().to_dict()
+    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
 
-    print(invite_ref)
-    response = invite_ref.get().get("response")
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert has_read == False
     assert response == False
+    assert pid == notif_pid
 
-    notif_pid = invite_ref.get().get("pid")
-
+    accept = True
     msg = "Hi Project Master, I will gladly join Project A!"
 
-    res = respond_project_invitation(tm1_uid, notif_pid, msg)
+    res = respond_project_invitation(notif_pid, tm1_uid, accept, msg)
     assert res == 0
 
+    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
     assert response == True
+    assert has_read == True
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
     assert tm1_uid in project_members
 
-# def test_reject_invitation():
+    reset_projects()
+
+def test_reject_invitation():
     
-#     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-#     res = invite_to_project(pid, pm_uid, [tm1_uid])
-#     assert res == 0
+    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    assert res == 0
 
-#     invite_ref = db.collection("notifications").document(tm1_uid)
-#     response = invite_ref.get().get("response")
-#     assert response == False
+    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
 
-#     notif_pid = invite_ref.get().get("pid")
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
 
-#     msg = "Hi Project Master, sory but I cannot join Project A"
+    assert has_read == False
+    assert response == False
+    assert pid == notif_pid
 
-#     res = respond_project_invitation(notif_pid, tm1_uid, msg)
-#     assert res == 0
+    accept = False
+    msg = "Hi Project Master, sorry, but I cannot join Project A"
 
-#     assert response == False
-#     proj_ref = db.collection("projects").document(str(pid))
-#     project_members = proj_ref.get().get("project_members")
+    res = respond_project_invitation(notif_pid, tm1_uid, accept, msg)
+    assert res == 0
 
-#     assert tm1_uid not in project_members
+    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
 
-# def test_reject_invitation_no_msg():
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert has_read == True
+    assert response == False
+
+    proj_ref = db.collection("projects").document(str(pid))
+    project_members = proj_ref.get().get("project_members")
+
+    assert not tm1_uid in project_members
+
+    reset_projects()
+
+def test_reject_invitation_no_msg():
     
-#     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-#     res = invite_to_project(pid, pm_uid, [tm1_uid])
-#     assert res == 0
+    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    assert res == 0
 
-#     invite_ref = db.collection("notifications").document(tm1_uid)
-#     response = invite_ref.get().get("response")
-#     assert response == False
+    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
 
-#     notif_pid = invite_ref.get().get("pid")
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
 
-#     msg = ""
+    assert has_read == False
+    assert response == False
+    assert pid == notif_pid
 
-#     with pytest.raises(InputError):
-#         respond_project_invitation(tm1_uid, notif_pid, msg)
+    accept = False
+    msg = ""
+
+    with pytest.raises(InputError):
+        respond_project_invitation(notif_pid, tm1_uid, accept, msg)
+
+    reset_projects()

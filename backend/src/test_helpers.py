@@ -19,6 +19,19 @@ def add_tm_to_project(pid, new_uid):
     })
 
 ############################################################
+#                    Helpers for Projects                  #
+############################################################
+
+def get_notif_ref_proj_invite(pid, uid):
+    doc = db.collection('notifications').document(uid).get().to_dict()
+
+    for key, val in doc.items():
+        if val.get("pid") == pid and "project_invite" in key:
+            ret = val
+    
+    return ret
+
+############################################################
 #                      Reset Database                      #
 ############################################################
 
