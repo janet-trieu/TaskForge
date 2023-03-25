@@ -249,7 +249,7 @@ def flask_request_leave_project():
 def flask_respond_project_invitation():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    res = request_leave_project(data["pid"], uid, data["accept"], data["msg"])
+    res = respond_project_invitation(data["pid"], uid, data["accept"], data["msg"])
     return dumps(res)
 
 # CONNECTION ROUTES #
