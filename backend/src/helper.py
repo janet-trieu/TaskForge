@@ -13,10 +13,16 @@ db = firestore.client()
 def check_valid_uid(uid):
     if not isinstance(uid, str):
         raise InputError('uid needs to be a string')
-
+    
+    # Auth DB
+    try:
+        auth.get_user(uid)
+    except:
+        raise InputError(f'User {uid} does not exist in Authentication database')
+    # Firestore DB
     doc = db.collection('users').document(uid).get()
     if not doc.exists:
-        raise InputError(f'uid {uid} does not exist in database')
+        raise InputError(f'User {uid} does not exist in Firestore database')
 
 def check_valid_pid(pid):
     if not isinstance(pid, int):
