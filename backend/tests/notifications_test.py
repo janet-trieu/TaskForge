@@ -57,8 +57,9 @@ def test_project_invite_notification():
     assert isinstance(actual_notification.get('time_sent'), datetime)
     assert actual_notification.get('type') == 'project_invite'
     assert actual_notification.get('uid_sender') == user_id0
-    assert actual_notification.get('accept_msg') == "You accepted John Doe's project invitation."
-    assert actual_notification.get('decline_msg') == "You declined John Doe's project invitation."
+    assert actual_notification.get('response') == False
+    # assert actual_notification.get('accept_msg') == "You accepted John Doe's project invitation."
+    # assert actual_notification.get('decline_msg') == "You declined John Doe's project invitation."
     assert actual_notification.get('nid') == 'project_invite0'
 
     # Assert user 2 has invite notification data; skip some data #

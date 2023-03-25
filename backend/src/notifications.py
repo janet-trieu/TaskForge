@@ -138,8 +138,7 @@ def notification_project_invite(uid, uid_sender, pid):
             "time_sent": datetime.now(),
             "type": notification_type,
             "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s project invitation.",
-            "decline_msg": f"You declined {sender_name}'s project invitation.",
+            "response": False,
             "nid": nid
         }
     }
