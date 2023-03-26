@@ -86,7 +86,11 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         "due_date": due_date,
         "team_strength": team_strength,
         "picture": picture,
-        "project_members": [uid]
+        "project_members": [uid],
+        "epics": [],
+        "tasks": [],
+        "subtasks": [],
+        "in_pinned": False
     }
 
     # get the current pid to return
