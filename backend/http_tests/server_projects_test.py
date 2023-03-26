@@ -23,7 +23,7 @@ pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
 tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
 tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
 tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-'''
+
 ############################################################
 #                     Test for view_project                #
 ############################################################
@@ -588,7 +588,7 @@ def test_leave_project_not_in_project():
     assert leave_resp.status_code == 403
 
     reset_projects()
-'''
+
 ############################################################
 #                 Test for respond_invitation              #
 ############################################################
