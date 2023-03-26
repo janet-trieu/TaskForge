@@ -6,12 +6,8 @@ import requests
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
-<<<<<<< HEAD
 from src.projects import *
 from src.proj_master import *
-=======
-
->>>>>>> 790334a5f339802e80f9f93f1593d35e14f3dc0a
 
 port = 5000
 url = f"http://localhost:{port}/"
@@ -654,15 +650,13 @@ def test_accept_invitation():
 
     assert tm1_uid in project_members
 
-    reset_projects()
-
 def test_reject_invitation():
     
     tm1_email = auth.get_user(tm1_uid).email
     header = {'Authorization': pm_uid}
     create_resp = requests.post(url + "projects/create", headers=header, json={
-        "name": "Project A",
-        "description": "Creating Project A for testing",
+        "name": "Project B",
+        "description": "Creating Project B for testing",
         "due_date": None,
         "team_strength": None,
         "picture": None
@@ -688,7 +682,7 @@ def test_reject_invitation():
     assert response == False
     assert create_json == notif_pid
 
-    accept = True
+    accept = False
     msg = "Hi Project Master, I cannot join"
 
     header = {'Authorization': tm1_uid}
@@ -763,5 +757,3 @@ def test_reject_invitation_no_msg():
     project_members = proj_ref.get().get("project_members")
 
     assert not tm1_uid in project_members
-
-    reset_projects()
