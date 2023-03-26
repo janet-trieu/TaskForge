@@ -478,3 +478,97 @@ def test_reject_invitation_no_msg():
         respond_project_invitation(notif_pid, tm1_uid, accept, msg)
 
     reset_projects()
+
+############################################################
+#                    Test for pin_project                  #
+############################################################
+
+def test_pin_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    res = pin_project(pid, pm_uid, is_pinned)
+    assert res == 0
+    assert is_pinned == True
+
+def test_unpin_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    res = pin_project(pid, pm_uid, is_pinned)
+    assert res == 0
+
+    # proj_ref = db.collection("projects").document(str(pid))
+    # is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == True
+
+    res = pin_project(pid, pm_uid, is_pinned)
+    assert res == 0
+    assert is_pinned == False
+
+def test_pin_invalid_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    with pytest.raises(InputError):
+        pin_project(-1, pm_uid, is_pinned)
+
+def test_unpin_invalid_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    res = pin_project(pid, pm_uid, is_pinned)
+    assert res == 0
+    assert is_pinned == True
+
+    with pytest.raises(InputError):
+        pin_project(-1, pm_uid, is_pinned)
+
+def test_pin_not_in_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    with pytest.raises(AccessError):
+        pin_project(pid, tm1_uid, is_pinned)
+    
+
+def test_unpin_not_in_project():
+    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+
+    proj_ref = db.collection("projects").document(str(pid))
+
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    res = pin_project(pid, pm_uid, is_pinned)
+    assert res == 0
+    assert is_pinned == True
+
+    with pytest.raises(AccessError):
+        pin_project(pid, tm1_uid, is_pinned)
