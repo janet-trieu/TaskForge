@@ -8,20 +8,17 @@ credentials = service_account.Credentials.from_service_account_file("taskforge-9
 
 def upload_file(fileName, destination_name):
     bucket = storage.bucket()
-    blob = bucket.blob(fileName)
-    blob.upload_from_filename(destination_name)
+    blob = bucket.blob(destination_name)
+    blob.upload_from_filename(fileName)
     blob.make_public()
     print(f"{destination_name}", blob.public_url)
-    
 
-#files = storage.Client(credentials=credentials).list_blobs(firebase_admin.storage.bucket().name) # fetch all the files in the bucket
-#for i in files: print('The public url is ', i.public_url)
 
-base_url = ''
+base_url = 'https://storage.googleapis.com/taskforge-9aea9.appspot.com/'
 
 def download_file(fileName, destination_name): 
     bucket = storage.bucket()
-    blob = bucket.blob(base_url + fileName)
+    blob = bucket.blob(fileName)
     blob.download_to_filename(destination_name)
     
 
@@ -29,7 +26,8 @@ def delete_file(fileName):
     bucket = storage.bucket()
     blob = bucket.blob(fileName)
     blob.delete()
-    
+
+upload_file('antonio.jpeg', 'ant.jpeg')
 upload_file('safety.docx', 'safety.docx')
-download_file('safety.docx', 'safe.docx')
+download_file('safety.docx', 'safse.docx')
 delete_file('safety.docx')
