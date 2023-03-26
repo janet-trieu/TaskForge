@@ -1,9 +1,5 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import auth
+from firebase_admin import firestore, auth
 
-from .profile_page import *
 from .error import *
 from .global_counters import *
 
@@ -17,10 +13,16 @@ db = firestore.client()
 def check_valid_uid(uid):
     if not isinstance(uid, str):
         raise InputError('uid needs to be a string')
-
+    
+    # Auth DB
+    try:
+        auth.get_user(uid)
+    except:
+        raise InputError(f'User {uid} does not exist in Authentication database')
+    # Firestore DB
     doc = db.collection('users').document(uid).get()
     if not doc.exists:
-        raise InputError(f'uid {uid} does not exist in database')
+        raise InputError(f'User {uid} does not exist in Firestore database')
 
 def check_valid_eid(eid):
     if not isinstance(eid, int):

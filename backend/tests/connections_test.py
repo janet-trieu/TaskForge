@@ -1,9 +1,4 @@
-import pytest
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-from src.connections import connection_request_respond, get_connection_requests, get_connected_taskmasters
+from src.connections import *
 from src.error import *
 from src.helper import *
 from src.profile_page import *

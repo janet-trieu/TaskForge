@@ -1,7 +1,3 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
 class User(object):
     """
     User Class that will be stored in the firestore database

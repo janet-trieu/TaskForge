@@ -1,9 +1,5 @@
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-from .global_counters import *
 from .profile_page import *
-from .error import InputError, AccessError
+from .error import *
 '''
 Feature: Admin
 Functionalities:

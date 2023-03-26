@@ -1,8 +1,7 @@
-from .global_counters import *
-from .error import InputError
-from .helper import check_valid_uid
-from .notifications import does_nid_exists
 from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
+
+from .error import *
+from .helper import *
 
 def connection_request_respond(uid, nid, response):
     '''
