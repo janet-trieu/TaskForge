@@ -6,8 +6,14 @@ from time import sleep
 import requests
 from src.authentication import *
 from src.test_helpers import *
+<<<<<<< HEAD
 from src.profile_page import *
  
+=======
+from src.profile_page import create_user_email
+
+
+>>>>>>> 790334a5f339802e80f9f93f1593d35e14f3dc0a
 url = 'http://127.0.0.1:5000'
 
 try:

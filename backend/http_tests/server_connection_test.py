@@ -5,7 +5,11 @@ import pytest
 import requests
 from src.test_helpers import *
 from src.helper import *
+<<<<<<< HEAD
 from src.profile_page import *
+=======
+from src.profile_page import create_user_email
+>>>>>>> 790334a5f339802e80f9f93f1593d35e14f3dc0a
 
 port = 5000
 url = f"http://localhost:{port}/"
