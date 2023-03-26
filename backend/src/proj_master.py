@@ -43,9 +43,7 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         team_strength = None
     if picture == None:
         picture = "bleh.png"
-    
-    print(f" THIS IS UID: {uid}")
-    print(f" THIS IS UID TYPE: {type(uid)}")
+
     check_valid_uid(uid)
 
     # check for invalid type inputs:

@@ -6,7 +6,8 @@ import requests
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
-
+from src.projects import *
+from src.proj_master import *
 
 port = 5000
 url = f"http://localhost:{port}/"
@@ -22,7 +23,7 @@ pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
 tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
 tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
 tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-'''
+
 ############################################################
 #                     Test for view_project                #
 ############################################################
@@ -466,7 +467,7 @@ def test_search_return_nothing():
     search_json = search_resp.json()
 
     assert search_json == []
-'''
+
 ############################################################
 #               Test for request_leave_project             #
 ############################################################
@@ -587,3 +588,172 @@ def test_leave_project_not_in_project():
     assert leave_resp.status_code == 403
 
     reset_projects()
+
+############################################################
+#                 Test for respond_invitation              #
+############################################################
+
+def test_accept_invitation():
+
+    tm1_email = auth.get_user(tm1_uid).email
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project A",
+        "description": "Creating Project A for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
+        "pid": create_json,
+        "receiver_uids": [tm1_email]
+    })
+
+    assert invite_resp.status_code == 200
+
+    invite_ref = get_notif_ref_proj_invite(create_json, tm1_uid)
+
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert has_read == False
+    assert response == False
+    assert create_json == notif_pid
+
+    accept = True
+    msg = "Hi Project Master, I will gladly join Project A!"
+
+    header = {'Authorization': tm1_uid}
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
+        "pid": create_json,
+        "accept": accept,
+        "msg": msg
+    })
+
+    assert respond_resp.status_code == 200
+
+    invite_ref = get_notif_ref_proj_invite(create_json, tm1_uid)
+
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert response == True
+    assert has_read == True
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    project_members = proj_ref.get().get("project_members")
+
+    assert tm1_uid in project_members
+
+def test_reject_invitation():
+    
+    tm1_email = auth.get_user(tm1_uid).email
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project B",
+        "description": "Creating Project B for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
+        "pid": create_json,
+        "receiver_uids": [tm1_email]
+    })
+
+    assert invite_resp.status_code == 200
+
+    invite_ref = get_notif_ref_proj_invite(create_json, tm1_uid)
+
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert has_read == False
+    assert response == False
+    assert create_json == notif_pid
+
+    accept = False
+    msg = "Hi Project Master, I cannot join"
+
+    header = {'Authorization': tm1_uid}
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
+        "pid": create_json,
+        "accept": accept,
+        "msg": msg
+    })
+
+    assert respond_resp.status_code == 200
+
+    invite_ref = get_notif_ref_proj_invite(create_json, tm1_uid)
+
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert response == False
+    assert has_read == True
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    project_members = proj_ref.get().get("project_members")
+
+    assert not tm1_uid in project_members
+
+    reset_projects()
+
+def test_reject_invitation_no_msg():
+    
+    tm1_email = auth.get_user(tm1_uid).email
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project A",
+        "description": "Creating Project A for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    invite_resp = requests.post(url + "projects/invite", headers=header, json={
+        "pid": create_json,
+        "receiver_uids": [tm1_email]
+    })
+
+    assert invite_resp.status_code == 200
+
+    invite_ref = get_notif_ref_proj_invite(create_json, tm1_uid)
+
+    notif_pid = invite_ref.get("pid")
+    has_read = invite_ref.get("has_read")
+    response = invite_ref.get("response")
+
+    assert has_read == False
+    assert response == False
+    assert create_json == notif_pid
+
+    accept = True
+    msg = ""
+
+    header = {'Authorization': tm1_uid}
+    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
+        "pid": create_json,
+        "accept": accept,
+        "msg": msg
+    })
+
+    assert respond_resp.status_code == 400
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    project_members = proj_ref.get().get("project_members")
+
+    assert not tm1_uid in project_members
