@@ -6,11 +6,11 @@ from firebase_admin import firestore
 from firebase_admin import auth
 
 from src.error import *
-from src.helper import *
 from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
 from src.taskboard import *
+from src.proj_master import *
 
 # ============ SET UP ============ #
 db = firestore.client()
@@ -25,6 +25,20 @@ except auth.EmailAlreadyExistsError:
 
 # Users may already exist
 
-uid1 = auth.get_user_by_email("taskboardtest1@gmail.com")
-uid2 = auth.get_user_by_email("taskboardtest2@gmail.com")
-uid3 = auth.get_user_by_email("taskboardtest3@gmail.com")
+uid1 = auth.get_user_by_email("taskboardtest1@gmail.com").uid
+uid2 = auth.get_user_by_email("taskboardtest2@gmail.com").uid
+uid3 = auth.get_user_by_email("taskboardtest3@gmail.com").uid
+
+pid1 = create_project(str(uid1), "boobs", "butts", "", None, "")
+
+def test_create_epic():
+    eid1 = create_epic(str(uid1), pid1, "Women", "kill all men", "")
+    epic = get_epic_details(uid1, eid1)
+    delete_epic(uid1, eid1)
+    return
+
+def test_create_task():
+    eid1 = create_epic(str(uid1), pid1, "Women", "kill all men", "")
+    epic = get_epic_details(uid1, eid1)
+    tid1 = create_task(str(uid1), pid1, eid1, [uid1], "booties", "bootilicious", "1679749200", None, None, "Not Started")
+    print(tid1)
