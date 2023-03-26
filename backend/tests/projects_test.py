@@ -418,11 +418,9 @@ def test_accept_invitation():
 
     assert tm1_uid in project_members
 
-    reset_projects()
-
 def test_reject_invitation():
     
-    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
+    pid = create_project(pm_uid, "Project B", "Projec B xyz", None, None, None)
 
     res = invite_to_project(pid, pm_uid, [tm1_uid])
     assert res == 0
@@ -455,8 +453,6 @@ def test_reject_invitation():
     project_members = proj_ref.get().get("project_members")
 
     assert not tm1_uid in project_members
-
-    reset_projects()
 
 def test_reject_invitation_no_msg():
     
