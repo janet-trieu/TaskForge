@@ -75,14 +75,19 @@ users_ref.document('5').set(e.to_dict())
 users_ref = db.collection('users')
 query = users_ref.where('is_admin', '==', 'True')
 
-docs = db.collection('users').where('is_admin', '==', True).stream()
-for doc in docs:
-    print(f'{doc.id} => {doc.to_dict()}')
+#docs = db.collection('users').where('is_admin', '==', True).stream()
+#for doc in docs:
+#    print(f'{doc.id} => {doc.to_dict()}')
     
 
-docs = db.collection('users').where('uid', '>', 3).stream()
+docs = db.collection('users').where('uid', '>', 6).stream()
+dict_list = []
 for doc in docs:
-    print(f'{doc.id} => {doc.to_dict()}')
+    #dict_list.append(doc.to_dict())
+    result = doc.to_dict()
+    if (result == {}) : print("none")
+    print(result)
+#print(result.get('display_name'))
 
 
 #ADDING NEW COLLECTION, PROJECTS
@@ -90,11 +95,11 @@ for doc in docs:
 p0 = Project(0, 0, datetime.datetime.now())
 t0 = Task(0, 0, datetime.datetime.now())
 
-projects_ref = db.collection('projects')
+projects_ref = db.collection("projects")
 projects_ref.document('0').set(p0.to_dict())
 
 
 #ADDING TASKS AS A SUBCOLLECTION INSIDE OF A PROJECT DOCUMENT
-p0_ref = db.collection('projects').document('0')
+p0_ref = db.collection("projects").document('0')
 t0_ref = p0_ref.collection('tasks').document('0')
 t0_ref.set(t0.to_dict())
