@@ -252,6 +252,13 @@ def flask_respond_project_invitation():
     res = respond_project_invitation(data["pid"], uid, data["accept"], data["msg"])
     return dumps(res)
 
+@app.route("/projects/pin", methods=["POST"])
+def flask_pin_project():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    res = pin_project(data["pid"], uid, data["is_pinned"])
+    return dumps(res)
+
 # CONNECTION ROUTES #
 
 @app.route("/connections/request_respond", methods=["POST"])

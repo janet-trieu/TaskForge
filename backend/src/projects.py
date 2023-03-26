@@ -248,3 +248,48 @@ def respond_project_invitation(pid, uid, accept, msg):
     # TODO
 
     return 0
+
+def pin_project(pid, uid, is_pinned):
+    '''
+    Pin or unpin a project 
+    - has to be in the project
+    - cannot "pin" a pinned project
+
+    Arguments:
+    - pid (project id)
+    - uid (project or task master id)
+    - is_pinned (bool)
+
+    Returns:
+    - 0 for successful response
+
+    Raises:
+    - AccessError for uid not in project
+    - InputError for invalid pid, trying to pin a pinned project 
+        or vice versa
+    '''
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    check_valid_uid(uid)
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    if uid not in proj_ref.get().get("project_members"):
+        raise AccessError(f"ERROR: Cannot pin/unpin a project you are not in")
+
+    curr_pin = proj_ref.get().get("is_pinned")
+
+    # specified project is not pinned, and user wants to pin
+    if (curr_pin == False and is_pinned == True) or (curr_pin == True and is_pinned == False):
+        proj_ref.update({
+        "is_pinned": is_pinned
+        })
+
+    else:
+        raise InputError(f"ERROR: Cannot pin/unpin a project that is already pinned/unpinned")
+
+    return 0
