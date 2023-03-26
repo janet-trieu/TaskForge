@@ -757,3 +757,103 @@ def test_reject_invitation_no_msg():
     project_members = proj_ref.get().get("project_members")
 
     assert not tm1_uid in project_members
+
+############################################################
+#                     Test for pin_project                 #
+############################################################
+def test_pin_unpin_project():
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project A",
+        "description": "Creating Project A for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    # pin project
+    pin_resp = requests.post(url + "projects/pin", headers=header, json={
+        "pid": create_json,
+        "is_pinned": True
+    })
+    assert pin_resp.status_code == 200
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == True
+
+    # unpin project
+    unpin_resp = requests.post(url + "projects/pin", headers=header, json={
+        "pid": create_json,
+        "is_pinned": False
+    })
+    assert unpin_resp.status_code == 200
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    # unpin project again
+    unpin_resp = requests.post(url + "projects/pin", headers=header, json={
+        "pid": create_json,
+        "is_pinned": False
+    })
+    assert unpin_resp.status_code == 400
+
+def test_pin_invalid_project():
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project A",
+        "description": "Creating Project A for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    # pin project
+    pin_resp = requests.post(url + "projects/pin", headers=header, json={
+        "pid": -1,
+        "is_pinned": True
+    })
+    assert pin_resp.status_code == 400
+
+def test_pin_not_in_project():
+    header = {'Authorization': pm_uid}
+    create_resp = requests.post(url + "projects/create", headers=header, json={
+        "name": "Project A",
+        "description": "Creating Project A for testing",
+        "due_date": None,
+        "team_strength": None,
+        "picture": None
+    })
+    assert create_resp.status_code == 200
+    create_json = create_resp.json()
+
+    proj_ref = db.collection("projects").document(str(create_json))
+    is_pinned = proj_ref.get().get("is_pinned")
+
+    assert is_pinned == False
+
+    # pin project
+    header = {'Authorization': tm1_uid}
+    pin_resp = requests.post(url + "projects/pin", headers=header, json={
+        "pid": create_json,
+        "is_pinned": True
+    })
+    assert pin_resp.status_code == 403
