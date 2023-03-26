@@ -8,6 +8,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
+import re
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -28,11 +29,30 @@ def create_epic(uid, pid, title, description, colour):
     # Check whether UID or PID is valid and if UID is in PID
     check_user_in_project(uid, pid)
 
+    # check for invalid value inputs:
+    if len(title) >= 50:
+        raise InputError("Epic name is too long. Please keep it below 50 characters.")
+    if len(title) <= 0:
+        raise InputError("Epic requires a name!!!")
+    if len(description) >= 1000:
+        raise InputError("Epic description is too long. Please keep it below 1000 characters.")
+    if len(description) <= 0:
+        raise InputError("Epic requies a description!!!")
+
+    #checks if colour is a valid hex code
+    match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colour)
+    if not match:
+        raise InputError("Colour is not a valid hex colour")
+
     epic_ref = db.collection("epics")
     value = get_curr_eid()
     epic = Epic(value, pid, [], title, description, colour)
     epic_ref.document(str(value)).set(epic.to_dict())
+    #TODO add to projects
+    """
+    db.collection("projects").document(str(pid)).update({"epics"})
     update_eid()
+    """
     return value
 
 ### ========= Get Epic Ref ========= ###
@@ -68,7 +88,7 @@ def get_epic_details(uid, eid):
 
     doc = get_epic_ref(eid)
     epic = Epic(doc.get("eid"), doc.get("pid"), doc.get("tasks"), doc.get("title"), doc.get("description"), doc.get("colour"))
-    return epic.to_dict
+    return epic.to_dict()
 
 ### ========= Delete Epic ========= ###
 def delete_epic(uid, eid):
@@ -171,7 +191,7 @@ def get_task_details(uid, tid):
     task = Task(doc.get("tid"), doc.get("pid"), doc.get("eid"), doc.get("assignees"), doc.get("subtasks"), doc.get("title"), 
                 doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"), doc.get("comments"),
                 doc.get("flagged"), doc.get("completed"))
-    return task.to_dict
+    return task.to_dict()
 
 ### ========= Get Assign Task ========= ###
 def assign_task(uid, tid, new_assignees):
@@ -200,10 +220,11 @@ def assign_task(uid, tid, new_assignees):
     added_assignees = list(set(new_assignees) - set(old_assignees))
 
     # remove task from assignees that are no longer assigned
-    for uid in removed_assignees:
-        user = get_user_ref(uid)
+    for new_uid in removed_assignees:
+        user = get_user_ref(new_uid)
         tasks = user.get("tasks")
-        db.collection('users').document(new_uid).update({"tasks": tasks.remove(tid)})
+        tasks.remove(tid)
+        db.collection('users').document(new_uid).update({"tasks": tasks})
 
     # add task to new assignees
     for new_uid in added_assignees:
@@ -230,7 +251,7 @@ def delete_task(uid, tid):
     """
     # Check if user is in project
     check_valid_tid(tid)
-    check_user_in_project(uid, get_task_ref(uid, tid).get("pid"))
+    check_user_in_project(uid, get_task_ref(tid).get("pid"))
 
     # Delete all subtasks under it
     task_ref = get_task_ref(tid)
@@ -241,13 +262,13 @@ def delete_task(uid, tid):
     # Remove task from epic
     epic = get_epic_ref(task_ref.get("eid"))
     tasks = epic.get("tasks")
-    tasks.remove("tid")
-    epic.update({"tasks": tasks})
+    tasks.remove(tid)
+    db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
 
     # Remove task from assigned users
-    assignees = db.collection('tasks').document(str(tid)).get("assignees")
+    assignees = db.collection('tasks').document(str(tid)).get().get("assignees")
     for assignee in assignees:
-        assigned_tasks = db.collection('users').document(str(assignee)).get("tasks")
+        assigned_tasks = db.collection('users').document(str(assignee)).get().get("tasks")
         assigned_tasks.remove(tid)
         db.collection('users').document(str(assignee)).update({"tasks": assigned_tasks})
 
@@ -321,7 +342,7 @@ def get_subtask_details(uid, stid):
     subtask = Subtask(doc.get("stid"), doc.get("tid"), doc.get("pid"), doc.get("eid"),doc.get("assignees"), doc.get("title"), 
                 doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"),
                 doc.get("comments"), doc.get("flagged"), doc.get("completed"))
-    return subtask.to_dict
+    return subtask.to_dict()
 
 ### ========= Get Assign Subtask ========= ###
 def assign_subtask(uid, stid, new_assignees):
