@@ -9,6 +9,7 @@ from firebase_admin import firestore, auth
 
 from .error import *
 from .notifications import *
+from .test_helpers import *
 
 db = firestore.client()
 
@@ -163,7 +164,7 @@ def request_leave_project(pid, uid, msg):
     return return_dict
 
 
-def respond_project_invitation(pid, uid, msg):
+def respond_project_invitation(pid, uid, accept, msg):
     '''
     Respond to a project invitation
     - either accept to be added to the project
@@ -194,8 +195,101 @@ def respond_project_invitation(pid, uid, msg):
     if msg == "":
         raise InputError("ERROR: Need to give response message to the invitation")
 
-    invite_ref = db.collection("notifications").document(uid).where("pid", "==", pid)
+    doc = db.collection("notifications").document(uid).get().to_dict()
 
-    print(invite_ref)
-    assert pid == invite_ref.get().get("pid")
-        
+    for key, val in doc.items():
+        if val.get("pid") == pid and "project_invite" in key:
+            notif_id = key
+            invite_ref = val
+
+    time_sent = invite_ref.get("time_sent")
+    notif_type = invite_ref.get("notif_type")
+
+    pm_uid = proj_ref.get().get("uid")
+    pm_name = auth.get_user(pm_uid).display_name
+
+    # if accepted == True, change the notification to be read, and for the response to be set as True
+    # else, change the notification to be read, but response kept as False
+    if accept == True:
+        notification = {
+            notif_id : {
+                "has_read": True,
+                "notification_msg": f"{pm_name} has invited you to join {proj_ref.get().get('name')}.",
+                "pid": pid,
+                "time_sent": time_sent,
+                "type": notif_type,
+                "uid_sender": pm_uid,
+                "response": True,
+                "nid": notif_id
+            }
+        }
+
+        db.collection("notifications").document(uid).update(notification)
+
+        # add the invited task master to the project
+        add_tm_to_project(pid, uid)
+    else:
+        notification = {
+            notif_id : {
+                "has_read": True,
+                "notification_msg": f"{pm_name} has invited you to join {proj_ref.get().get('name')}.",
+                "pid": pid,
+                "time_sent": time_sent,
+                "type": notif_type,
+                "uid_sender": pm_uid,
+                "response": False,
+                "nid": notif_id
+            }
+        }
+
+    db.collection("notifications").document(uid).update(notification)
+
+    # send notification to the project master
+    # TODO
+
+    return 0
+
+def pin_project(pid, uid, is_pinned):
+    '''
+    Pin or unpin a project 
+    - has to be in the project
+    - cannot "pin" a pinned project
+
+    Arguments:
+    - pid (project id)
+    - uid (project or task master id)
+    - is_pinned (bool)
+
+    Returns:
+    - 0 for successful response
+
+    Raises:
+    - AccessError for uid not in project
+    - InputError for invalid pid, trying to pin a pinned project 
+        or vice versa
+    '''
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    check_valid_uid(uid)
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    if uid not in proj_ref.get().get("project_members"):
+        raise AccessError(f"ERROR: Cannot pin/unpin a project you are not in")
+
+    curr_pin = proj_ref.get().get("is_pinned")
+
+    # specified project is not pinned, and user wants to pin
+    if (curr_pin == False and is_pinned == True) or (curr_pin == True and is_pinned == False):
+        proj_ref.update({
+        "is_pinned": is_pinned
+        })
+
+    else:
+        raise InputError(f"ERROR: Cannot pin/unpin a project that is already pinned/unpinned")
+
+    return 0
