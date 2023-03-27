@@ -43,7 +43,7 @@ def view_project(pid, uid):
     project_name = proj_ref.get().get("name")
     description = proj_ref.get().get("description")
     project_members = proj_ref.get().get("project_members")
-
+    tasks = proj_ref.get().get("tasks")
     return_dict = {}
 
     if uid in proj_ref.get().get("project_members"):
@@ -52,7 +52,7 @@ def view_project(pid, uid):
             "name": project_name,
             "description": description,
             "project_members": project_members,
-            "tasks": []
+            "tasks": tasks
         }
     else:
         return_dict = {

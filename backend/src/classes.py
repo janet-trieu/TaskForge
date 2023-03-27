@@ -97,7 +97,7 @@ class Task():
         deadline (int): an int that corresponds to the unix time the task is supposed to be finished
         workload (int): an int that corresponds to the estimated number of days required to finish this task
         priority (str): a string that corresponds to the prioty of the task. It is either "High", "Moderate", or "Low"
-        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing", or "Done"
+        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing","Blocked" or "Done"
         comments (list): a list of CIDs (int) corresponding to a specific comment
         flagged (boolean): a boolean that corresponds to whether the task has been flagged or not
         completed (int): an int that corresponds to the unix time that the task has been completed

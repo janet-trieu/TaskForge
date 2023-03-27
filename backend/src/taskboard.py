@@ -9,6 +9,7 @@ from .notifications import *
 from .helper import *
 from .profile_page import *
 import re
+import time
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -44,15 +45,17 @@ def create_epic(uid, pid, title, description, colour):
     if not match:
         raise InputError("Colour is not a valid hex colour")
 
+    #Add to firestore
     epic_ref = db.collection("epics")
     value = get_curr_eid()
     epic = Epic(value, pid, [], title, description, colour)
     epic_ref.document(str(value)).set(epic.to_dict())
-    #TODO add to projects
-    """
-    db.collection("projects").document(str(pid)).update({"epics"})
+    # Add to project
+    project_epics = db.collection("projects").document(str(pid)).get().get("epics")
+    project_epics.append(value)
+    db.collection("projects").document(str(pid)).update({"epics": project_epics})
+    #Update eid
     update_eid()
-    """
     return value
 
 ### ========= Get Epic Ref ========= ###
@@ -104,7 +107,8 @@ def delete_epic(uid, eid):
     """
     # Check if user is in project
     check_valid_eid(eid)
-    check_user_in_project(uid, get_epic_ref(eid).get("pid"))
+    pid = get_epic_ref(eid).get("pid")
+    check_user_in_project(uid, pid)
     tasks = get_epic_ref(eid).get("tasks")
 
     # Remove eid in every child task and subtask
@@ -114,6 +118,10 @@ def delete_epic(uid, eid):
         for subtask in subtasks:
             db.collection('subtasks').document(str(subtask)).update({'eid': ""})
         task_doc.update({'eid': ""})
+
+    project_epics = db.collection("projects").document(str(pid)).get().get("epics")
+    project_epics.remove(eid)
+    db.collection("projects").document(str(pid)).update({"epics": project_epics})
 
     db.collection('epics').document(str(eid)).delete()
     return
@@ -153,6 +161,10 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
     epic_tasks.append(value)
     db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
+    #Add to project
+    project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+    project_tasks.append(value)
+    db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
     # update tid
     update_tid()
     return value
@@ -235,6 +247,7 @@ def assign_task(uid, tid, new_assignees):
         else:
             tasks.append(tid)
             db.collection('users').document(new_uid).update({"tasks": tasks})
+    # 
     db.collection('tasks').document(str(tid)).update({"assignees": new_assignees})
     return
 
@@ -251,7 +264,8 @@ def delete_task(uid, tid):
     """
     # Check if user is in project
     check_valid_tid(tid)
-    check_user_in_project(uid, get_task_ref(tid).get("pid"))
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
 
     # Delete all subtasks under it
     task_ref = get_task_ref(tid)
@@ -271,6 +285,11 @@ def delete_task(uid, tid):
         assigned_tasks = db.collection('users').document(str(assignee)).get().get("tasks")
         assigned_tasks.remove(tid)
         db.collection('users').document(str(assignee)).update({"tasks": assigned_tasks})
+
+    #Remove from projects
+    project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+    project_tasks.remove(tid)
+    db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
 
     db.collection('tasks').document(str(tid)).delete()
     return 
@@ -305,6 +324,10 @@ def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, 
     subtask_ref.document(value).set(subtask.to_dict())
 
     assign_subtask(uid, value, assignees)
+
+    project_subtasks = db.collection("projects").document(str(pid)).get().get("subtasks")
+    project_subtasks.append(value)
+    db.collection("projects").document(str(pid)).update({"subtasks": project_subtasks})
     update_stid()
     return value
 
@@ -340,8 +363,7 @@ def get_subtask_details(uid, stid):
     check_valid_stid(stid)
     doc = get_subtask_ref(stid)
     subtask = Subtask(doc.get("stid"), doc.get("tid"), doc.get("pid"), doc.get("eid"),doc.get("assignees"), doc.get("title"), 
-                doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"),
-                doc.get("comments"), doc.get("flagged"), doc.get("completed"))
+                doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"))
     return subtask.to_dict()
 
 ### ========= Get Assign Subtask ========= ###
@@ -397,7 +419,8 @@ def delete_subtask(uid, stid):
     Returns:
         None
     """
-    check_user_in_project(uid, get_subtask_ref(stid).get("pid"))
+    pid = get_subtask_ref(stid).get("pid")
+    check_user_in_project(uid, pid)
     check_valid_stid(stid)
     # Remove task from assigned users
     assignees = db.collection('tasks').document(str(stid)).get("assignees")
@@ -405,8 +428,15 @@ def delete_subtask(uid, stid):
         assigned_subtasks = db.collection('users').document(str(assignee)).get("subtasks")
         assigned_subtasks.remove(stid)
         db.collection('users').document(str(assignee)).update({"tasks": assigned_subtasks})
+
+    #Remove from project
+    project_subtasks = db.collection("projects").document(str(pid)).get().get("subtasks")
+    project_subtasks.remove(stid)
+    db.collection("projects").document(str(pid)).update({"subtasks": project_subtasks})
+
     return db.collection('subtasks').document(str(stid)).delete()
 
+#TODO
 ### ========= Search Taskboard ========= ###
 def search_taskboard(uid, pid, query):
     """
@@ -420,7 +450,21 @@ def search_taskboard(uid, pid, query):
     Returns:
         A list of tasks that match the query
     """
-    return
+    check_user_in_project(uid, pid)
+    project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+
+    tasks = {}
+    #task ID, task name, description and/or deadline
+    for task in project_tasks:
+        task_ref = db.collection("tasks").document(str(task)).get()
+        title = task_ref.get("title")
+        description = task_ref.get("description")
+        deadline = task_ref.get("deadline")
+
+        if query.lower() in title.lower() or query.lower() in description.lower() or query.lower() in deadline.lower():
+            tasks.append(task)
+
+    return tasks
 
 ### ========= Comment Task ========= ###
 def comment_task(uid, tid, comment):
@@ -435,7 +479,24 @@ def comment_task(uid, tid, comment):
     Returns:
         None
     """
-    return
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_valid_stid(tid)
+
+    if len(comment) <= 0:
+        raise InputError("Comment must not be empty")
+    if len(comment) > 1000:
+        raise InputError("Comment must not be longer than 1000 characters")
+    
+    data = {
+        "time": time.time(),
+        "uid": uid,
+        "display_name": get_display_name(uid),
+        "comment": comment,
+    }
+    comments = db.collection("tasks").document(str(tid)).get().get("comments")
+    comments.append(data)
+    db.collection("tasks").document(str(tid)).update({"comments": comments})
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):
@@ -444,6 +505,71 @@ def flag_task(uid, tid, boolean):
 
     Args:
         uid (str): id of the user
+        tid (int): id of the task that will be flagged/unflagged
     """
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_valid_stid(tid)
+
+    db.collection("tasks").document(str(tid)).update({"flagged": boolean})
+
+### ========= Change status ========= ###
+def change_status(uid, tid, status):
+    """
+    Changes the status of a task
+
+    Args:
+        uid (str): id of the user
+        tid (int): id of the task that will be changed
+        status (str): the new status of the task
     
-    return
+    Returns:
+        None
+    """
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_valid_stid(tid)
+
+    if status is not "Not Started" or status is not "In Progress" or status is not "Blocked" or status is not "In Review/Testing" or status is not "Completed":
+        raise InputError("Not a valid status")
+    
+    if status is "Completed":
+        db.collection("tasks").document(str(tid)).update({"completed": time.time()})
+    else:
+        db.collection("tasks").document(str(tid)).update({"completed": ""})
+    db.collection("tasks").document(str(tid)).update({"status": status})
+
+### ========= Show Non-Hidden Tasks ========= ###
+def show_tasks(uid, pid, hidden):
+    """
+    Retrieves a list of tasks based on whether the hidden boolean is true or false.
+    If true, retrieve all tasks. If false, only show non-hidden tasks.
+
+    Args:
+        uid (str): user that is requesting tasks
+        pid (int): id of the project that will be accessed
+        hidden (boolean): boolean that determines if the tasks will include hidden or non-hidden tasks
+
+    Returns:
+        A list of tids based on the hidden argument
+    """
+    task_list = []
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_valid_stid(tid)
+    curr_time = time.time()
+
+    if hidden == True:
+        return db.collection("projects").document(str(pid)).get().get("tasks")
+    else:
+        tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+        for task in tasks:
+            time = db.collection("tasks").document(str(task)).get().get("completed")
+            # if task has been completed and it has been more than 2 weeks since completed
+            # this task is hidden
+            if time.isdigit() and (curr_time - time) >= 604800 * 2:
+                pass
+            # this task is not hidden
+            else:
+                task_list.append(task)
+        return task_list
