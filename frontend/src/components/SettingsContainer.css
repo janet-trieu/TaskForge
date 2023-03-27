@@ -8,14 +8,18 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
-.divider {
+.settings-description {
+    color: gray;
+}
+
+.settings-divider {
     display: block;
     height: 2px;
     background: #E3E3E3;
     margin: 3px;
 }
 
-.buttons {
+.settings-buttons {
     display: flex;
     flex-direction: row;
     gap: 1vw;
