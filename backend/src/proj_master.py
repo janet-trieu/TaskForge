@@ -86,7 +86,13 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         "picture": picture,
         "project_members": [uid],
         "epics": [],
-        "tasks": [],
+        "tasks": {
+            "Not Started": [],
+            "In Progress": [],
+            "Blocked": [],
+            "In Review/Testing": [],
+            "Completed": []
+        },
         "subtasks": [],
         "is_pinned": False
     }

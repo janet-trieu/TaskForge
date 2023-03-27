@@ -142,7 +142,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
         deadline (int): an int that corresponds to the unix time the task is supposed to be finished
         workload (int): an int that corresponds to the estimated number of days required to finish this task
         priority (str): a string that corresponds to the prioty of the task. It is either "High", "Moderate", or "Low"
-        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing", or "Done"
+        status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "In Review/Testing", or "Completed"
 
     Returns:
         An int that corresponds to the id to the task.
@@ -152,19 +152,28 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
 
     task_ref = db.collection("tasks")
     value = get_curr_tid()
-    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, status, [], False, "")
+    # Check Status
+    if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
+        raise InputError("Not a valid status")
+    
+    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
     #Assign task to assignees
     assign_task(uid, value, assignees)
+
     # Add task to epic
     epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
     epic_tasks.append(value)
     db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
     #Add to project
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
-    project_tasks.append(value)
+    project_tasks.get(status).append(value)
     db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
+
+    # Not started is default but will be changed to status
+    change_status(uid, value, status)
+    
     # update tid
     update_tid()
     return value
@@ -288,7 +297,8 @@ def delete_task(uid, tid):
 
     #Remove from projects
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
-    project_tasks.remove(tid)
+    status = db.collection("tasks").document(str(tid)).get().get("status")
+    project_tasks.get(status).remove(tid)
     db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
 
     db.collection('tasks').document(str(tid)).delete()
@@ -509,7 +519,7 @@ def flag_task(uid, tid, boolean):
     """
     pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
-    check_valid_stid(tid)
+    check_valid_tid(tid)
 
     db.collection("tasks").document(str(tid)).update({"flagged": boolean})
 
@@ -528,15 +538,23 @@ def change_status(uid, tid, status):
     """
     pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
-    check_valid_stid(tid)
+    check_valid_tid(tid)
+    old_status = db.collection("tasks").document(str(tid)).get().get("status")
 
-    if status is not "Not Started" or status is not "In Progress" or status is not "Blocked" or status is not "In Review/Testing" or status is not "Completed":
+    if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
-    if status is "Completed":
+    if status == "Completed":
         db.collection("tasks").document(str(tid)).update({"completed": time.time()})
     else:
         db.collection("tasks").document(str(tid)).update({"completed": ""})
+
+    # Remove from old status in project and add to status in project
+    tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+    tasks.get(old_status).remove(tid)
+    tasks.get(status).append(tid)
+
+    db.collection("projects").document(str(pid)).update({"tasks": tasks})
     db.collection("tasks").document(str(tid)).update({"status": status})
 
 ### ========= Show Non-Hidden Tasks ========= ###
@@ -556,7 +574,7 @@ def show_tasks(uid, pid, hidden):
     task_list = []
     pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
-    check_valid_stid(tid)
+    check_valid_tid(tid)
     curr_time = time.time()
 
     if hidden == True:

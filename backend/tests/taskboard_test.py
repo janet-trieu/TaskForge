@@ -60,7 +60,7 @@ def test_assign_task():
     task1 = get_task_details(uid1, tid1)
     assert task1 == {"tid": tid1, "pid": pid1, "eid": eid1, "assignees": [uid2], "subtasks": [], "title": "Task1", "description": "Task1 Description",
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
-    delete_task(uid1, tid1)
-    delete_epic(uid1, eid1)
+    #delete_task(uid1, tid1)
+    #delete_epic(uid1, eid1)
 
     
