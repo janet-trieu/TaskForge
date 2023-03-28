@@ -60,7 +60,17 @@ def test_assign_task():
     task1 = get_task_details(uid1, tid1)
     assert task1 == {"tid": tid1, "pid": pid1, "eid": eid1, "assignees": [uid2], "subtasks": [], "title": "Task1", "description": "Task1 Description",
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
-    #delete_task(uid1, tid1)
-    #delete_epic(uid1, eid1)
+    delete_task(uid1, tid1)
+    delete_epic(uid1, eid1)
 
-    
+def test_show_taskboard():
+    eid1 = create_epic(str(uid1), pid1, "Epic1", "Epic1 Description", "#ffa28e")
+
+    tid1 = create_task(str(uid1), pid1, eid1, [uid1], "Task1", "Task1 Description", "1679749200", None, None, "Not Started")
+    task1 = get_task_details(uid1, tid1)
+    assert task1 == {"tid": tid1, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task1", "description": "Task1 Description",
+                     "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
+    taskboard = get_taskboard(uid1, pid1, True)
+    assert taskboard == {'Not Started': [{'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 
+                                          'status': 'Not Started', 'assignees': ['gAsG8EKXiDTFXnMj2elXMV8uiJp2'], 'epic': 'Epic1'}], 
+                                          'In Progress': [], 'Blocked': [], 'In Review/Testing': [], 'Completed': []}

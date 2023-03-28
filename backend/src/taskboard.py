@@ -168,7 +168,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
     #Add to project
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
-    project_tasks.get(status).append(value)
+    project_tasks.get("Not Started").append(value)
     db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
 
     # Not started is default but will be changed to status
@@ -446,7 +446,6 @@ def delete_subtask(uid, stid):
 
     return db.collection('subtasks').document(str(stid)).delete()
 
-#TODO
 ### ========= Search Taskboard ========= ###
 def search_taskboard(uid, pid, query):
     """
@@ -557,7 +556,7 @@ def change_status(uid, tid, status):
     db.collection("projects").document(str(pid)).update({"tasks": tasks})
     db.collection("tasks").document(str(tid)).update({"status": status})
 
-### ========= Show Non-Hidden Tasks ========= ###
+### ========= List of Hidden/Non-Hidden Tasks ========= ###
 def show_tasks(uid, pid, hidden):
     """
     Retrieves a list of tasks based on whether the hidden boolean is true or false.
@@ -572,22 +571,68 @@ def show_tasks(uid, pid, hidden):
         A list of tids based on the hidden argument
     """
     task_list = []
-    pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
-    check_valid_tid(tid)
     curr_time = time.time()
 
+    tasks = db.collection("projects").document(str(pid)).get().get("tasks")
+    task_list.extend(tasks.get("Not Started"))
+    task_list.extend(tasks.get("In Progress"))
+    task_list.extend(tasks.get("Blocked"))
+    task_list.extend(tasks.get("In Review/Testing"))
+
     if hidden == True:
-        return db.collection("projects").document(str(pid)).get().get("tasks")
+        task_list.extend(tasks.get("Completed"))
+        return task_list
     else:
-        tasks = db.collection("projects").document(str(pid)).get().get("tasks")
-        for task in tasks:
-            time = db.collection("tasks").document(str(task)).get().get("completed")
+        completed_tasks = tasks.get("Completed")
+        for task in completed_tasks:
+            task_time = db.collection("tasks").document(str(task)).get().get("completed")
             # if task has been completed and it has been more than 2 weeks since completed
             # this task is hidden
-            if time.isdigit() and (curr_time - time) >= 604800 * 2:
+            if task_time.isdigit() and (curr_time - task_time) >= 604800 * 2:
                 pass
             # this task is not hidden
             else:
                 task_list.append(task)
         return task_list
+    
+def get_taskboard(uid, pid, hidden):
+    """
+    Retrieves every task in a project. Shows or does not show hidden tasks depending on whether
+    hidden is True or False
+
+    Args:
+        uid (str): id of the user requesting the tasks
+        pid (int): id of the project's tasks that is being requested
+        hidden (boolean): boolean on whether hidden or non-hidden tasks are returned
+
+    Returns:
+        a dict of statuses with tasks details inside. Details include: 
+        Task details include: id, title, epic, deadline, priority, status, assignees
+    """
+    taskboard_list = show_tasks(uid, pid, hidden)
+    task_list = {
+        "Not Started": [],
+        "In Progress": [],
+        "Blocked": [],
+        "In Review/Testing": [],
+        "Completed": []
+    }
+    for task in taskboard_list:
+        task_ref = get_task_ref(task)
+        pid = task_ref.get("pid")
+        eid = task_ref.get("eid")
+        task_details = {
+            "tid": task,
+            "title": task_ref.get("title"),
+            "deadline": task_ref.get("deadline"),
+            "priority": task_ref.get("priority"),
+            "status": task_ref.get("status"),
+            "assignees": task_ref.get("assignees")
+        }
+        if eid == "" or eid == None:
+            task_details['epic'] = "None"
+        else:
+            task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
+        task_list[task_ref.get("status")].append(task_details)
+    return task_list
