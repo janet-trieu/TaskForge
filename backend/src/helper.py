@@ -1,9 +1,5 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import auth
+from firebase_admin import firestore, auth
 
-from .profile_page import *
 from .error import *
 from .global_counters import *
 
@@ -17,10 +13,16 @@ db = firestore.client()
 def check_valid_uid(uid):
     if not isinstance(uid, str):
         raise InputError('uid needs to be a string')
-
+    
+    # Auth DB
+    try:
+        auth.get_user(uid)
+    except:
+        raise InputError(f'User {uid} does not exist in Authentication database')
+    # Firestore DB
     doc = db.collection('users').document(uid).get()
     if not doc.exists:
-        raise InputError(f'uid {uid} does not exist in database')
+        raise InputError(f'User {uid} does not exist in Firestore database')
 
 def check_valid_pid(pid):
     if not isinstance(pid, int):
@@ -53,6 +55,16 @@ def check_valid_achievement(achievement_str):
     doc = db.collection('achievements').document(achievement_str).get()
     if not doc.exists:
         raise InputError(f'achievement_str {achievement_str} does not exist in database')
+    
+def does_nid_exists(uid, nid):
+    doc_ref = db.collection('notifications').document(uid)
+
+    # Check if field name exists in document
+    if (doc_ref.get().to_dict() is None): return False
+    if nid in doc_ref.get().to_dict():
+        return True
+    else:
+        return False
     
 ############################################################
 #                          Getters                         #
@@ -88,17 +100,3 @@ def create_admin(uid):
     }
 
     db.collection('users').document(uid).set(data)
-
-############################################################
-#                      Reset Database                      #
-############################################################
-
-def reset_projects():
-    project_count = get_curr_pid()
-
-    for i in range(0, project_count):
-        db.collection("projects").document(str(i)).delete()
-
-    counter_ref = db.collection("counters").document("total_projects")
-
-    counter_ref.update({"pid": 0})

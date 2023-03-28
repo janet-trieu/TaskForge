@@ -50,25 +50,6 @@ def create_user_email(email, password, display_name):
         print('Sucessfully created new user: {0}'.format(user.uid))
         return user.uid
 
-### ========= Delete User ========= ###
-def delete_user(uid):
-    """
-    Deletes User from auth and firestore database
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        None
-    """
-    try:
-        auth.delete_user(uid)
-        # tuid = get_user_ref(uid).get("tuid")
-        db.collection("users").document(str(uid)).delete()
-        db.collection('notifications').document(uid).delete()
-    except:
-        print("uid does not correspond to a current user")
-
 ### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
@@ -379,7 +360,7 @@ def create_user_firestore(uid):
     """
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", "", False, False, False, [], [], [])
+    user = User(uid, value, "", "", "", False, False, False, [], [], [], [])
     
     users_ref.document(uid).set(user.to_dict())
 

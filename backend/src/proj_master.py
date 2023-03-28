@@ -7,7 +7,8 @@ Functionalities:
  - invite_to_project()
  - update_project()
 '''
-from firebase_admin import firestore, auth
+from firebase_admin import firestore
+
 from .global_counters import *
 from .error import *
 from .notifications import *
@@ -42,7 +43,7 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         team_strength = None
     if picture == None:
         picture = "bleh.png"
-    
+
     check_valid_uid(uid)
 
     # check for invalid type inputs:
@@ -83,7 +84,11 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         "due_date": due_date,
         "team_strength": team_strength,
         "picture": picture,
-        "project_members": [uid]
+        "project_members": [uid],
+        "epics": [],
+        "tasks": [],
+        "subtasks": [],
+        "is_pinned": False
     }
 
     # get the current pid to return
