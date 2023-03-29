@@ -6,20 +6,22 @@ import requests
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
+from src.notifications import *
+from src.connections import *
 
 port = 5000
 url = f"http://localhost:{port}/"
 
-
-
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
+    tm0_uid = create_user_email("projecttest.tm0@gmail.com", "taskmaster0", "Task Master0")
     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
-    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
-    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
+    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster2", "Task Master2")
+    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster3", "Task Master3")
 except auth.EmailAlreadyExistsError:
     pass
 pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
+tm0_uid = auth.get_user_by_email("projecttest.tm0@gmail.com").uid
 tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
 tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
 tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
@@ -363,6 +365,9 @@ def test_invite_to_project():
     assert create_resp.status_code == 200
     create_json = create_resp.json()
 
+    nid = notification_connection_request(tm0_uid, pm_uid)
+    connection_request_respond(tm0_uid, nid, True)
+
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,
         "receiver_uids": [tm1_email]
@@ -388,6 +393,13 @@ def test_multiple_invite_to_project():
 
     assert create_resp.status_code == 200
     create_json = create_resp.json()
+
+    nid1 = notification_connection_request(tm1_uid, pm_uid)
+    nid2 = notification_connection_request(tm2_uid, pm_uid)
+    nid3 = notification_connection_request(tm3_uid, pm_uid)
+    connection_request_respond(tm1_uid, nid1, True)
+    connection_request_respond(tm2_uid, nid2, True)
+    connection_request_respond(tm3_uid, nid3, True)
 
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": create_json,

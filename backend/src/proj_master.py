@@ -13,6 +13,7 @@ from .global_counters import *
 from .error import *
 from .notifications import *
 from .helper import *
+from .connections import *
 
 db = firestore.client()
 
@@ -250,10 +251,13 @@ def invite_to_project(pid, sender_uid, receiver_uids):
 
     project_members = proj_ref.get().get("project_members")
 
+    connection_list = get_connected_taskmasters(sender_uid)
     for uid in receiver_uids:
-
         # check whether the specified uid exists
         check_valid_uid(uid)
+
+        if uid not in connection_list:
+            raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
             raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
