@@ -178,6 +178,8 @@ def test_revive_completed_project():
 
     assert proj_ref.get().get("status") == "Not Started"
 
+    print(proj_ref.get().get("status"))
+
     res = update_project(pid, pm_uid, {"status": "Completed"})
 
     assert res == 0

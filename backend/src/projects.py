@@ -5,6 +5,10 @@ Functionalities:
  - request_leave_project()
 '''
 
+'''
+TO-DO get stuff related to tasks and epics
+'''
+
 from firebase_admin import firestore, auth
 
 from .error import *
@@ -44,6 +48,7 @@ def view_project(pid, uid):
     project_name = proj_ref.get().get("name")
     description = proj_ref.get().get("description")
     project_members = proj_ref.get().get("project_members")
+    status = proj_ref.get().get("status")
 
     return_dict = {}
 
@@ -53,12 +58,9 @@ def view_project(pid, uid):
             "name": project_name,
             "description": description,
             "project_members": project_members,
-            "tasks": []
-        }
-    else:
-        return_dict = {
-            "project_master": pm_name,
-            "name": project_name,
+            "epics": [],
+            "tasks": [],
+            "status": status
         }
 
     return return_dict
@@ -100,6 +102,7 @@ def search_project(uid, query):
                     "name": proj_name,
                     "description": description,
                     "project_members": project_members,
+                    "epics": [],
                     "tasks": [],
                     "status": status
                 }
