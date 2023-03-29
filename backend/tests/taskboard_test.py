@@ -74,3 +74,5 @@ def test_show_taskboard():
     assert taskboard == {'Not Started': [{'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 
                                           'status': 'Not Started', 'assignees': ['gAsG8EKXiDTFXnMj2elXMV8uiJp2'], 'epic': 'Epic1'}], 
                                           'In Progress': [], 'Blocked': [], 'In Review/Testing': [], 'Completed': []}
+    delete_task(uid1, tid1)
+    delete_epic(uid1, eid1)    
