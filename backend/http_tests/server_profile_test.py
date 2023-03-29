@@ -8,7 +8,8 @@ from src.authentication import *
 from src.test_helpers import *
 from src.profile_page import *
  
-url = 'http://127.0.0.1:5000'
+port = 8000
+url = f"http://localhost:{port}/"
 
 try:
     create_user_email("profiletest0@gmail.com", "password123", "Profile Doe")

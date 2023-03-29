@@ -7,8 +7,9 @@ import requests
 
 from src.profile_page import *
 from src.helper import *
- 
-url = 'http://127.0.0.1:5000'
+
+port = 8000
+url = f'http://127.0.0.1:{port}'
 
 try:
     admin_uid = create_user_email("admin@gmail.com", "admin123", "Admin Admin")

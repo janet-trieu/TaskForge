@@ -9,7 +9,7 @@ from src.profile_page import *
 from src.projects import *
 from src.proj_master import *
 
-port = 5000
+port = 8000
 url = f"http://localhost:{port}/"
 
 try:
