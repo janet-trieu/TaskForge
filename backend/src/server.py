@@ -266,24 +266,25 @@ def flask_connection_request_respond():
     """
     connection_request_respond flask
     """
+    uid = request.headers.get("Authorization")
     data = request.get_json()
-    return dumps(connection_request_respond(data["uid"], data["nid"], data["response"]))
+    return dumps(connection_request_respond(uid, data["nid"], data["response"]))
     
 @app.route("/connections/get_connection_requests", methods=["GET", "POST"])
 def flask_get_connection_requests():
     """
     get_connection_requests flask
     """
-    data = request.get_json()
-    return dumps(get_connection_requests(data["uid"]), indent=4, sort_keys=True, default=str)
+    uid = request.headers.get("Authorization")
+    return dumps(get_connection_requests(uid, indent=4, sort_keys=True, default=str))
 
 @app.route("/connections/get_connected_taskmasters", methods=["GET", "POST"])
 def flask_get_connected_taskmasters():
     """
     get_connection_requests flask
     """
-    data = request.get_json()
-    return dumps(get_connected_taskmasters(data["uid"]))
+    uid = request.headers.get("Authorization")
+    return dumps(get_connected_taskmasters(uid))
     
     
 if __name__ == "__main__":
