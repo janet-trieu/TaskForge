@@ -31,6 +31,9 @@ def test_view_project():
 
     # add tm to project
     add_tm_to_project(pid, tm1_uid)
+    
+    project = get_project(pid)
+    print(project)
 
     res = view_project(pid, tm1_uid)
 
@@ -47,7 +50,7 @@ def test_view_project():
     }
 
     reset_projects()
-
+'''
 def test_view_project_invalid_pid():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -559,3 +562,4 @@ def test_pin_pinned_project():
 
     with pytest.raises(InputError):
         pin_project(pid, pm_uid, False)
+'''

@@ -1,6 +1,9 @@
 '''
 temp file to store the project class 
 '''
+from firebase_admin import firestore
+db = firestore.client()
+
 class Project():
     """
     A Project class that will be stored in firestore.
@@ -21,7 +24,7 @@ class Project():
         self.project_members = project_members
         self.epics = epics
         self.tasks = tasks
-        self.subtasks = tasks
+        self.subtasks = subtasks
         self.is_pinned = is_pinned
     
     def to_dict(self):
@@ -37,5 +40,27 @@ class Project():
             "project_members": self.project_members,
             "epics": self.epics,
             "tasks": self.tasks,
+            "subtasks": self.subtasks,
             "is_pinned": self.is_pinned
         }
+
+def get_project(pid):
+    doc = db.collection("projects").document(str(pid)).get()
+
+    project = Project(
+        doc.get("pid"),
+        doc.get("uid"),
+        doc.get("name"),
+        doc.get("description"),
+        doc.get("status"),
+        doc.get("due_date"),
+        doc.get("team_strength"),
+        doc.get("picture"),
+        doc.get("project_members"),
+        doc.get("epics"),
+        doc.get("tasks"),
+        doc.get("subtasks"),
+        doc.get("is_pinned")
+    )
+
+    return project.to_dict()

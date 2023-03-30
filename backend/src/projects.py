@@ -14,6 +14,7 @@ from firebase_admin import firestore, auth
 from .error import *
 from .notifications import *
 from .test_helpers import *
+from .proj_class import *
 
 db = firestore.client()
 
@@ -36,34 +37,14 @@ def view_project(pid, uid):
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
     
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
     
     # check whether the specified uid exists
     check_valid_uid(uid)
 
-    pm_id = proj_ref.get().get("uid")
-    pm_name = get_display_name(pm_id)
-    project_name = proj_ref.get().get("name")
-    description = proj_ref.get().get("description")
-    project_members = proj_ref.get().get("project_members")
-    status = proj_ref.get().get("status")
-
-    return_dict = {}
-
-    if uid in proj_ref.get().get("project_members"):
-        return_dict = {
-            "project_master": pm_name,
-            "name": project_name,
-            "description": description,
-            "project_members": project_members,
-            "epics": [],
-            "tasks": [],
-            "status": status
-        }
-
-    return return_dict
+    return project
 
 def search_project(uid, query):
     '''
