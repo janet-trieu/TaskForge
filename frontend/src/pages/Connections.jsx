@@ -22,10 +22,6 @@ const Connections = () => {
           <ConnectionCard />
           <ConnectionCard />
           <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
         </div>
       </div>
     </>
