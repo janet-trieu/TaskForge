@@ -44,6 +44,9 @@ def view_project(pid, uid):
     # check whether the specified uid exists
     check_valid_uid(uid)
 
+    if not uid in project["project_members"]:
+        raise AccessError(f"ERROR: User is not in the project")
+    
     return project
 
 def search_project(uid, query):
@@ -67,31 +70,20 @@ def search_project(uid, query):
 
     return_list = []
     for doc in docs:
-        return_dict = {}
-        pm_uid = doc.to_dict().get("uid")
-        pm_name = auth.get_user(pm_uid).display_name
-        proj_name = doc.to_dict().get("name")
-        status = doc.to_dict().get("status")
+        pid = doc.to_dict().get("pid")
+        project = get_project(pid)
+        pm_uid = project["uid"]
+        pm_name = auth.get_user(str(pm_uid)).display_name
 
-        description = doc.to_dict().get("description")
-        project_members = doc.to_dict().get("project_members")
-
-        if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == "":
-            if uid in project_members:
-                return_dict = {
-                    "project_master": pm_name,
-                    "name": proj_name,
-                    "description": description,
-                    "project_members": project_members,
-                    "epics": [],
-                    "tasks": [],
-                    "status": status
-                }
-        
-        return_list.append(return_dict)
-        print(f"Successfully added {proj_name} to list of search result")
+        if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
+            if uid in project["project_members"]:
+                return_list.append(get_project(pid))
+                print(f"Successfully added {project['name']} to list of search result")
 
     return_list = list(filter(None, return_list))
+
+    if len(return_list) == 1:
+        return return_list[0]
 
     return return_list
 
@@ -270,7 +262,7 @@ def pin_project(pid, uid, is_pinned):
     # specified project is not pinned, and user wants to pin
     if (curr_pin == False and is_pinned == True) or (curr_pin == True and is_pinned == False):
         proj_ref.update({
-        "is_pinned": is_pinned
+            "is_pinned": is_pinned
         })
 
     else:
