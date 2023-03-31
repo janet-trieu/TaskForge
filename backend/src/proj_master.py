@@ -13,6 +13,8 @@ from .global_counters import *
 from .error import *
 from .notifications import *
 from .helper import *
+from .connections import *
+from .proj_class import *
 
 db = firestore.client()
 
@@ -76,30 +78,15 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         if team_strength < 0:
             raise InputError("Team strength cannot be less than 0!!!")
 
-    data = {
-        "uid": uid,
-        "name": name,
-        "description": description,
-        "status": "Not Started",
-        "due_date": due_date,
-        "team_strength": team_strength,
-        "picture": picture,
-        "project_members": [uid],
-        "epics": [],
-        "tasks": [],
-        "subtasks": [],
-        "is_pinned": False
-    }
-
-    # get the current pid to return
-    curr_pid = get_curr_pid()
-
-    db.collection("projects").document(str(curr_pid)).set(data)
+    proj_ref = db.collection("projects")
+    value = get_curr_pid()
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], [], [], False)
+    proj_ref.document(str(value)).set(project.to_dict())
     
     # update the pid after creating a project
     update_pid()
 
-    return curr_pid
+    return value
 
 def is_user_project_master(pid, uid):
     '''
@@ -244,16 +231,19 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    project_members = proj_ref.get().get("project_members")
+    project_members = project["project_members"]
 
+    connection_list = get_connected_taskmasters(sender_uid)
     for uid in receiver_uids:
-
         # check whether the specified uid exists
         check_valid_uid(uid)
+
+        if uid not in connection_list:
+            raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
             raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
