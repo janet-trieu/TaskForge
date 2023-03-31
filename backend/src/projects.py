@@ -46,8 +46,88 @@ def view_project(pid, uid):
 
     if not uid in project["project_members"]:
         raise AccessError(f"ERROR: User is not in the project")
+
+    return {
+            "pid": pid,
+            "name": project["name"],
+            "description": project["description"],
+            "status": project["status"],
+            "due_date": project["due_date"],
+            "team_strength": project["team_strength"],
+            "picture": project["picture"],
+            "project_members": project["project_members"],
+            "epics": extract_epics(pid),
+            "tasks": extract_tasks(pid),
+            "is_pinned": project["is_pinned"]
+    }
+
+def extract_epics(pid):
+    '''
+    Helper function to extract the necessary epic details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic ids, 
+    - epic titles, 
+    - epic colour
+    '''
+
+    project = get_project(pid)
+    epics = project["epics"]
+
+    return_list = []
+
+    for ep in epics:
+        return_dict = {}
+        
+        return_dict = {
+            "eid": ep.get("eid"),
+            "title": ep.get("title"),
+            "colour": ep.get("colour")
+        }
+        return_list.append(return_dict)
     
-    return project
+    if len(return_list) == 1:
+        return return_list[0]
+
+    return return_list
+
+def extract_tasks(pid):
+    '''
+    Helper function to extract the necessary task details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic_id
+    - task title, 
+    - task status,
+    - task assignee
+    '''
+
+    project = get_project(pid)
+    tasks = project["tasks"]
+
+    return_list = []
+
+    for task in tasks:
+        return_dict = {}
+
+        return_dict = {
+            "eid": task.get("eid"),
+            "title": task.get("title"),
+            "status": task.get("status"),
+            "assignee": task.get("assignees")
+        }
+        return_list.append(return_dict)
+
+    if len(return_list) == 1:
+        return return_list[0]
+
+    return return_list
 
 def search_project(uid, query):
     '''
