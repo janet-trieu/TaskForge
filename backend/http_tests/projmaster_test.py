@@ -15,17 +15,17 @@ url = f"http://localhost:{port}/"
 
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
-    tm0_uid = create_user_email("projecttest.tm0@gmail.com", "taskmaster0", "Task Master0")
-    tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
-    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster2", "Task Master2")
-    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster3", "Task Master3")
+    tm0_uid = create_user_email("pmtest.tm0@gmail.com", "taskmaster0", "Task Master0")
+    tm1_uid = create_user_email("pmtest.tm1@gmail.com", "taskmaster1", "Task Master1")
+    tm2_uid = create_user_email("pmtest.tm2@gmail.com", "taskmaster2", "Task Master2")
+    tm3_uid = create_user_email("pmtest.tm3@gmail.com", "taskmaster3", "Task Master3")
 except auth.EmailAlreadyExistsError:
     pass
 pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-tm0_uid = auth.get_user_by_email("projecttest.tm0@gmail.com").uid
-tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+tm0_uid = auth.get_user_by_email("pmtest.tm0@gmail.com").uid
+tm1_uid = auth.get_user_by_email("pmtest.tm1@gmail.com").uid
+tm2_uid = auth.get_user_by_email("pmtest.tm2@gmail.com").uid
+tm3_uid = auth.get_user_by_email("pmtest.tm3@gmail.com").uid
 
 ############################################################
 #                   Test for create_project                #

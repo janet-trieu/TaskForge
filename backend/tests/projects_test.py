@@ -20,7 +20,7 @@ pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
 tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
 tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
 tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
-'''
+
 ############################################################
 #                    Test for view_project                 #
 ############################################################
@@ -67,7 +67,7 @@ def test_view_project_not_in_project():
 
     with pytest.raises(AccessError):
         view_project(pid, tm1_uid)
-'''
+
 ############################################################
 #                   Test for search_project                #
 ############################################################
@@ -182,7 +182,7 @@ def test_search_return_nothing():
     res = search_project(tm1_uid, query)
 
     assert res == []
-'''
+
 ############################################################
 #                    Test for leave_project                #
 ############################################################
@@ -259,6 +259,9 @@ def test_accept_invitation():
     
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
+    nid = notification_connection_request(tm1_uid, pm_uid)
+    connection_request_respond(tm1_uid, nid, True)
+
     res = invite_to_project(pid, pm_uid, [tm1_uid])
     assert res == 0
 
@@ -294,10 +297,13 @@ def test_reject_invitation():
     
     pid = create_project(pm_uid, "Project B", "Projec B xyz", None, None, None)
 
-    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    nid = notification_connection_request(tm2_uid, pm_uid)
+    connection_request_respond(tm2_uid, nid, True)
+
+    res = invite_to_project(pid, pm_uid, [tm2_uid])
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm2_uid)
 
     notif_pid = invite_ref.get("pid")
     has_read = invite_ref.get("has_read")
@@ -310,10 +316,10 @@ def test_reject_invitation():
     accept = False
     msg = "Hi Project Master, sorry, but I cannot join Project A"
 
-    res = respond_project_invitation(notif_pid, tm1_uid, accept, msg)
+    res = respond_project_invitation(notif_pid, tm2_uid, accept, msg)
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm2_uid)
 
     has_read = invite_ref.get("has_read")
     response = invite_ref.get("response")
@@ -324,16 +330,19 @@ def test_reject_invitation():
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    assert not tm1_uid in project_members
+    assert not tm2_uid in project_members
 
 def test_reject_invitation_no_msg():
     
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    nid = notification_connection_request(tm3_uid, pm_uid)
+    connection_request_respond(tm3_uid, nid, True)
+
+    res = invite_to_project(pid, pm_uid, [tm3_uid])
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm3_uid)
 
     notif_pid = invite_ref.get("pid")
     has_read = invite_ref.get("has_read")
@@ -347,7 +356,7 @@ def test_reject_invitation_no_msg():
     msg = ""
 
     with pytest.raises(InputError):
-        respond_project_invitation(notif_pid, tm1_uid, accept, msg)
+        respond_project_invitation(notif_pid, tm3_uid, accept, msg)
 
     reset_projects()
 
@@ -431,4 +440,3 @@ def test_pin_pinned_project():
 
     with pytest.raises(InputError):
         pin_project(pid, pm_uid, False)
-'''

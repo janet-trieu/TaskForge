@@ -11,42 +11,43 @@ from src.helper import *
 
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
-    tm0_uid = create_user_email("projecttest.tm0@gmail.com", "taskmaster0", "Task Master0")
-    tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
-    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster2", "Task Master2")
-    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster3", "Task Master3")
+    tm0_uid = create_user_email("pmtest.tm0@gmail.com", "taskmaster0", "Task Master0")
+    tm1_uid = create_user_email("pmtest.tm1@gmail.com", "taskmaster1", "Task Master1")
+    tm2_uid = create_user_email("pmtest.tm2@gmail.com", "taskmaster2", "Task Master2")
+    tm3_uid = create_user_email("pmtest.tm3@gmail.com", "taskmaster3", "Task Master3")
 except auth.EmailAlreadyExistsError:
     pass
 pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-tm0_uid = auth.get_user_by_email("projecttest.tm0@gmail.com").uid
-tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+tm0_uid = auth.get_user_by_email("pmtest.tm0@gmail.com").uid
+tm1_uid = auth.get_user_by_email("pmtest.tm1@gmail.com").uid
+tm2_uid = auth.get_user_by_email("pmtest.tm2@gmail.com").uid
+tm3_uid = auth.get_user_by_email("pmtest.tm3@gmail.com").uid
 
 ############################################################
 #                   Test for create_project                #
 ############################################################
 def test_create_project_use_default_vals():
 
+    reset_projects()
+
     # test for project creation
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
     assert pid == 0
 
-    # reset database
-    reset_projects()
 
 def test_create_project_every_args():
+
+    reset_projects()
     
     # test for project creation
     pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023-12-31", 5, "test1.jpg")
 
     assert pid == 0
 
-    # reset database
-    reset_projects()
-
 def test_create_multiple_projects():
+
+    reset_projects()
 
     # test for project1 creation
     pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None, None)
@@ -57,8 +58,6 @@ def test_create_multiple_projects():
     pid = create_project(pm_uid, "Project2", "Creating Project2 for testing", None, None, None)
 
     assert pid == 1
-
-    reset_projects()
 
 def test_create_project_invalid_uid():
 

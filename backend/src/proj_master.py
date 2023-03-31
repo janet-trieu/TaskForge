@@ -231,11 +231,11 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    project_members = proj_ref.get().get("project_members")
+    project_members = project["project_members"]
 
     connection_list = get_connected_taskmasters(sender_uid)
     for uid in receiver_uids:
