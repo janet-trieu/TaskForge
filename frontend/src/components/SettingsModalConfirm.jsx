@@ -1,7 +1,25 @@
 import React from "react";
+import { makeRequest } from "../helpers";
 import './SettingsModal.css'
 
-const SettingsModalConfirm = ({ title, onClose, action, warning }) => {
+const SettingsModalConfirm = ({ firebaseApp, title, onClose, action, warning }) => {
+    const handleConfirm = (action) => {
+        console.log(action)
+        switch (action) {
+            case 'Reset Password':
+                const uid = firebaseApp.auth().currentUser.uid;
+                const data = makeRequest("/authentication/reset_password", "POST", null, uid)
+                if (data.error) {
+                    alert(data.error)
+                } else {
+                    alert('Email has been sent.')
+                    onClose()
+                }
+            default:
+                onClose()
+        }
+    }
+
     return (
         <>
             <div className="settings-modal">
@@ -15,7 +33,7 @@ const SettingsModalConfirm = ({ title, onClose, action, warning }) => {
                     <div className="settings-modal-warning">{warning}</div>
                     <div className="settings-modal-footer">
                         <button className="button-cancel" onClick={onClose}>Cancel</button>
-                        <button className="button-confirm" onClick={onClose}>{action}</button>
+                        <button className="button-confirm" onClick={() => handleConfirm(action)}>{action}</button>
                     </div>
                 </div>
             </div>
