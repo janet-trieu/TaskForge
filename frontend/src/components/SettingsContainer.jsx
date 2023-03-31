@@ -4,7 +4,7 @@ import { Modal } from "@mui/material";
 import SettingsModalSearch from './SettingsModalSearch.jsx'
 import SettingsModalConfirm from './SettingsModalConfirm.jsx'
 
-const SettingsContainer = ({ title, description, buttons }) => {
+const SettingsContainer = ({ firebaseApp, title, description, buttons }) => {
   const [open, setOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalAction, setModalAction] = useState('');
@@ -21,7 +21,7 @@ const SettingsContainer = ({ title, description, buttons }) => {
         </Modal>
       case 'confirm':
         return <Modal open={open} onClose={handleClose}>
-        <SettingsModalConfirm title={`${modalTitle}`} onClose={handleClose} action={`${modalAction}`} warning={`${warning}`} />
+        <SettingsModalConfirm firebaseApp={firebaseApp} title={`${modalTitle}`} onClose={handleClose} action={`${modalAction}`} warning={`${warning}`} />
       </Modal>
       default:
         return null;
