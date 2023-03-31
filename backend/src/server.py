@@ -45,6 +45,12 @@ def flask_reset_password():
     if res == -1:
         return Response(status=400)
     else:
+        # Send email
+        msg_title = "TaskForge: Reset Password"
+        receipient_email = auth.get_user(uid).email
+        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+        msg.body = "Click link to reset your password: {res}"
+        mail.send(msg)
         return dumps(res)
     
 #Profile Routes#
