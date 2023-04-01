@@ -203,15 +203,6 @@ input {
   margin-top: 4vh;
 }
 
-#connections-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2vw;
-  margin-left: 2.5vw;
-  margin-right: 2.5vw;
-  margin-top: 4vh;
-}
-
 .task-modal {
   background-color: white;
   width: 50vw;

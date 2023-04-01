@@ -1,14 +1,18 @@
 import React from "react";
-import './ConnectionCard.css'
+import './ConnectionCard.css';
+import userIcon from '../assets/default user icon.png';
 
 const ConnectionCard = () => {
   return (
     <>
-    <div className="connection-card">
-      <div>Connection Name</div>
-      <div>Connection Role</div>
-      <div># mutual connections</div>
-    </div>
+      <div className="connection-card">
+        <img src={userIcon}></img>
+        <div className="connection-card-info">
+          <div style={{fontWeight: 'bold'}}>FullName</div>
+          <div>Role</div>
+          <div style={{color: 'gray'}}># mutual connections</div>
+        </div>
+      </div>
     </>
   )
 }
