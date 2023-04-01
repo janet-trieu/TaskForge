@@ -10,6 +10,7 @@ from .admin import *
 from .proj_master import *
 from .profile_page import *
 from .projects import *
+from .connections import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -150,7 +151,7 @@ def admin_readd_user():
     return dumps(readd_user(data["uid_admin"], uid_user))
 
 
-#PROJECT ROUTES
+#PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
@@ -192,15 +193,15 @@ def flask_invite_to_project():
 
     res = invite_to_project(data["pid"], sender_uid, uid_list)
 
-    # Send email to all users in uid_list
-    for uid, data in res.items():
-        receipient_email = data[0]
-        msg_title = data[1]
-        msg_body = data[2]
+    # # Send email to all users in uid_list
+    # for uid, data in res.items():
+    #     receipient_email = data[0]
+    #     msg_title = data[1]
+    #     msg_body = data[2]
 
-        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
-        msg.body = msg_body
-        mail.send(msg)
+    #     msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+    #     msg.body = msg_body
+    #     mail.send(msg)
 
     return dumps(res)
 
@@ -210,7 +211,6 @@ def flask_update_project():
     uid = request.headers.get('Authorization')
     res = update_project(data["pid"], uid, data["updates"])
     return dumps(res)
-
 
 # NOTIFICATIONS ROUTES #
 @app.route('/notifications/get', methods=['GET'])
@@ -230,6 +230,11 @@ def clear_all_notifications():
     return dumps(clear_all_notifications(uid))
 
 
+@app.route('/notification/connection/request', methods=['POST'])
+def flask_notification_connection_request():
+    data = request.get_json()
+    return dumps(notification_connection_request(data["uid"], data["uid_sender"]))
+
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
 def flask_view_project():
@@ -243,6 +248,54 @@ def flask_search_project():
     query = request.args.get('query')
     return dumps(search_project(uid, query))
 
-if __name__ == "__main__":
-    app.run()
+@app.route("/projects/leave", methods=["POST"])
+def flask_request_leave_project():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    res = request_leave_project(data["pid"], uid, data["msg"])
+    return dumps(res)
 
+@app.route("/projects/invite/respond", methods=["POST"])
+def flask_respond_project_invitation():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    res = respond_project_invitation(data["pid"], uid, data["accept"], data["msg"])
+    return dumps(res)
+
+@app.route("/projects/pin", methods=["POST"])
+def flask_pin_project():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    res = pin_project(data["pid"], uid, data["is_pinned"])
+    return dumps(res)
+
+# CONNECTION ROUTES #
+
+@app.route("/connections/request_respond", methods=["POST"])
+def flask_connection_request_respond():
+    """
+    connection_request_respond flask
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(connection_request_respond(str(uid), data["nid"], data["response"]))
+    
+@app.route("/connections/get_connection_requests", methods=["GET", "POST"])
+def flask_get_connection_requests():
+    """
+    get_connection_requests flask
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_connection_requests(uid), indent=4, sort_keys=True, default=str)
+
+@app.route("/connections/get_connected_taskmasters", methods=["GET", "POST"])
+def flask_get_connected_taskmasters():
+    """
+    get_connection_requests flask
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_connected_taskmasters(uid))
+    
+    
+if __name__ == "__main__":
+    app.run(port=8000, debug=True)

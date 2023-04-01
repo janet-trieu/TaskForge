@@ -48,3 +48,33 @@ firebase auth, and if we should keep using it. I believe we are going to keep it
 things we thought we could not.
 
 The sprint ends very soon, and it does not look like we'll finish in time, so some issues may have to be pushed to sprint 2
+
+============================================================================================================================
+
+Week 5
+
+We demoed our Sprint 1 to our tutor, which was missing some frontend implementation, and we also had our retrospective on the
+same day after the tut. Since then, we divided up sprint 2 into functionalities just like in sprint 1 and I got connection
+management.
+
+I came across some annoying import errors which took some time to debug with help from the team, but I got through it. HTTP tests
+for connection management also took some time, as I didn't know you could have multi method routes like "GET", "POST".
+Janet just brought up an issue of tests running in random order, so we may have to change tests for that, since some tests rely
+on previous tests to work properly.
+
+We still have to work on the retrospective, and finish more functionalities in sprint 2.
+
+============================================================================================================================
+
+Week 6
+
+I finished the connection management functions, unit testing and http testing, janet filled out the retrospective and it was 
+okayed by everyone so that was submitted.
+
+Dabin ran into issues on his own machine, although no one else had the same issues, causing tests to not work properly. So he will
+have to work on VLAB/TigerVNC from now on :/. Francis was unsure about file download and upload, so I was assigned to look into
+solutions, of which I chose google cloud storage, another component of firebase. So now we're using firebase authentication,
+firestore database, and google cloud storage. I created a small storage_examples.py file to demonstrate the funcitonality.
+
+We have to finish off sprint 2, a little work left for backend, but still alot to go for frontend. With Janet assisting joseph, it
+should come along more quickly. 

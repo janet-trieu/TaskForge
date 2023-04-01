@@ -109,11 +109,52 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
 ## Week 5 ##
 
 ??? What was planned for the period since the last work diary entry ???
+- Finish off sprint 1 implementations
+- Plan and start sprint 2
 
 ??? What was finished ???
+- Sprint 1 implementation & demo
+- Notification implementation for welcome and project_invite
 
 ??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Email Notifications
+  - We initially thought one of the requirements for task management system required us to send an email notification to users who are being request to be connected but we realised we may have misinterpreted it
+    I sent out a question on the forum for further clarification. If sending emails are not required, we will scrap sending emails as it complicates our system too much within the scope of the course
+- Deadline Notifications
+  - We initially planned to send a deadline notification when an assigned task was due soon (e.g. a day away) but there was the issue of how we would be able to present it in demos and final implementation
+    as the system would only be used within a short amount of time, rather than days. We decided the work for it was too much within the scope of the course and scrapped deadline notifications.
+- Tests
+  - We had the mistake of forgetting to delete our test data from our database so I created a function to reset our database completely. However, this would break our tests if we were to test multiple test files
+  with 'pytest' as pytest tests in a random order, thereby some data would be deleted before they could be tested. This currently is being fixed.
 
 ??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Clearing database
+  - Not a danger to our project for now as we still have plenty of time to work on sprint 2
 
 ??? What is planned for the next period (e.g., next week) ???
+- Work on sprint 2 stuff
+- Finish retrospective report
+
+///////////////////////////////////////////
+
+## Week 6 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Work on sprint 2 stuff
+- Finish retrospective report
+- Assist frontend
+
+??? What was finished ???
+- Retrospective report + submission
+- Basic admin frontend implementation in settings
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Learning frontend
+  - This is the first time in doing frontend stuff, so I was quite confused on how it works but with Joseph explaining, some Googling and looking at existing frontend code in our project. It is somewhat manageable.
+  I do feel quite slow with it so hopefully the more I work with it, the more faster and familiar I am with frontend.
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- N/A
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish off admin frontend + any other sprint1/2 frontend stuff I might get assigned too

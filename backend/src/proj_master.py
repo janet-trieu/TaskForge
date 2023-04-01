@@ -7,33 +7,36 @@ Functionalities:
  - invite_to_project()
  - update_project()
 '''
-from firebase_admin import firestore, auth
+from firebase_admin import firestore
+
 from .global_counters import *
 from .error import *
 from .notifications import *
 from .helper import *
+from .connections import *
+from .proj_class import *
 
 db = firestore.client()
 
-'''
-Create a project with the given arguments
-* project status is initialised to Not Started
-
-Arguments:
-- uid (user that creates the project, also becomes the project master)
-- name (project name)
-- description (project description)
-- due_date (project due date, can be None)
-- team_strength (can be None)
-- picture (can be None)
-
-Returns:
-- pid (project id) when successful
-
-Raises:
-- InputError for any incorrect values
-'''
 def create_project(uid, name, description, due_date, team_strength, picture):
+    '''
+    Create a project with the given arguments
+    * project status is initialised to Not Started
+
+    Arguments:
+    - uid (user that creates the project, also becomes the project master)
+    - name (project name)
+    - description (project description)
+    - due_date (project due date, can be None)
+    - team_strength (can be None)
+    - picture (can be None)
+
+    Returns:
+    - pid (project id) when successful
+
+    Raises:
+    - InputError for any incorrect values
+    '''
 
     # setting default values 
     if due_date == None:
@@ -42,7 +45,7 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         team_strength = None
     if picture == None:
         picture = "bleh.png"
-    
+
     check_valid_uid(uid)
 
     # check for invalid type inputs:
@@ -75,42 +78,31 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         if team_strength < 0:
             raise InputError("Team strength cannot be less than 0!!!")
 
-    data = {
-        "uid": uid,
-        "name": name,
-        "description": description,
-        "status": "Not Started",
-        "due_date": due_date,
-        "team_strength": team_strength,
-        "picture": picture,
-        "project_members": [uid]
-    }
-
-    # get the current pid to return
-    curr_pid = get_curr_pid()
-
-    db.collection("projects").document(str(curr_pid)).set(data)
+    proj_ref = db.collection("projects")
+    value = get_curr_pid()
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], [], [], False)
+    proj_ref.document(str(value)).set(project.to_dict())
     
     # update the pid after creating a project
     update_pid()
 
-    return curr_pid
+    return value
 
-'''
-Helper function for project master:
-Checks whether the uid given is the project master id of the specified project
-
-Arguments:
-- pid (project id)
-- uid (user id)
-
-Returns:
-- 0 if the supplied uid is a project master of the specified project
-
-Raises:
-- AccessError if the supplied user id is not the project master
-'''
 def is_user_project_master(pid, uid):
+    '''
+    Helper function for project master:
+    Checks whether the uid given is the project master id of the specified project
+
+    Arguments:
+    - pid (project id)
+    - uid (user id)
+
+    Returns:
+    - 0 if the supplied uid is a project master of the specified project
+
+    Raises:
+    - AccessError if the supplied user id is not the project master
+    '''
 
     proj_ref = db.collection("projects").document(str(pid))
     proj_master_id = proj_ref.get().get("uid")
@@ -120,23 +112,23 @@ def is_user_project_master(pid, uid):
     else:
         raise AccessError(f"ERROR: Supplied user id:{uid} is not the project master of project:{pid}")
 
-'''
-Revives a project where its status has been set to Completed
-The new status can be anything except Completed
-
-Arguments:
-- pid (project id)
-- uid (user id)
-- new_status (new status of the project)
-
-Returns:
-- 0 if the revival was successful
-
-Raises:
-- AccessError for incorrect uid
-- InputError for invalid pid, or invalid project status value
-'''
 def revive_completed_project(pid, uid, new_status):
+    '''
+    Revives a project where its status has been set to Completed
+    The new status can be anything except Completed
+
+    Arguments:
+    - pid (project id)
+    - uid (user id)
+    - new_status (new status of the project)
+
+    Returns:
+    - 0 if the revival was successful
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid, or invalid project status value
+    '''
 
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
@@ -165,22 +157,23 @@ def revive_completed_project(pid, uid, new_status):
 
     return 0
 
-'''
-Removes a specific project member within the project
-
-Arguments:
-- pid (project id)
-- uid (user id)
-- uid_to_be_removed (user id of the member to be removed)
-
-Returns:
-- 0 if the removal was successful
-
-Raises:
-- AccessError for incorrect uid
-- InputError for invalid pid, or invalid uid_to_be_removed
-'''
 def remove_project_member(pid, uid, uid_to_be_removed):
+    '''
+    Removes a specific project member within the project
+
+    Arguments:
+    - pid (project id)
+    - uid (user id)
+    - uid_to_be_removed (user id of the member to be removed)
+
+    Returns:
+    - 0 if the removal was successful
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid, or invalid uid_to_be_removed
+    '''
+
     '''
     assumption: project already has members
     '''
@@ -213,22 +206,22 @@ def remove_project_member(pid, uid, uid_to_be_removed):
 
     return 0
 
-'''
-Invite a specific user to a project
-
-Arguments:
-- pid (project id)
-- sender_uid (project master id)
-- receiver_uids (list of the uids to be invited to project)
-
-Returns:
-- Dict of the data required to send the invite via email
-
-Raises:
-- AccessError for incorrect uid
-- InputError for invalid pid, or invalid receiver_uids, or inviting a user thats already in the project
-'''
 def invite_to_project(pid, sender_uid, receiver_uids):
+    '''
+    Invite a specific user to a project
+
+    Arguments:
+    - pid (project id)
+    - sender_uid (project master id)
+    - receiver_uids (list of the uids to be invited to project)
+
+    Returns:
+    - 0 for success
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid, or invalid receiver_uids, or inviting a user thats already in the project
+    '''
     
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
@@ -238,53 +231,45 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    project_members = proj_ref.get().get("project_members")
+    project_members = project["project_members"]
 
-    return_dict = {}
+    connection_list = get_connected_taskmasters(sender_uid)
     for uid in receiver_uids:
-
         # check whether the specified uid exists
         check_valid_uid(uid)
+
+        if uid not in connection_list:
+            raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
             raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
 
-        receipient_name = auth.get_user(uid).display_name
-        sender_name = auth.get_user(sender_uid).display_name
-        project_name = proj_ref.get().get("name")
-
         # Add project invitation notification data in database
         notification_project_invite(uid, sender_uid, pid)
 
-        receipient_email = auth.get_user(uid).email
-        msg_title = f"TaskForge: Project Invitation to {project_name}"
-        msg_body = f"Hi {receipient_name}, \n{sender_name} is inviting you to project {project_name}.\nPlease follow the link below to accept or reject this request: https://will_be_added.soon."
+    return 0
 
-        return_dict[uid] = [receipient_email, msg_title, msg_body]
-
-    return return_dict
-
-'''
-Update a specific project's details
-- Can update any detail except the project master uid
-
-Arguments:
-- pid (project id)
-- uid (project master id)
-- updates (dictionary, containing the key (project detail type) and the value (new project detail)
-
-Returns:
-- 0 for successful update
-
-Raises:
-- AccessError for incorrect uid
-- InputError for invalid pid, or invalid new project details
-'''
 def update_project(pid, uid, updates):
+    '''
+    Update a specific project's details
+    - Can update any detail except the project master uid
+
+    Arguments:
+    - pid (project id)
+    - uid (project master id)
+    - updates (dictionary, containing the key (project detail type) and the value (new project detail)
+
+    Returns:
+    - 0 for successful update
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid, or invalid new project details
+    '''
     
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
