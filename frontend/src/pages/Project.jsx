@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from "react";
-//import { makeRequest } from '../helpers';
+import { useParams } from 'react-router-dom';
+import { makeRequest } from '../helpers';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from "./Column";
 import './Project.css';
 import testData from '../testData';
 
 const Project = ({ firebaseApp }) => {
-  //const [isLoading, setIsLoading] = useState('Loading...');
+  const [stateIsLoading, setstateIsLoading] = useState('Loading...');
+  const [detailsIsLoading, setDetailsIsLoading] = useState('Loading...');
+  const [details, setDetails] = useState();
   const [state, setState] = useState(testData);
+  const {pid} = useParams();
+
+  useEffect(async () => {
+    const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    if (data.error) alert(data.error);
+    else {
+      console.log(data)
+      setDetails(data);
+      setDetailsIsLoading(false);
+    }
+  }, [])
 
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -68,11 +82,12 @@ const Project = ({ firebaseApp }) => {
 
   return (
     <>
-      <div id='project-container'>
+      {detailsIsLoading || (
+        <div id='project-container'>
         <div id='project-header'>
           <div id='project-name-block'>
-            <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>Project Name</div>
-            <div>Project Type</div>
+            <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>{details.name}</div>
+            <div>{details.description}</div>
           </div>
           <div id='project-member-block'></div>
         </div>
@@ -90,6 +105,7 @@ const Project = ({ firebaseApp }) => {
           </div>
         </DragDropContext>
       </div>
+      )}
     </>
   )
 }

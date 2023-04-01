@@ -1,6 +1,6 @@
 import React from "react";
 import SettingsContainer from '../components/SettingsContainer.jsx';
-import SettingsModalConfirm from "../components/SettingsModalConfirm.jsx";
+//import SettingsModalConfirm from "../components/SettingsModalConfirm.jsx";
 
 import banIcon from '../assets/settings ban user.png';
 import adminIcon from '../assets/settings admin user.png';

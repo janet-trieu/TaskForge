@@ -6,7 +6,8 @@ import TaskCard from "./TaskCard";
 const Container = styled.div`
   margin: 8px;
   border: 1px solid lightgrey;
-  border-radius: 2px;
+  border-radius: 10px;
+  background-color: #f3f3f3;
 `;
 const Title = styled.h3`
   padding: 8px;
@@ -22,7 +23,7 @@ const Column = (props) => {
 
   return (
     <Container>
-      <Title>{props.column.title}</Title>
+      <Title>{props.column.title} - {props.tasks.length} TASKS</Title>
       <Droppable droppableId={props.column.id}>
         {provided => (
           <TaskList ref={provided.innerRef} {...provided.droppableProps}>
