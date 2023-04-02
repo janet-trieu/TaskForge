@@ -5,10 +5,6 @@ Functionalities:
  - request_leave_project()
 '''
 
-'''
-TO-DO get stuff related to tasks and epics
-'''
-
 from firebase_admin import firestore, auth
 
 from .error import *
@@ -216,18 +212,10 @@ def request_leave_project(pid, uid, msg):
         raise InputError("Need a message to request to leave project")
 
     pm_uid = proj_ref.get().get("uid")
-    pm_email = auth.get_user(pm_uid).email
-    sender_email = auth.get_user(uid).email
-    proj_name = proj_ref.get().get("name")
 
-    return_dict = {
-        "receipient_email": pm_email,
-        "sender_email": sender_email,
-        "msg_title": f"Request to leave {proj_name}",
-        "msg_body": msg
-    }
+    notification_leave_request(uid, pm_uid, pid)
 
-    return return_dict
+    return 0
 
 
 def respond_project_invitation(pid, uid, accept, msg):
@@ -294,6 +282,9 @@ def respond_project_invitation(pid, uid, accept, msg):
 
         # add the invited task master to the project
         add_tm_to_project(pid, uid)
+
+        # send the response to the project master
+        notification_accepted_request(pm_uid, uid)
     else:
         notification = {
             notif_id : {
@@ -308,10 +299,10 @@ def respond_project_invitation(pid, uid, accept, msg):
             }
         }
 
-    db.collection("notifications").document(uid).update(notification)
+        # send the response to the project master
+        notification_denied_request(pm_uid, uid)
 
-    # send notification to the project master
-    # TODO
+    db.collection("notifications").document(uid).update(notification)
 
     return 0
 

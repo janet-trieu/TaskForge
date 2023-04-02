@@ -209,16 +209,7 @@ def test_leave_project():
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
     res = request_leave_project(pid, tm1_uid, msg)
 
-    pm_name = auth.get_user(pm_uid).display_name
-    proj_ref = db.collection("projects").document(str(pid))
-    proj_name = proj_ref.get().get("name")
-
-    assert res == {
-        "receipient_email": "projectmaster@gmail.com",
-        "sender_email": "projecttest.tm1@gmail.com",
-        "msg_title": "Request to leave Project Alpha",
-        "msg_body": msg
-    }
+    assert res == 0
 
     reset_projects()
 
