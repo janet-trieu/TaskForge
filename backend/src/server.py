@@ -106,6 +106,11 @@ def create_user():
 
 
 #ADMIN ROUTES#
+@app.route("/admin/is_admin", methods=["GET"])
+def admin_is_admin():
+    uid = request.headers.get('Authorization')
+    return dumps(is_admin(uid))
+
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
