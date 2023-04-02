@@ -76,3 +76,26 @@ def test_show_taskboard():
                                           'In Progress': [], 'Blocked': [], 'In Review/Testing': [], 'Completed': []}
     delete_task(uid1, tid1)
     delete_epic(uid1, eid1)    
+
+def test_show_taskboard_one_flag():
+    eid1 = create_epic(str(uid1), pid1, "Epic1", "Epic1 Description", "#ffa28e")
+
+    tid1 = create_task(str(uid1), pid1, eid1, [uid1], "Task1", "Task1 Description", "1679749200", None, None, "Not Started")
+    task1 = get_task_details(uid1, tid1)
+    assert task1 == {"tid": tid1, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task1", "description": "Task1 Description",
+                     "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
+    tid2 = create_task(str(uid1), pid1, eid1, [uid1], "Task2", "Task2 Description", "1679749200", None, None, "Not Started")
+    flag_task(uid1, tid2, True)
+    task2 = get_task_details(uid1, tid2)
+    assert task2 == {"tid": tid2, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task2", "description": "Task2 Description",
+                     "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": True, "completed": ""}
+    taskboard = get_taskboard(uid1, pid1, True)
+    print(taskboard)
+    assert taskboard == {'Not Started': [{'tid': tid2, 'title': 'Task2', 'deadline': '1679749200', 'priority': None, 
+                                          'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': True},
+                                          {'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 
+                                          'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}], 
+                                          'In Progress': [], 'Blocked': [], 'In Review/Testing': [], 'Completed': []}
+    delete_task(uid1, tid1)
+    delete_task(uid1, tid2)
+    delete_epic(uid1, eid1)    
