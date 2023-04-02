@@ -1,9 +1,9 @@
 from json import dumps
-from flask import Flask, request, send_from_directory, Response
+from flask import Flask, current_app, request, send_from_directory, Response, render_template
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
-from flask import Flask, request, Response
+from werkzeug import secure_filename
 
 from .authentication import *
 from .admin import *
@@ -12,6 +12,7 @@ from .profile_page import *
 from .projects import *
 from .connections import *
 from .taskboard import *
+from .helper import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -287,7 +288,25 @@ def flask_get_connected_taskmasters():
     uid = request.headers.get("Authorization")
     return dumps(get_connected_taskmasters(uid))
     
-# TASK MANAGEMENT #
+# TASK MANAGEMENT #	
+@app.route('/upload_file', methods = ['POST'])
+def upload_file():
+    f = request.files['file']
+    f.save(f.filename)
+    
+    prefix = request.form("prefix")
+    storage_upload_file(f"{prefix}/{f.filename}")
+    os.remove(f.filename)
+    return
+
+@app.route('/download_file', methods = ['GET'])
+def download_file():
+    data = request.get_json()
+    fileName = data["fileName"]
+    storage_download_file(fileName, f"UPLOAD_FOLDER/{fileName}")
+    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_from_directory(directory=uploads, filename=fileName)
+
 # CREATE #
 @app.route("/epic/create", methods=["POST"])
 def flask_create_epic():
