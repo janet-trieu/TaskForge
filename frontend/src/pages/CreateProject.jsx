@@ -34,7 +34,6 @@ const CreateProject = ({ firebaseApp }) => {
     if (!body.description) {alert('Please enter a project type.'); return;}
     if (body.icon === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
     const uid = await firebaseApp.auth().currentUser.uid;
-    console.log(uid);
     const data = await makeRequest("/projects/create", "POST", body, uid);
     if (data.error) alert(data.error);
     else { 

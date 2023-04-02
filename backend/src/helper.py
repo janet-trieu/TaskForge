@@ -144,3 +144,30 @@ def storage_delete_file(fileName):
     bucket = storage.bucket()
     blob = bucket.blob(fileName)
     blob.delete()
+
+############################################################
+#                    Sorting Functions                     #
+############################################################
+
+def sort_tasks(tasks):
+    unflagged_list = []
+    flagged_list = []
+
+    for task in tasks:
+        if task["flagged"]:
+            flagged_list.append(task)
+        else:
+            unflagged_list.append(task)
+    
+    def sortFunc(e):
+        if e["deadline"]:
+            return e["deadline"]
+        else:
+            return "No deadline"
+    
+    flagged_list.sort(key=sortFunc)
+    unflagged_list.sort(key=sortFunc)
+
+    return_list = flagged_list + unflagged_list
+
+    return return_list

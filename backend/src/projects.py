@@ -77,11 +77,11 @@ def extract_epics(pid):
 
     for ep in epics:
         return_dict = {}
-        
+        epic_doc = db.collection("epics").document(str(ep)).get().to_dict()
         return_dict = {
-            "eid": ep.get("eid"),
-            "title": ep.get("title"),
-            "colour": ep.get("colour")
+            "eid": epic_doc.get("eid"),
+            "title": epic_doc.get("title"),
+            "colour": epic_doc.get("colour")
         }
         return_list.append(return_dict)
     
@@ -98,7 +98,8 @@ def extract_tasks(pid):
     - pid (project id)
 
     Returns:
-    - epic_id
+    - epic id,
+    - task id,
     - task title, 
     - task status,
     - task assignee
@@ -108,22 +109,22 @@ def extract_tasks(pid):
     tasks = project["tasks"]
 
     return_list = []
+    for task_list in tasks:
+        for task in tasks[task_list]:
+            return_dict = {}
+            task_doc = db.collection("tasks").document(str(task)).get().to_dict()
+            return_dict = {
+                "eid": task_doc.get("eid"),
+                "tid": task_doc.get("tid"),
+                "title": task_doc.get("title"),
+                "status": task_doc.get("status"),
+                "assignee": task_doc.get("assignees"),
+                "flagged": task_doc.get("flagged"),
+                "deadline": task_doc.get("deadline")
+            }
+            return_list.append(return_dict)
 
-    for task in tasks:
-        return_dict = {}
-
-        return_dict = {
-            "eid": task.get("eid"),
-            "title": task.get("title"),
-            "status": task.get("status"),
-            "assignee": task.get("assignees")
-        }
-        return_list.append(return_dict)
-
-    if len(return_list) == 1:
-        return return_list[0]
-
-    return return_list
+    return sort_tasks(return_list)
 
 def search_project(uid, query):
     '''
@@ -145,6 +146,7 @@ def search_project(uid, query):
     docs = db.collection("projects").stream()
 
     return_list = []
+
     for doc in docs:
         pid = doc.to_dict().get("pid")
         project = get_project(pid)
@@ -157,7 +159,7 @@ def search_project(uid, query):
                 print(f"Successfully added {project['name']} to list of search result")
 
     return_list = list(filter(None, return_list))
-
+    return_list.sort(key=lambda x: (-x["is_pinned"], x["pid"]))
     return return_list
 
 def request_leave_project(pid, uid, msg):

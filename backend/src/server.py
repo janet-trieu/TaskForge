@@ -180,7 +180,7 @@ def flask_invite_to_project():
     sender_uid = request.headers.get('Authorization')
 
     uid_list = []
-    for email in data["receiver_uids"]:
+    for email in data["receiver_emails"]:
 
         try:
             uid = auth.get_user_by_email(email).uid
