@@ -24,6 +24,14 @@ def check_valid_uid(uid):
     if not doc.exists:
         raise InputError(f'User {uid} does not exist in Firestore database')
 
+def check_valid_eid(eid):
+    if not isinstance(eid, int):
+        raise InputError('eid needs to be an int')
+
+    doc = db.collection('epics').document(str(eid)).get()
+    if not doc.exists:
+        raise InputError(f'eid {eid} does not exist in database')
+
 def check_valid_pid(pid):
     if not isinstance(pid, int):
         raise InputError('pid needs to be an int')
@@ -39,6 +47,14 @@ def check_valid_tid(tid):
     doc = db.collection('tasks').document(str(tid)).get()
     if not doc.exists:
         raise InputError(f'tid {tid} does not exist in database')
+    
+def check_valid_stid(stid):
+    if not isinstance(stid, int):
+        raise InputError('tid needs to be an int')
+    
+    doc = db.collection('subtasks').document(str(stid)).get()
+    if not doc.exists:
+        raise InputError(f'stid {stid} does not exist in database')
 
 def check_valid_rid(rid):
     if not isinstance(rid, int):
@@ -55,6 +71,14 @@ def check_valid_achievement(achievement_str):
     doc = db.collection('achievements').document(achievement_str).get()
     if not doc.exists:
         raise InputError(f'achievement_str {achievement_str} does not exist in database')
+    
+def check_user_in_project(uid, pid):
+    check_valid_uid(uid)
+    check_valid_pid(pid)
+    doc = db.collection("projects").document(str(pid)).get()
+    project_members = doc.get("project_members")
+    if uid not in project_members:
+        raise InputError(f'UID {uid} does not belong in project {pid}')
     
 def does_nid_exists(uid, nid):
     doc_ref = db.collection('notifications').document(uid)
