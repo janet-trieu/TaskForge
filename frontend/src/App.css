@@ -203,14 +203,6 @@ input {
   margin-top: 4vh;
 }
 
-.task-modal {
-  background-color: white;
-  width: 50vw;
-  height: 50vh;
-  border: solid black 2px;
-  border-radius: 10px;
-}
-
 .MuiModal-root {
   display: flex;
   justify-content: center;
@@ -222,4 +214,16 @@ input {
   border: solid black 2px;
   border-radius: 10px;
   padding: 2em;
+}
+
+.task-modal {
+  background-color: white;
+  /* width: 50vw;
+  height: 50vh; */
+  box-sizing: border-box;
+  border: solid black 2px;
+  border-radius: 10px;
+  padding: 2.5em;
+  display: flex;
+  gap: 5em;
 }

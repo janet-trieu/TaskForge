@@ -339,8 +339,9 @@ def flask_task_details():
     """
     Gets task detail
     """
-    data = request.get_json()
-    return get_task_details(data["tid"])
+    tid = int(request.args.get('tid'))
+    uid = request.headers.get("Authorization")
+    return get_task_details(uid, tid)
 
 @app.route("/subtask/details", methods=["GET"])
 def flask_subtask_details():

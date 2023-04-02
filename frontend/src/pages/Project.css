@@ -20,10 +20,19 @@
     overflow: auto;
 }
 
-#left-section {
-    width: 25vw;
-    height: calc(100% - 2vh);
-    background-color: red;
-    padding-left: 2vw;
-    padding-top: 2vh;
+/* #task-left-section {
+
+} */
+
+#task-right-section {
+    display: flex;
+    gap: 2.5em;
+}
+
+.task-modal textarea {
+    resize: none;
+    background-color: white;
+    color: black;
+    width: 25em;
+    height: 5em;
 }

@@ -51,7 +51,7 @@ def test_view_project():
         "tasks": extract_tasks(pid),
         "is_pinned": project["is_pinned"]
     }
-'''
+
 def test_view_project_invalid_pid():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -97,7 +97,7 @@ def test_search_empty_query():
 
     project = get_project(pid)
 
-    assert res == project
+    assert res == [project]
 
 def test_search_project_simple():
 
@@ -109,7 +109,7 @@ def test_search_project_simple():
     query = "Alpha"
     res = search_project(tm1_uid, query)
 
-    assert res == get_project(pid1)
+    assert res == [get_project(pid1)]
     
 def test_search_project_upper_lower():
     reset_projects()
@@ -120,7 +120,7 @@ def test_search_project_upper_lower():
     query = "alpha"
     res = search_project(tm1_uid, query)
 
-    assert res == get_project(pid1)
+    assert res == [get_project(pid1)]
 
 def test_search_project_pm_name():
     reset_projects()
@@ -132,7 +132,7 @@ def test_search_project_pm_name():
     query = "Master"
     res = search_project(tm1_uid, query)
 
-    assert res == get_project(pid1)
+    assert res == [get_project(pid1)]
 
 def test_search_project_verbose():
     reset_projects()
@@ -153,12 +153,12 @@ def test_search_project_verbose():
     query = "Alpha"
     res = search_project(tm1_uid, query)
 
-    assert res == proj1
+    assert res == [proj1]
 
     query = "Receiving"
     res = search_project(tm1_uid, query)
 
-    assert res == proj2
+    assert res == [proj2]
 
     query = "Project"
     res = search_project(tm1_uid, query)
@@ -452,4 +452,3 @@ def test_pin_pinned_project():
 
     with pytest.raises(InputError):
         pin_project(pid, pm_uid, False)
-'''
