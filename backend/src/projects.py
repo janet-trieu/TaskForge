@@ -146,6 +146,7 @@ def search_project(uid, query):
     docs = db.collection("projects").stream()
 
     return_list = []
+
     for doc in docs:
         pid = doc.to_dict().get("pid")
         project = get_project(pid)
