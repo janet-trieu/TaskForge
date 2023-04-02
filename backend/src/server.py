@@ -298,14 +298,14 @@ def flask_get_connected_taskmasters():
     return dumps(get_connected_taskmasters(uid))
     
 # TASK MANAGEMENT #	
-@app.route('/upload_file', methods = ['POST'])
+@app.route('/upload_file', methods = ['POST', "GET"])
 def flask_upload_file():
     uid = request.headers.get('Authorization')
     f = request.files['file']
     f.save(f.filename)
     
-    tid = request.form("tid")
-    upload_file(uid, f.filename, tid)
+    data = request.get_json()
+    upload_file(uid, f.filename, data["destination_name"], data["tid"])
     return
 
 @app.route('/download_file', methods = ['GET'])

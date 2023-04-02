@@ -27,6 +27,6 @@ def test_file_upload():
     tid = create_task(uid, pid, eid, [], 'title', 'descr', 0, 0, "", "Not Started")
     
     header = {'Authorization': uid}
-    params = {'file': 'test.jpg'}
-    resp = requests.get(url + "file_upload", headers=header, params=params)
+    params = {'file': 'http_tests/test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
+    resp = requests.get(url + "upload_file", headers=header, params=params)
     assert(resp.status_code == 200)

@@ -157,7 +157,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
-    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], False, "")
+    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
     #Assign task to assignees
@@ -511,9 +511,9 @@ def comment_task(uid, tid, comment):
 
 ### ========= Files ========= ###
 #prefix is basically the t_id
-def upload_file(uid, fileName, tid):
+def upload_file(uid, fileName, destination_name, tid):
     if (not get_user_ref(uid)): raise InputError('uid invalid')
-    path = f"{tid}/{fileName}"
+    path = f"{tid}/{destination_name}"
     storage_upload_file(fileName, path)
     os.remove(fileName)
     
