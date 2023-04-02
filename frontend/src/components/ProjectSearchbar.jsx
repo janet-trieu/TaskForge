@@ -1,10 +1,18 @@
 import React from "react";
 import './Searchbar.css';
+import { makeRequest } from "../helpers";
 
-const ProjectSearchbar = () => {
-  const handleSearch = (event) => {
+const ProjectSearchbar = ({ setProjects, setIsLoading, uid }) => {
+  const handleSearch = async (event) => {
     event.preventDefault();
-    console.log(event, 'hi');
+    console.log(event)
+    setIsLoading('Loading...');
+    const data = await makeRequest('/projects/search', 'GET', {query: event.target.searchbar.value}, uid);
+    if (data.error) alert(data.error);
+    else {
+      setProjects(data);
+      setIsLoading(false);
+    }
   }
   return (
     <div id='searchbar-container'>

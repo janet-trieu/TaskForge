@@ -17,7 +17,7 @@ const Projects = ({ firebaseApp }) => {
 
   return (
     <>
-      <ProjectSearchbar />
+      <ProjectSearchbar setProjects={setProjects} setIsLoading={setIsLoading} uid={firebaseApp.auth().currentUser.uid} />
       <div id='projects-container'>
         {isLoading || (
           projects.map((details, idx) => {
