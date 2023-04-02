@@ -11,6 +11,7 @@ from .proj_master import *
 from .profile_page import *
 from .projects import *
 from .connections import *
+from .taskboard import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -296,6 +297,77 @@ def flask_get_connected_taskmasters():
     uid = request.headers.get("Authorization")
     return dumps(get_connected_taskmasters(uid))
     
-    
+# TASK MANAGEMENT #
+# CREATE #
+@app.route("/epic/create", methods=["POST"])
+def flask_create_epic():
+    """
+    Creates an epic
+    """
+    data = request.get_json()
+    return create_epic(data["uid"], data["pid"], data["title"], data["description"], data["colour"])
+
+@app.route("/task/create", methods=["POST"])
+def flask_create_task():
+    """
+    Creates a task
+    """
+    data = request.get_json()
+    return create_task(data["uid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+                data["workload"], data["priority"], data["status"])
+
+@app.route("/subtask/create", methods=["POST"])
+def flask_create_subtask():
+    """
+    Creates a subtask
+    """
+    data = request.get_json()
+    return create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+                          data["workload"], data["priority"], data["status"])
+
+# DETAILS #
+@app.route("/epic/details", methods=["GET"])
+def flask_epic_details():
+    """
+    Gets epic detail
+    """
+    data = request.get_json()
+    return get_epic_details(data["eid"])
+
+@app.route("/task/details", methods=["GET"])
+def flask_task_details():
+    """
+    Gets task detail
+    """
+    data = request.get_json()
+    return get_task_details(data["tid"])
+
+@app.route("/subtask/details", methods=["GET"])
+def flask_subtask_details():
+    """
+    Gets subtask detail
+    """
+    data = request.get_json()
+    return get_subtask_details(data["stid"])
+
+# ASSIGNEES #
+@app.route("/task/assign", methods=["POST"])
+def flask_task_assign():
+    """
+    Assign new users to task
+    """
+    data = request.get_json()
+    assign_task(data["tid"], data["new_assignees"])
+    return
+
+@app.route("/subtask/assign", methods=["POST"])
+def flask_subtask_assign():
+    """
+    Assign new users to subtask
+    """
+    data = request.get_json()
+    assign_subtask(data["stid"], data["new_assignees"])
+    return
+
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
