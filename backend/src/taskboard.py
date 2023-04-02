@@ -636,3 +636,45 @@ def get_taskboard(uid, pid, hidden):
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         task_list[task_ref.get("status")].append(task_details)
     return task_list
+
+def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)
+    
+    # Update epics
+    old_epic = get_task_ref(tid).get("eid")
+    # new epic is different
+    if not old_epic == eid:
+        # Update subtask epic
+        subtasks = get_task_ref(tid).get("subtasks")
+        for subtask in subtasks:
+            db.collection("subtasks").document(str(subtask)).update({'eid': eid})
+        # Update task epic
+        db.collection("tasks").document(str(tid)).update({'eid': eid})
+
+    assign_task(uid, tid, assignees)
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("tasks").document(str(tid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("tasks").document(str(tid)).update({'description': description})
+    if type(deadline) != int:
+        raise InputError(f'deadline is not valid')
+    else:
+        db.collection("tasks").document(str(tid)).update({'deadline': deadline})
+    if type(workload) != int:
+        raise InputError(f'workload is not valid')
+    else:
+        db.collection("tasks").document(str(tid)).update({'workload': workload})
+    if priority != "High" or priority != "Moderate" or priority != "Low":
+        raise InputError('priority is not valid')
+    else:
+        db.collection("priority").document(str(tid)).update({'priority': priority})
+    change_status(uid, tid, status)
+    flag_task(uid, tid, flagged)
+    return
