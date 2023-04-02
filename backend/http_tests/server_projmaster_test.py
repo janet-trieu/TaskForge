@@ -297,7 +297,7 @@ def test_invite_to_project():
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": pid,
-        "receiver_uids": [tm0_email]
+        "receiver_emails": [tm0_email]
     })
 
     assert invite_resp.status_code == 200
@@ -322,7 +322,7 @@ def test_multiple_invite_to_project():
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": pid,
-        "receiver_uids": [tm1_email, tm2_email, tm3_email]
+        "receiver_emails": [tm1_email, tm2_email, tm3_email]
     })
 
     assert invite_resp.status_code == 200
@@ -338,7 +338,7 @@ def test_invite_to_invalid_project():
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": -1,
-        "receiver_uids": [tm1_email]
+        "receiver_emails": [tm1_email]
     })
 
     assert invite_resp.status_code == 400
@@ -352,7 +352,7 @@ def test_invite_invalid_receiver_uid():
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": pid,
-        "receiver_uids": ["doesnt.exist@gmail.com"]
+        "receiver_emails": ["doesnt.exist@gmail.com"]
     })
 
     assert invite_resp.status_code == 400
@@ -374,7 +374,7 @@ def test_invite_uid_already_in_project():
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
         "pid": pid,
-        "receiver_uids": [tm1_email]
+        "receiver_emails": [tm1_email]
     })
 
     assert invite_resp.status_code == 400

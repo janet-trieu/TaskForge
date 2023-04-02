@@ -77,11 +77,11 @@ def extract_epics(pid):
 
     for ep in epics:
         return_dict = {}
-        
+        epic_doc = db.collection("epics").document(str(ep)).get().to_dict()
         return_dict = {
-            "eid": ep.get("eid"),
-            "title": ep.get("title"),
-            "colour": ep.get("colour")
+            "eid": epic_doc.get("eid"),
+            "title": epic_doc.get("title"),
+            "colour": epic_doc.get("colour")
         }
         return_list.append(return_dict)
     
@@ -109,20 +109,20 @@ def extract_tasks(pid):
     tasks = project["tasks"]
 
     return_list = []
-
-    for task in tasks:
-        return_dict = {}
-        task_doc = db.collection("tasks").document(task).get().to_dict()
-        return_dict = {
-            "eid": task_doc.get("eid"),
-            "tid": task_doc.get("tid"),
-            "title": task_doc.get("title"),
-            "status": task_doc.get("status"),
-            "assignee": task_doc.get("assignees"),
-            "flagged": task_doc.get("flagged"),
-            "deadline": task_doc.get("deadline")
-        }
-        return_list.append(return_dict)
+    for task_list in tasks:
+        for task in tasks[task_list]:
+            return_dict = {}
+            task_doc = db.collection("tasks").document(str(task)).get().to_dict()
+            return_dict = {
+                "eid": task_doc.get("eid"),
+                "tid": task_doc.get("tid"),
+                "title": task_doc.get("title"),
+                "status": task_doc.get("status"),
+                "assignee": task_doc.get("assignees"),
+                "flagged": task_doc.get("flagged"),
+                "deadline": task_doc.get("deadline")
+            }
+            return_list.append(return_dict)
 
     return sort_tasks(return_list)
 
