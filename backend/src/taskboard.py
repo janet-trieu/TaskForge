@@ -638,6 +638,26 @@ def get_taskboard(uid, pid, hidden):
     return task_list
 
 def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
+    """
+    Updates task
+
+    Args:
+        uid (str): uid of the user updating the task
+        tid (int): id of the task that is being updated
+        eid (int): id of the new epic that is being updated
+        assignees (list): list of uids that will be assigned to the task
+        title (str): string of the new title
+        description (str): new description
+        deadline (int): unix time stamp of when the task is due
+        workload (int): new workload
+        priority (str): new priority
+        status (str): new status
+        flagged (boolean): new flagged
+
+    Returns:
+        None
+
+    """
     pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
     check_epic_in_project(eid, pid)
@@ -652,6 +672,13 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
             db.collection("subtasks").document(str(subtask)).update({'eid': eid})
         # Update task epic
         db.collection("tasks").document(str(tid)).update({'eid': eid})
+        # Update new epic to include tid
+        new_epic_tasks = get_epic_ref(eid).get("tasks")
+        db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks.append(tid)})
+        # Remove tid from old epic
+        old_epic_tasks = get_epic_ref(old_epic).get("tasks")
+        old_epic_tasks.remove(tid)
+        db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
 
     assign_task(uid, tid, assignees)
 
