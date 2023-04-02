@@ -30,13 +30,7 @@ def get_user_assigned_task(uid, show_completed):
 
     tasks = db.collection("users").document(uid).get().get("tasks")
     if show_completed == True:
-        task_list = {
-            "Not Started": [],
-            "In Progress": [],
-            "Blocked": [],
-            "In Review/Testing": [],
-            "Completed": []
-        }
+        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")
@@ -54,14 +48,12 @@ def get_user_assigned_task(uid, show_completed):
                 task_details['epic'] = "None"
             else:
                 task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-            task_list[task_ref.get("status")].append(task_details)
+            if task_details['deadline'] == "" or task_details['deadline'] == None:
+                task_list.append(task_details)
+            else:
+                task_list = insert_tasklist(task_list, task_details)
     elif show_completed == False:
-        task_list = {
-            "Not Started": [],
-            "In Progress": [],
-            "Blocked": [],
-            "In Review/Testing": [],
-        } 
+        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")
@@ -80,5 +72,31 @@ def get_user_assigned_task(uid, show_completed):
                     task_details['epic'] = "None"
                 else:
                     task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-                task_list[task_ref.get("status")].append(task_details)
+                if task_details['deadline'] == "" or task_details['deadline'] == None:
+                    task_list.append(task_details)
+                else:
+                    task_list = insert_tasklist(task_list, task_details)
     return task_list
+
+### ========= Insert into tasklist ========= ###
+def insert_tasklist(tasklist, task):
+    length = len(tasklist)
+    if length == 0:
+        tasklist.append(task)
+        return tasklist
+    i = 0
+    
+    while i < length:
+        if less_than(task, tasklist[i]):
+            tasklist.insert(i, task)
+            return tasklist
+        i += 1
+    tasklist.append(task)
+    return tasklist
+
+### ========= Less than helper ========= ###
+def less_than(task_one, task_two):
+    if (task_one['deadline'] < task_two['deadline']):
+        return True
+    else:
+        return False
