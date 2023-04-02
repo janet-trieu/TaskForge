@@ -290,22 +290,24 @@ def flask_get_connected_taskmasters():
     
 # TASK MANAGEMENT #	
 @app.route('/upload_file', methods = ['POST'])
-def upload_file():
+def flask_upload_file():
+    uid = request.headers.get('Authorization')
     f = request.files['file']
     f.save(f.filename)
     
-    prefix = request.form("prefix")
-    storage_upload_file(f"{prefix}/{f.filename}")
-    os.remove(f.filename)
+    tid = request.form("tid")
+    upload_file(uid, f.filename, tid)
     return
 
 @app.route('/download_file', methods = ['GET'])
-def download_file():
-    data = request.get_json()
-    fileName = data["fileName"]
-    storage_download_file(fileName, f"UPLOAD_FOLDER/{fileName}")
+def flask_download_file():
+    uid = request.headers.get('Authorization')
+    fileName = request.args.get('fileName')
+    download_file(uid, fileName)
     uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
-    return send_from_directory(directory=uploads, filename=fileName)
+    rv = send_from_directory(directory=uploads, filename=fileName)
+    os.remove(f"UPLOAD_FOLDER/{fileName}")
+    return rv
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])

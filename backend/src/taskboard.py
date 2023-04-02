@@ -10,6 +10,7 @@ from .helper import *
 from .profile_page import *
 import re
 import time
+import os
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -502,10 +503,35 @@ def comment_task(uid, tid, comment):
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": comment,
+        "file": None
     }
     comments = db.collection("tasks").document(str(tid)).get().get("comments")
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
+
+### ========= Files ========= ###
+#prefix is basically the t_id
+def upload_file(uid, fileName, tid):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    path = f"{tid}/{fileName}"
+    storage_upload_file(fileName, path)
+    os.remove(fileName)
+    
+    data = {
+        "time": time.time(),
+        "uid": uid,
+        "display_name": get_display_name(uid),
+        "comment": "",
+        "file": path
+    }
+    files = db.collection("tasks").document(str(tid)).get().get("files")
+    files.append(data)
+    db.collection("tasks").document(str(tid)).update({"files": files})
+    
+def download_file(uid, fileName):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    storage_download_file(fileName, f"UPLOAD_FOLDER/{fileName}")
+
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):
