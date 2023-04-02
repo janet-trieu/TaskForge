@@ -3,7 +3,6 @@ from flask import Flask, current_app, request, send_from_directory, Response, re
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
-from werkzeug import secure_filename
 
 from .authentication import *
 from .admin import *

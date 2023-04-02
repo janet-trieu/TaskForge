@@ -22,16 +22,11 @@ uid = auth.get_user_by_email("file1@gmail.com").uid
 def test_file_upload():
     header = {'Authorization': uid}
     
-    params = {'title': 'proj', 'description': 'desc'}
-    resp = requests.get(url + "projects/create", headers=header, params=params)
-    pid = resp.json()
+    pid = create_project(uid, "Project 123", "description", None, None, None)
+    eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
+    tid = create_task(uid, pid, eid, [], 'title', 'descr', 0, 0, "", "Not Started")
     
-    params = {'pid': pid, 'title':'tit', 'description': 'desc', 'color': '#fcba03'}
-    resp = requests.get(url + "epic/create", headers=header, params=params)
-    eid = resp.json()
-    
-    params = {'pid': pid, 'eid':eid, 'title':'tit', 'description': 'desc'}
-    resp = requests.get(url + "task/create", headers=header, params=params)
-    tid = resp.json()
-    
-    
+    header = {'Authorization': uid}
+    params = {'file': 'test.jpg'}
+    resp = requests.get(url + "file_upload", headers=header, params=params)
+    assert(resp.status_code == 200)
