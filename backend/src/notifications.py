@@ -336,3 +336,63 @@ def notification_leave_request(uid, uid_sender, pid):
 
     db.collection("notifications").document(uid).update(notification)
     return nid
+
+def notification_accepted_request(uid, uid_sender):
+    '''
+    Creates and add notification when a user's request was accepted.
+    This is non-specific for simplicity sake can refer to:
+        -connection request, project invite, leave request
+    Args:
+        uid (string): User being notified and who sent the request
+        uid_sender (string): User who has responded to the request
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user has sent a request + respondee has accepted
+    '''
+    notification_type = 'accepted_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has accepted your request.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_denied_request(uid, uid_sender):
+    '''
+    Creates and add notification when a user's request was denied.
+    This is non-specific for simplicity sake can refer to:
+        -connection request, project invite, leave request
+    Args:
+        uid (string): User being notified and who sent the request
+        uid_sender (string): User who has responded to the request
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user has sent a request + respondee has denied
+    '''
+    notification_type = 'denied_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has denied your request.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
