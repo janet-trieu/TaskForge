@@ -1,6 +1,6 @@
 import './App.css';
-import Auth from './Pages/Auth.jsx';
-import Site from './Components/Site.jsx';
+import Auth from './pages/Auth.jsx';
+import Site from './components/Site.jsx';
 import firebase from 'firebase/compat/app';
 import { useState, useEffect } from 'react';
 

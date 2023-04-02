@@ -20,19 +20,22 @@ const CreateProject = ({ firebaseApp }) => {
   const cancelButtonHandler = () => navigate('/projects');
   const createButtonHandler = async (event) => {
     event.preventDefault();
-
     const body = {
       name: event.target.name.value,
-      type: event.target.type.value,
+      description: event.target.type.value,
       invites: event.target.invites.value,
-      icon
+      due_date: null,
+      team_strength: null,
+      status: null,
+      picture: icon
     }
 
     if (!body.name) {alert('Please enter a project name.'); return;}
-    if (!body.type) {alert('Please enter a project type.'); return;}
+    if (!body.description) {alert('Please enter a project type.'); return;}
     if (body.icon === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
-
-    const data = await makeRequest("/createproject", "POST", body, firebaseApp.auth().currentUser.id);
+    const uid = await firebaseApp.auth().currentUser.uid;
+    console.log(uid);
+    const data = await makeRequest("/projects/create", "POST", body, uid);
     if (data.error) alert(data.error);
     else { 
       alert('Project has been successfully created!')

@@ -104,7 +104,7 @@
   font-weight: bold;
 }
 
-#create-project-form input {
+input {
   background-color: white;
   color: black;
   padding: 1vh;
@@ -116,7 +116,7 @@
 
 #project-invite {
   background-image: url('assets/search.png');
-  background-position: calc(30vw - 20px) 0px;
+  background-position: calc(30vw - 20px);
   background-repeat: no-repeat;
 }
 
@@ -192,4 +192,38 @@
   width: 39vw;
   background-color: #f3f3f3 ;
   border-radius: 10px;
+}
+
+#projects-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+  margin-left: 2.5vw;
+  margin-right: 2.5vw;
+  margin-top: 4vh;
+}
+
+.MuiModal-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#profile-modal {
+  background-color: white;
+  border: solid black 2px;
+  border-radius: 10px;
+  padding: 2em;
+}
+
+.task-modal {
+  background-color: white;
+  /* width: 50vw;
+  height: 50vh; */
+  box-sizing: border-box;
+  border: solid black 2px;
+  border-radius: 10px;
+  padding: 2.5em;
+  display: flex;
+  gap: 5em;
 }

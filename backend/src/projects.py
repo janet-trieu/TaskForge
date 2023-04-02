@@ -162,9 +162,6 @@ def search_project(uid, query):
 
     return_list = list(filter(None, return_list))
 
-    if len(return_list) == 1:
-        return return_list[0]
-
     return return_list
 
 def request_leave_project(pid, uid, msg):

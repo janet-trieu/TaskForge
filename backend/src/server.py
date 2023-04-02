@@ -48,6 +48,12 @@ def flask_reset_password():
     if res == -1:
         return Response(status=400)
     else:
+        # Send email
+        msg_title = "TaskForge: Reset Password"
+        receipient_email = auth.get_user(uid).email
+        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+        msg.body = "Click link to reset your password: {res}"
+        mail.send(msg)
         return dumps(res)
     
 #Profile Routes#
@@ -74,12 +80,15 @@ def profile_update():
         email = data["email"]
         role = data["role"]
         photo_url = data["photo_url"]
-        try:
-            update_email(uid, email)
-        except ValueError:
-            return "Invalid Email"
-        update_role(uid, role)
-        update_photo(uid, photo_url)
+        display_name = data["display_name"]
+        if email:
+            try:
+                update_email(uid, email)
+            except ValueError:
+                return "Invalid Email"
+        if role: update_role(uid, role)
+        if photo_url: update_photo(uid, photo_url)
+        if display_name: update_display_name(uid, display_name)
         return Response(status=200)
 
 @app.route('/profile/tasks', methods=['GET'])
@@ -94,6 +103,7 @@ def get_user_tasks():
 def create_user():
     uid = request.headers.get('Authorization')
     create_user_firestore(uid)
+    return Response(status=200)
 
 
 #ADMIN ROUTES#
@@ -350,8 +360,9 @@ def flask_task_details():
     """
     Gets task detail
     """
-    data = request.get_json()
-    return get_task_details(data["tid"])
+    tid = int(request.args.get('tid'))
+    uid = request.headers.get("Authorization")
+    return get_task_details(uid, tid)
 
 @app.route("/subtask/details", methods=["GET"])
 def flask_subtask_details():
