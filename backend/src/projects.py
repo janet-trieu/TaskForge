@@ -102,7 +102,8 @@ def extract_tasks(pid):
     - pid (project id)
 
     Returns:
-    - epic_id
+    - epic id,
+    - task id,
     - task title, 
     - task status,
     - task assignee
@@ -111,21 +112,33 @@ def extract_tasks(pid):
     project = get_project(pid)
     tasks = project["tasks"]
 
-    return_list = []
+    unflagged_list = []
+    flagged_list = []
 
     for task in tasks:
         return_dict = {}
 
         return_dict = {
             "eid": task.get("eid"),
+            "tid": task.get("tid"),
             "title": task.get("title"),
             "status": task.get("status"),
-            "assignee": task.get("assignees")
+            "assignee": task.get("assignees"),
+            "flagged": task.get("flagged"),
+            "deadline": task.get("deadline")
         }
-        return_list.append(return_dict)
+        if return_dict["flagged"]:
+            flagged_list.append(return_dict)
+        else:
+            unflagged_list.append(return_dict)
 
-    if len(return_list) == 1:
-        return return_list[0]
+    def sortFunc(e):
+        return e["deadline"]
+    
+    flagged_list.sort(key=sortFunc)
+    unflagged_list.sort(key=sortFunc)
+
+    return_list = flagged_list + unflagged_list
 
     return return_list
 
