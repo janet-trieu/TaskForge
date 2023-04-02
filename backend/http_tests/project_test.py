@@ -44,7 +44,19 @@ def test_view_project():
     view_json = view_resp.json()
 
 
-    assert view_json == project
+    assert view_json == {
+        "pid": pid,
+        "name": project["name"],
+        "description": project["description"],
+        "status": project["status"],
+        "due_date": project["due_date"],
+        "team_strength": project["team_strength"],
+        "picture": project["picture"],
+        "project_members": project["project_members"],
+        "epics": extract_epics(pid),
+        "tasks": extract_tasks(pid),
+        "is_pinned": project["is_pinned"]
+    }
 
     reset_projects()
 
@@ -104,7 +116,7 @@ def test_search_empty_query():
     assert search_resp.status_code == 200
     search_json = search_resp.json()
 
-    assert search_json == project
+    assert search_json == [project]
 
     reset_projects()
 
@@ -124,7 +136,7 @@ def test_search_project_simple():
     assert search_resp.status_code == 200
     search_json = search_resp.json()
 
-    assert search_json == project
+    assert search_json == [project]
 
     reset_projects()
 
@@ -144,7 +156,7 @@ def test_search_project_pm_name():
     assert search_resp.status_code == 200
     search_json = search_resp.json()
 
-    assert search_json == project
+    assert search_json == [project]
 
     reset_projects()
 
@@ -170,7 +182,7 @@ def test_search_project_verbose():
     assert search_resp.status_code == 200
     search_json = search_resp.json()
 
-    assert search_json == proj1
+    assert search_json == [proj1]
 
     query = "Receiving"
     header = {'Authorization': tm1_uid}
@@ -179,7 +191,7 @@ def test_search_project_verbose():
     assert search_resp.status_code == 200
     search_json = search_resp.json()
 
-    assert search_json == proj2
+    assert search_json == [proj2]
 
     query = "Project"
     header = {'Authorization': tm1_uid}
