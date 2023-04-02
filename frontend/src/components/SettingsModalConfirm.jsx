@@ -1,22 +1,16 @@
 import React from "react";
 import { makeRequest } from "../helpers";
-import './SettingsModal.css'
+import './SettingsModal.css';
+import { getAuth } from "firebase/auth"
 
 const SettingsModalConfirm = ({ firebaseApp, title, onClose, action, warning }) => {
-    const handleConfirm = (action) => {
-        console.log(action)
+    const handleConfirm = async (action) => {
         switch (action) {
             case 'Reset Password':
-                const uid = firebaseApp.auth().currentUser.uid;
-                const data = makeRequest("/authentication/reset_password", "POST", null, uid)
-                if (data.error) {
-                    alert(data.error)
-                } else {
-                    alert('Email has been sent.')
-                    onClose()
-                }
-            default:
-                onClose()
+                const email = firebaseApp.auth().currentUser.email;
+                const data = await firebaseApp.auth().sendPasswordResetEmail(email);
+                alert("Email sent!")
+                onClose();
         }
     }
 
