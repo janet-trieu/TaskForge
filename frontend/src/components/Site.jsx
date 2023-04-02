@@ -24,7 +24,7 @@ const Site = ({ firebaseApp }) => {
           <Route path='/projects/create' element={<CreateProject firebaseApp={firebaseApp}/>} />
           <Route path='/projects/:pid' element={<ProjectBoardView firebaseApp={firebaseApp}/>} />
           <Route path='/projects/:pid/board' element={<ProjectBoardView firebaseApp={firebaseApp}/>} />
-          <Route path='/projects/:pid/tasks' element={<ProjectTaskView firebaseApp={firebaseApp}/>} />
+          <Route path='/projects/:pid/task' element={<ProjectTaskView firebaseApp={firebaseApp}/>} />
           <Route path='/tasks' element={<Tasks firebaseApp={firebaseApp} />} />
           <Route path='/profile' element={<Profile firebaseApp={firebaseApp} />} />
           <Route path='/profile/:uid' element={<Profile firebaseApp={firebaseApp} />} />
