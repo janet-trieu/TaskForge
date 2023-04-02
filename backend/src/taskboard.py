@@ -8,7 +8,6 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
-from .tasklist import insert_tasklist, less_than
 import re
 import time
 
@@ -629,18 +628,16 @@ def get_taskboard(uid, pid, hidden):
             "deadline": task_ref.get("deadline"),
             "priority": task_ref.get("priority"),
             "status": task_ref.get("status"),
-            "assignees": task_ref.get("assignees")
+            "assignees": task_ref.get("assignees"),
+            "flagged": task_ref.get("flagged")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
         else:
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-        if task_details['deadline'] == "" or task_details['deadline'] == None:
-            task_list[task_ref.get("status")].append(task_details)
-        else:
-            status_list = task_list[task_ref.get("status")]
-            status_list = insert_tasklist(status_list, task_details)
-            task_list[task_ref.get("status")] = status_list
+        status_list = task_list[task_ref.get("status")]
+        status_list = insert_tasklist(status_list, task_details)
+        task_list[task_ref.get("status")] = status_list
     return task_list
 
 def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
@@ -711,3 +708,55 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
     change_status(uid, tid, status)
     flag_task(uid, tid, flagged)
     return
+
+### ========= Insert into tasklist ========= ###
+def insert_tasklist(tasklist, task):
+    length = len(tasklist)
+    if length == 0:
+        tasklist.append(task)
+        return tasklist
+    i = 0
+    
+    while i < length:
+        if less_than(task, tasklist[i]):
+            tasklist.insert(i, task)
+            return tasklist
+        i += 1
+    tasklist.append(task)
+    return tasklist
+
+### ========= Less than helper ========= ###
+def less_than(task_one, task_two):
+    task_one_flagged = task_one['flagged']
+    task_two_flagged = task_two['flagged']
+    if (task_one['deadline'] == "" or task_one['deadline'] == None):
+        task_one_deadline = None
+    else: 
+        task_one_deadline = task_one['deadline']
+    if (task_two['deadline'] == "" or task_two['deadline'] == None):
+        task_two_deadline = None
+    else:         
+        task_two_deadline = task_two['deadline']
+
+    if ((task_one_flagged == True and task_two_flagged == True) or (task_one_flagged == False and task_two_flagged == False)):
+        # Both have time stamps
+        if (task_one_deadline != None and task_two_deadline != None):
+            if (task_one_deadline < task_two_deadline):
+                return True
+            else:
+                return False       
+        # Indexed has a time stamp but task doesnt
+        if (task_one_deadline == None and task_two_deadline != None):
+            return False
+        # Both do not have timestamps
+        if (task_one_deadline == None and task_two_deadline == None):
+            return True
+        # Indexed does not have a timestamp so task should be added infront of it
+        if (task_one_deadline != None and task_two_deadline == None):
+            return True
+    # task one isnt flagged so should be after flagged task
+    elif (task_one_flagged == False and task_two_flagged == True):
+        return False
+    # Task one is flagged and task two isnt so task should be inserted infront
+    elif (task_one_flagged == True and task_two_flagged == False):
+        return True

@@ -44,7 +44,7 @@ def test_get_assigned_tasklist_show_completed():
     assigned_list = get_user_assigned_task(uid1, True)
     print(assigned_list)
     assert assigned_list == [{'tid': tid1, 'title': 'Task1', 'project_name': 'boobs', 'deadline': '1679749200', 'priority': None, 
-                              'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1'}]
+                              'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}]
 
                                             
     delete_task(uid1, tid1)
@@ -66,9 +66,9 @@ def test_get_assigned_task_list_show_completed_two_projects():
     print(assigned_list)
 
     assert assigned_list == [{'tid': tid1, 'title': 'Task1', 'project_name': 'boobs', 'deadline': '1679749200', 'priority': None, 
-                              'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1'}, 
+                              'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}, 
                               {'tid': tid2, 'title': 'Task1', 'project_name': 'bootie', 'deadline': '1679749201', 'priority': None, 
-                               'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1'}]
+                               'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}]
 
     delete_task(uid1, tid1)
     delete_epic(uid1, eid1)

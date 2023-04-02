@@ -72,7 +72,7 @@ def test_show_taskboard():
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
     taskboard = get_taskboard(uid1, pid1, True)
     assert taskboard == {'Not Started': [{'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 
-                                          'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1'}], 
+                                          'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}], 
                                           'In Progress': [], 'Blocked': [], 'In Review/Testing': [], 'Completed': []}
     delete_task(uid1, tid1)
     delete_epic(uid1, eid1)    
