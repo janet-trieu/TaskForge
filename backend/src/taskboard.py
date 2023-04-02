@@ -8,6 +8,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
+from .tasklist import insert_tasklist, less_than
 import re
 import time
 
@@ -587,9 +588,9 @@ def show_tasks(uid, pid, hidden):
         completed_tasks = tasks.get("Completed")
         for task in completed_tasks:
             task_time = db.collection("tasks").document(str(task)).get().get("completed")
-            # if task has been completed and it has been more than 2 weeks since completed
+            # if task has been completed and it has been more than a weeks since completed
             # this task is hidden
-            if task_time.isdigit() and (curr_time - task_time) >= 604800 * 2:
+            if task_time.isdigit() and (curr_time - task_time) >= 604800:
                 pass
             # this task is not hidden
             else:
@@ -634,7 +635,12 @@ def get_taskboard(uid, pid, hidden):
             task_details['epic'] = "None"
         else:
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-        task_list[task_ref.get("status")].append(task_details)
+        if task_details['deadline'] == "" or task_details['deadline'] == None:
+            task_list[task_ref.get("status")].append(task_details)
+        else:
+            status_list = task_list[task_ref.get("status")]
+            status_list = insert_tasklist(status_list, task_details)
+            task_list[task_ref.get("status")] = status_list
     return task_list
 
 def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
