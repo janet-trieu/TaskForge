@@ -17,7 +17,7 @@ const SettingsContainer = ({ firebaseApp, title, description, buttons }) => {
     switch (modalType) {
       case 'uid search':
         return <Modal open={open} onClose={handleClose}>
-          <SettingsModalSearch title={`${modalTitle}`} onClose={handleClose} action={`${modalAction}`} warning={`${warning}`} />
+          <SettingsModalSearch firebaseApp={firebaseApp} title={`${modalTitle}`} onClose={handleClose} action={`${modalAction}`} warning={`${warning}`} />
         </Modal>
       case 'confirm':
         return <Modal open={open} onClose={handleClose}>

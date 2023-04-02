@@ -1,24 +1,46 @@
 import React, { useState } from "react";
 import './SettingsModal.css'
 import './Searchbar.css';
+import { makeRequest } from "../helpers";
 
-const SettingsModalSearch = ({ title, onClose, action, warning }) => {
-    const handleConfirm = (action, warning) => {
-        const msg = `Are you sure you want to ${action.toLowerCase()} FULLNAME UID? ${warning}`
+const SettingsModalSearch = ({ firebaseApp, title, onClose, action, warning }) => {
+    const handleConfirm = async (action, warning, event) => {
+        event.preventDefault();
+        if (!event.target.searchbar.value) {
+            alert("Please enter a UID.");
+            return;
+        }
+        const msg = `Are you sure you want to continue? ${warning}`
     
         if (window.confirm(msg)) {
-            // if action == admin, admin user
-            // if action == ban, remove user
-            onClose()
-        } else {
-            onClose()
+            let route = null;
+            switch (action.toLowerCase()) {
+                case 'admin user':
+                    route = "give_admin";
+                    break;
+                case 'ban user':
+                    route = "ban_user";
+                    break;
+                case 'unban user':
+                    route = "unban_user";
+                    break;
+                case 'remove user':
+                    route = "remove_user";
+                    break;
+                case 'restore user':
+                    route = "readd_user";
+                    break;
+            }
+            const data = makeRequest(`/admin/${route}`, 'POST', {uid_admin: event.target.searchbar.value}, firebaseApp.auth().currentUser.uid);
+            if (data.error) alert(data.error);
         }
+        onClose();
     }
 
     return (
         <>
             <div className="settings-modal">
-                <div className="settings-modal-content">
+                <form className="settings-modal-content" onSubmit={(event) => handleConfirm(action, warning, event)}>
                     <div className="settings-modal-header">
                         <h3 className="settings-modal-title">{title}</h3>
                     </div>
@@ -27,9 +49,9 @@ const SettingsModalSearch = ({ title, onClose, action, warning }) => {
                     </div>
                     <div className="settings-modal-footer">
                         <button className="button-cancel" onClick={onClose}>Cancel</button>
-                        <button className="button-confirm" onClick={() => handleConfirm(action, warning)}>{action}</button>
+                        <button className="button-confirm" type="submit" >{action}</button>
                     </div>
-                </div>
+                </form>
             </div>
         </>
     )
