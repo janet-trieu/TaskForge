@@ -92,21 +92,25 @@ def notification_welcome(uid):
     Welcome message to new user.
     Args:
         uid (string): User being notified
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that this function is called ONCE per user.
     '''
-
-    name = auth.get_user(uid).display_name
+    nid = 'welcome'
+    name = get_display_name(uid)
 
     notification = {
         'welcome' : {
             "has_read": False,
             "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
             "time_sent": datetime.now(),
-            "nid": 'welcome'
+            "type": nid,
+            "nid": nid
         }
     }
 
     db.collection("notifications").document(uid).set(notification)
+    return nid
 
 def notification_connection_request(uid, uid_sender):
     '''
@@ -114,6 +118,8 @@ def notification_connection_request(uid, uid_sender):
     Args:
         uid (string): User being notified
         uid_sender (string): User who requests to connect
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the users are not connected + do not have an existing request
     '''
     if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
@@ -144,6 +150,8 @@ def notification_project_invite(uid, uid_sender, pid):
         uid (string): User being notified
         uid_sender (string): User that is inviting to the project
         pid (int): Project being invited to
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the user sending is in project + user receiving is not in project + do not have an existing request (+ possibly need to be connected?)
     '''
 
@@ -166,6 +174,7 @@ def notification_project_invite(uid, uid_sender, pid):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
 
 def notification_assigned_task(uid, pid, tid):
     '''
@@ -174,6 +183,8 @@ def notification_assigned_task(uid, pid, tid):
         uid (string): User being notified
         pid (int): Project the task is located in
         tid (int): Task being assigned
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the user is in project + task is in project
     '''
 
@@ -195,6 +206,7 @@ def notification_assigned_task(uid, pid, tid):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
 
 def notification_comment(uid, uid_sender, pid, tid):
     '''
@@ -204,6 +216,8 @@ def notification_comment(uid, uid_sender, pid, tid):
         uid_sender (string): User who commented
         pid (int): Project the task is in
         tid (int): Task that was commented in
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the user is in the project + task is in the project + user was assigned the task
     '''
 
@@ -227,6 +241,7 @@ def notification_comment(uid, uid_sender, pid, tid):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
 
 def notification_review(uid, uid_sender, rid):
     '''
@@ -235,6 +250,8 @@ def notification_review(uid, uid_sender, rid):
         uid (string): User being notified
         uid_sender (string): User who made review
         rid (int): Review created
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the users are connected(?)
     '''
 
@@ -255,6 +272,7 @@ def notification_review(uid, uid_sender, rid):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
 
 def notification_achievement(uid, achievement_str):
     '''
@@ -262,6 +280,8 @@ def notification_achievement(uid, achievement_str):
     Args:
         uid (string): User being notified
         achievement_str (string): Achievement that has been completed
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the achievement has been fulfilled
     '''
 
@@ -281,6 +301,7 @@ def notification_achievement(uid, achievement_str):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
 
 def notification_leave_request(uid, uid_sender, pid):
     '''
@@ -289,6 +310,8 @@ def notification_leave_request(uid, uid_sender, pid):
         uid (string): User being notified
         uid_sender (string): User sending leave request
         pid (int): Project being left
+    Returns:
+        nid (string): Notification ID of newly created notification
     ASSUMPTION that the users are in project + user notified is project master
     '''
 
@@ -312,3 +335,4 @@ def notification_leave_request(uid, uid_sender, pid):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
