@@ -5,7 +5,7 @@ import requests
 from src.authentication import *
 from src.profile_page import *
 
-port = 5000
+port = 8000
 url = f"http://localhost:{port}/"
 
 try:

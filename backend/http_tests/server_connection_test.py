@@ -7,7 +7,7 @@ from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
 
-port = 5000
+port = 8000
 url = f"http://localhost:{port}/"
 
 try:
@@ -40,15 +40,15 @@ def test_connection_request_respond_decline_success():
     """
     Successfully declining a connection request
     """
-    
+    headers_dict = {'Authorization': uid2}
     json_dict = {'uid': uid2, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
     
     json_dict = {'uid': uid2, 'nid': nid, 'response' : False}
-    resp = requests.post(url + '/connections/request_respond', json=json_dict)
+    resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
 
@@ -56,15 +56,15 @@ def test_connection_request_respond_accept_success():
     """
     Successfully accepting a connection request
     """
-    
+    headers_dict = {'Authorization': uid2}
     json_dict = {'uid': uid2, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
     
     json_dict = {'uid': uid2, 'nid': nid, 'response' : True}
-    resp = requests.post(url + '/connections/request_respond', json=json_dict)
+    resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
 
@@ -72,11 +72,11 @@ def test_get_connection_requests_failure():
     """
     Giving an int instead of a string
     """
+    headers_dict = {'Authorization': uid3}
     json_dict = {'uid': uid3, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
-    
     json_dict = {'uid': 1}
     resp = requests.post(url + '/connections/get_connection_requests', json=json_dict)
 
@@ -86,13 +86,13 @@ def test_get_connection_requests_success():
     """
     Successfully getting a connection request list
     """
+    headers_dict = {'Authorization': uid3}
     json_dict = {'uid': uid3, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     
-    json_dict = {'uid': uid3}
-    resp = requests.post(url + '/connections/get_connection_requests', json=json_dict)
+    resp = requests.post(url + '/connections/get_connection_requests', headers=headers_dict)
 
     assert resp.status_code == 200
 
@@ -109,19 +109,20 @@ def test_connected_taskmasters_success():
     """
     Successfully getting a connected tm list
     """
+    headers_dict = {'Authorization': uid3}
     json_dict = {'uid': uid3, 'uid_sender': uid2}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
     
     json_dict = {'uid': uid3, 'nid': nid, 'response' : True}
-    resp = requests.post(url + '/connections/request_respond', json=json_dict)
+    resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
     json_dict = {'uid': uid3}
-    resp = requests.post(url + '/connections/get_connected_taskmasters', json=json_dict)
+    resp = requests.post(url + '/connections/get_connected_taskmasters', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
 

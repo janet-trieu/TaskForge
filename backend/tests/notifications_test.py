@@ -44,6 +44,12 @@ def test_project_invite_notification():
     '''
 
     pid_expected = create_project(user_id0, "Project N", "Description", None, None, None)
+
+    nid1 = notification_connection_request(user_id1, user_id0)
+    nid2 = notification_connection_request(user_id2, user_id0)
+    connection_request_respond(user_id1, nid1, True)
+    connection_request_respond(user_id2, nid2, True)
+
     receiver_uids = [user_id1, user_id2]
     invite_to_project(pid_expected, user_id0, receiver_uids)
 

@@ -5,11 +5,16 @@ Functionalities:
  - request_leave_project()
 '''
 
+'''
+TO-DO get stuff related to tasks and epics
+'''
+
 from firebase_admin import firestore, auth
 
 from .error import *
 from .notifications import *
 from .test_helpers import *
+from .proj_class import *
 
 db = firestore.client()
 
@@ -32,36 +37,97 @@ def view_project(pid, uid):
     if pid < 0:
         raise InputError(f"ERROR: Invalid project id supplied {pid}")
     
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
     
     # check whether the specified uid exists
     check_valid_uid(uid)
 
-    pm_id = proj_ref.get().get("uid")
-    pm_name = get_display_name(pm_id)
-    project_name = proj_ref.get().get("name")
-    description = proj_ref.get().get("description")
-    project_members = proj_ref.get().get("project_members")
-    tasks = proj_ref.get().get("tasks")
-    return_dict = {}
+    if not uid in project["project_members"]:
+        raise AccessError(f"ERROR: User is not in the project")
 
-    if uid in proj_ref.get().get("project_members"):
-        return_dict = {
-            "project_master": pm_name,
-            "name": project_name,
-            "description": description,
-            "project_members": project_members,
-            "tasks": tasks
-        }
-    else:
-        return_dict = {
-            "project_master": pm_name,
-            "name": project_name,
-        }
+    return {
+            "pid": pid,
+            "name": project["name"],
+            "description": project["description"],
+            "status": project["status"],
+            "due_date": project["due_date"],
+            "team_strength": project["team_strength"],
+            "picture": project["picture"],
+            "project_members": project["project_members"],
+            "epics": extract_epics(pid),
+            "tasks": extract_tasks(pid),
+            "is_pinned": project["is_pinned"]
+    }
 
-    return return_dict
+def extract_epics(pid):
+    '''
+    Helper function to extract the necessary epic details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic ids, 
+    - epic titles, 
+    - epic colour
+    '''
+
+    project = get_project(pid)
+    epics = project["epics"]
+
+    return_list = []
+
+    for ep in epics:
+        return_dict = {}
+        
+        return_dict = {
+            "eid": ep.get("eid"),
+            "title": ep.get("title"),
+            "colour": ep.get("colour")
+        }
+        return_list.append(return_dict)
+    
+    if len(return_list) == 1:
+        return return_list[0]
+
+    return return_list
+
+def extract_tasks(pid):
+    '''
+    Helper function to extract the necessary task details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic_id
+    - task title, 
+    - task status,
+    - task assignee
+    '''
+
+    project = get_project(pid)
+    tasks = project["tasks"]
+
+    return_list = []
+
+    for task in tasks:
+        return_dict = {}
+
+        return_dict = {
+            "eid": task.get("eid"),
+            "title": task.get("title"),
+            "status": task.get("status"),
+            "assignee": task.get("assignees")
+        }
+        return_list.append(return_dict)
+
+    if len(return_list) == 1:
+        return return_list[0]
+
+    return return_list
 
 def search_project(uid, query):
     '''
@@ -84,30 +150,20 @@ def search_project(uid, query):
 
     return_list = []
     for doc in docs:
-        return_dict = {}
-        pm_uid = doc.to_dict().get("uid")
-        pm_name = auth.get_user(pm_uid).display_name
-        proj_name = doc.to_dict().get("name")
-        status = doc.to_dict().get("status")
+        pid = doc.to_dict().get("pid")
+        project = get_project(pid)
+        pm_uid = project["uid"]
+        pm_name = auth.get_user(str(pm_uid)).display_name
 
-        description = doc.to_dict().get("description")
-        project_members = doc.to_dict().get("project_members")
-
-        if query.lower() in proj_name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == "":
-            if uid in project_members:
-                return_dict = {
-                    "project_master": pm_name,
-                    "name": proj_name,
-                    "description": description,
-                    "project_members": project_members,
-                    "tasks": [],
-                    "status": status
-                }
-        
-        return_list.append(return_dict)
-        print(f"Successfully added {proj_name} to list of search result")
+        if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
+            if uid in project["project_members"]:
+                return_list.append(get_project(pid))
+                print(f"Successfully added {project['name']} to list of search result")
 
     return_list = list(filter(None, return_list))
+
+    if len(return_list) == 1:
+        return return_list[0]
 
     return return_list
 
@@ -286,7 +342,7 @@ def pin_project(pid, uid, is_pinned):
     # specified project is not pinned, and user wants to pin
     if (curr_pin == False and is_pinned == True) or (curr_pin == True and is_pinned == False):
         proj_ref.update({
-        "is_pinned": is_pinned
+            "is_pinned": is_pinned
         })
 
     else:

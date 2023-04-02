@@ -159,3 +159,29 @@ What was not finished, why this happened, how this affects the overall project p
 
 What is planned for the next period (e.g., next week)
 - Continue working on sprint 2, finish sprint 1 frontend ASAP
+
+=== Week 6 ===
+
+General Content:
+- Sprint 2 delegated tasks complete
+- Retro submitted
+
+What was planned for the period since the last work diary entry
+- Continue working on sprint 2
+
+What was finished
+- Connection management
+- Project management
+- most of Task Management
+- most of sprint 1 frontend
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- for me personally, I cannot work on local anymore due to some weird bug causing errors for http testing backend functionalities
+- this causes 80~90% of the http test I run to fail with 403 error, had to resort to working on cse server.
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Half of sprint 1 frontend features
+    - have communicated with Joseph, will also get Janet on board for frontend
+
+What is planned for the next period (e.g., next week)
+- Continue working on sprint 2, finish all frontend tasks ASAP
