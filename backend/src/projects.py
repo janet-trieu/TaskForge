@@ -108,35 +108,23 @@ def extract_tasks(pid):
     project = get_project(pid)
     tasks = project["tasks"]
 
-    unflagged_list = []
-    flagged_list = []
+    return_list = []
 
     for task in tasks:
         return_dict = {}
-
+        task_doc = db.collection("tasks").document(task).get().to_dict()
         return_dict = {
-            "eid": task.get("eid"),
-            "tid": task.get("tid"),
-            "title": task.get("title"),
-            "status": task.get("status"),
-            "assignee": task.get("assignees"),
-            "flagged": task.get("flagged"),
-            "deadline": task.get("deadline")
+            "eid": task_doc.get("eid"),
+            "tid": task_doc.get("tid"),
+            "title": task_doc.get("title"),
+            "status": task_doc.get("status"),
+            "assignee": task_doc.get("assignees"),
+            "flagged": task_doc.get("flagged"),
+            "deadline": task_doc.get("deadline")
         }
-        if return_dict["flagged"]:
-            flagged_list.append(return_dict)
-        else:
-            unflagged_list.append(return_dict)
+        return_list.append(return_dict)
 
-    def sortFunc(e):
-        return e["deadline"]
-    
-    flagged_list.sort(key=sortFunc)
-    unflagged_list.sort(key=sortFunc)
-
-    return_list = flagged_list + unflagged_list
-
-    return return_list
+    return sort_tasks(return_list)
 
 def search_project(uid, query):
     '''
@@ -170,7 +158,7 @@ def search_project(uid, query):
                 print(f"Successfully added {project['name']} to list of search result")
 
     return_list = list(filter(None, return_list))
-
+    return_list.sort(key=lambda x: (-x["is_pinned"], x["pid"]))
     return return_list
 
 def request_leave_project(pid, uid, msg):
