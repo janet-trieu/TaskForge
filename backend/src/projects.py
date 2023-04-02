@@ -207,14 +207,9 @@ def request_leave_project(pid, uid, msg):
     sender_email = auth.get_user(uid).email
     proj_name = proj_ref.get().get("name")
 
-    return_dict = {
-        "receipient_email": pm_email,
-        "sender_email": sender_email,
-        "msg_title": f"Request to leave {proj_name}",
-        "msg_body": msg
-    }
+    # TODO notification_leave_request(uid, uid_sender, pid):
 
-    return return_dict
+    return 0
 
 
 def respond_project_invitation(pid, uid, accept, msg):
@@ -296,6 +291,8 @@ def respond_project_invitation(pid, uid, accept, msg):
         }
 
     db.collection("notifications").document(uid).update(notification)
+    # project master sends invite
+    # user responds either accept or reject -> sends response to PM
 
     # send notification to the project master
     # TODO
