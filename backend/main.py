@@ -6,4 +6,4 @@ mode = "prod"
 if mode == "dev":
     app.run(port=8000, debug=True)
 else:
-    serve(app, host="0.0.0.0", port=8000)
+    serve(app, host="0.0.0.0", port=8000, url_prefix="/my-app")
