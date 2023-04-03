@@ -12,7 +12,6 @@ const Header = ({ firebaseApp }) => {
   const [openNotifications, setOpenNotifications] = useState(false);
   const handleOpenNotifications = () => {setOpenNotifications(true)};
   const handleCloseNotifications = () => {setOpenNotifications(false)};
-  const uid = firebaseApp.auth().currentUser.uid;
 
   useEffect(() => {
     location.pathname === '/projects' 
@@ -41,7 +40,7 @@ const Header = ({ firebaseApp }) => {
       <div></div>
       <img src={notificationIcon} style={{height: '3em', width: 'auto', marginRight: '3vw'}} onClick={handleOpenNotifications} />
       <Modal open={openNotifications} onClose={handleCloseNotifications}>
-        <NotificationModalContent handleClose={handleCloseNotifications} uid={uid} />
+        <NotificationModalContent handleClose={handleCloseNotifications} firebaseApp={firebaseApp} />
       </Modal>
     </div>
   )

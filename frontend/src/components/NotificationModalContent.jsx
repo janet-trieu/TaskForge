@@ -10,7 +10,7 @@ const NotificationModalContent = forwardRef((props, ref) => {
   const location = useLocation();
 
   useEffect(async () => {
-    const data = await makeRequest('/notifications/get', 'GET', null, props.uid);
+    const data = await makeRequest('/notifications/get', 'GET', null, props.firebaseApp.auth().currentUser.uid);
     if (data.error) alert(data.error);
     else {
       setData(data);
@@ -20,20 +20,11 @@ const NotificationModalContent = forwardRef((props, ref) => {
 
   return (
     <div id="notifications-modal">
-      {/* {isLoading || (
-        data.map((info) => {
-          return <div>{info.notification_msg}</div>
+      {isLoading || (
+        data.map((info, idx) => {
+          return <NotificationCard key={idx} content={info} />
         })
-      )} */}
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
-      <NotificationCard />
+      )}
     </div>
   );
 });
