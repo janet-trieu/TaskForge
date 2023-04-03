@@ -103,7 +103,7 @@ def notification_welcome(uid):
         'welcome' : {
             "has_read": False,
             "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": nid,
             "nid": nid
         }
@@ -131,7 +131,7 @@ def notification_connection_request(uid, uid_sender):
         nid : {
             "has_read": False,
             "notification_msg": f"{sender_name} has requested to connect.",
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "accept_msg": f"You accepted {sender_name}'s connection request.",
@@ -165,7 +165,7 @@ def notification_project_invite(uid, uid_sender, pid):
             "has_read": False,
             "notification_msg": f"{sender_name} has invited you to join {project_name}.",
             "pid": pid,
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "response": False,
@@ -199,7 +199,7 @@ def notification_assigned_task(uid, pid, tid):
             "notification_msg": f"You have been assigned {task_name} in {project_name}.",
             "pid": pid,
             "tid": tid,
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "nid": nid
         }
@@ -233,7 +233,7 @@ def notification_comment(uid, uid_sender, pid, tid):
             "notification_msg": f"{sender_name} has commented in {task_name} in {project_name}.",
             "pid": pid,
             "tid": tid,
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "nid": nid
@@ -264,7 +264,7 @@ def notification_review(uid, uid_sender, rid):
             "has_read": False,
             "notification_msg": f"{sender_name} has reviewed you.",
             "rid": rid,
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "nid": nid
@@ -294,7 +294,7 @@ def notification_achievement(uid, achievement_str):
             "achievement": achievement_str,
             "has_read": False,
             "notification_msg": f"You have earned the {achievement_name} achievement.",
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "nid": nid
         }
@@ -325,7 +325,7 @@ def notification_leave_request(uid, uid_sender, pid):
             "has_read": False,
             "notification_msg": f"{sender_name} has requested to leave {project_name}.",
             "pid": pid,
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "accept_msg": f"You accepted {sender_name}'s project leave.",
@@ -357,7 +357,7 @@ def notification_accepted_request(uid, uid_sender):
         nid : {
             "has_read": False,
             "notification_msg": f"{sender_name} has accepted your request.",
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "nid": nid
@@ -387,7 +387,7 @@ def notification_denied_request(uid, uid_sender):
         nid : {
             "has_read": False,
             "notification_msg": f"{sender_name} has denied your request.",
-            "time_sent": datetime.now(),
+            "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
             "nid": nid
