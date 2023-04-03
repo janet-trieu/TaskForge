@@ -10,7 +10,7 @@ from firebase_admin import firestore, auth
 from .error import *
 from .notifications import *
 from .test_helpers import *
-from .proj_class import *
+from .classes import *
 
 db = firestore.client()
 

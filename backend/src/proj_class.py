@@ -1,6 +1,4 @@
-'''
-temp file to store the project class 
-'''
+
 from firebase_admin import firestore
 db = firestore.client()
 

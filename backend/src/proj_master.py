@@ -14,7 +14,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .connections import *
-from .proj_class import *
+from .classes import *
 
 db = firestore.client()
 
