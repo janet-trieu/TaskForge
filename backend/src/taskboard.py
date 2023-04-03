@@ -523,7 +523,7 @@ def flag_task(uid, tid, boolean):
     db.collection("tasks").document(str(tid)).update({"flagged": boolean})
 
 ### ========= Change status ========= ###
-def change_status(uid, tid, status):
+def change_task_status(uid, tid, status):
     """
     Changes the status of a task
 
@@ -609,6 +609,11 @@ def get_taskboard(uid, pid, hidden):
     Returns:
         a dict of statuses with tasks details inside. Details include: 
         Task details include: id, title, epic, deadline, priority, status, assignees
+        in the priority order:
+        flagged with timestamp
+        flagged with no timestamp
+        not flagged with timestamp
+        not flagged without timestamp
     """
     taskboard_list = show_tasks(uid, pid, hidden)
     task_list = {
@@ -640,6 +645,39 @@ def get_taskboard(uid, pid, hidden):
         task_list[task_ref.get("status")] = status_list
     return task_list
 
+def update_epic(uid, eid, title, description, colour):
+    """
+    updates epic
+
+    Args:
+        uid (str): uid of the user updating the epic
+        eid (int): id of the epic that is being updated
+        title (str): str of the new title
+        description (str): str of the new description
+        colour (str): str of the new colour
+
+    Return:
+        None
+    """
+    pid = get_epic_ref(eid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)    
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("epics").document(str(eid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("epics").document(str(eid)).update({'description': description})
+    match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colour)
+    if not match:
+        raise InputError("Colour is not a valid hex colour")
+    else:
+        db.colection("epics").document(str(eid)).update({'colour': colour})
+    return
+        
 def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
     """
     Updates task
@@ -704,10 +742,69 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
     if priority != "High" or priority != "Moderate" or priority != "Low":
         raise InputError('priority is not valid')
     else:
-        db.collection("priority").document(str(tid)).update({'priority': priority})
-    change_status(uid, tid, status)
+        db.collection("tasks").document(str(tid)).update({'priority': priority})
+    change_task_status(uid, tid, status)
     flag_task(uid, tid, flagged)
     return
+
+def update_subtask(uid, stid, eid, assignees, title, description, deadline, workload, priority, status):
+    """
+    updates subtask
+
+    Args:
+        uid (str): uid of the user updating the task
+        stid (int): id of the subtask that is being updated
+        eid (int): id of the new epic that is being updated
+        assignees (list): list of uids that will be assigned to the task
+        title (str): string of the new title
+        description (str): new description
+        deadline (int): unix time stamp of when the task is due
+        workload (int): new workload
+        priority (str): new priority
+        status (str): new status   
+    
+    Return:
+        None
+    """
+    pid = get_task_ref(stid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)
+    
+    # Update epics
+    old_epic = get_subtask_ref(stid).get("eid")
+    # new epic is different
+    if not old_epic == eid:
+        # Update task epic
+        db.collection("subtasks").document(str(stid)).update({'eid': eid})
+
+    assign_subtask(uid, stid, assignees)
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'description': description})
+    if type(deadline) != int:
+        raise InputError(f'deadline is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
+    if type(workload) != int:
+        raise InputError(f'workload is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'workload': workload})
+    if priority != "High" or priority != "Moderate" or priority != "Low":
+        raise InputError('priority is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'priority': priority})
+    
+    if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
+        raise InputError("Not a valid status")
+    else:
+        db.collection("subtasks").document(str(stid)).update({'status': status})
+    return    
 
 ### ========= Insert into tasklist ========= ###
 def insert_tasklist(tasklist, task):

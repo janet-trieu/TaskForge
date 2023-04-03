@@ -321,43 +321,87 @@ def flask_epic_details():
     """
     Gets epic detail
     """
-    data = request.get_json()
-    return get_epic_details(data["eid"])
+    eid = int(request.args.get('eid'))
+    return dumps(get_epic_details(eid))
 
 @app.route("/task/details", methods=["GET"])
 def flask_task_details():
     """
     Gets task detail
     """
-    data = request.get_json()
-    return get_task_details(data["tid"])
+    tid = int(request.args.get('tid'))
+    return dumps(get_task_details(tid))
 
 @app.route("/subtask/details", methods=["GET"])
 def flask_subtask_details():
     """
     Gets subtask detail
     """
-    data = request.get_json()
-    return get_subtask_details(data["stid"])
+    stid = int(request.args.get('stid'))
+    return dumps(get_subtask_details(stid))
 
-# ASSIGNEES #
-@app.route("/task/assign", methods=["POST"])
-def flask_task_assign():
+# Update task management
+@app.route("/epic/update", methods=["POST"])
+def flask_epic_update():
     """
-    Assign new users to task
+    update epic
     """
     data = request.get_json()
-    assign_task(data["tid"], data["new_assignees"])
-    return
+    uid = request.headers.get("Authorization")
+    return dumps(update_epic(uid, data["eid"], data["title"], 
+                             data["description"], data["colour"]))
 
-@app.route("/subtask/assign", methods=["POST"])
-def flask_subtask_assign():
+@app.route("/task/update", methods=["POST"])
+def flask_task_update():
     """
-    Assign new users to subtask
+    update task
     """
     data = request.get_json()
-    assign_subtask(data["stid"], data["new_assignees"])
-    return
+    uid = request.headers.get("Authorization")
+    return dumps(update_task(uid, data["tid"], data["eid"], data["assignees"], 
+                             data["title"], data["description"], data["deadline"], 
+                             data["workload"], data["priority"], data["status"], data["flagged"]))
+
+@app.route("/subtask/update", methods=["POST"])
+def flask_subtask_update():
+    """
+    update subtask
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(update_subtask(uid, data["stid"], data["eid"], data["assignees"], 
+                                data["title"], data["description"], data["deadline"], 
+                                data["workload"], data["priority"], data["status"]))
+
+@app.route("/task/comment", methods=["POST"])
+def flask_task_comment():
+    """
+    Comment on a task
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return comment_task(uid, data["tid"], data["comment"])
+
+# Taskboard
+@app.route("/taskboard/show", methods=["GET"])
+def flask_taskboard_show():
+    """
+    retrieves the taskboard
+    """
+    uid = request.headers.get("Authorization")
+    pid = request.headers.get("pid")
+    hidden = request.headers.get("hidden")
+    return dumps(get_taskboard(uid, pid, hidden))
+
+# Assigned Task List
+@app.route("/tasklist/show", methods=["GET"])
+def flask_tasklist_show():
+    """
+    Retrieve the tasklist
+    """
+    uid = request.headers.get("Authorization")
+    show_completed = request.headers.get("show_completed")
+    return dumps(get_user_assigned_task(uid, show_completed))
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
