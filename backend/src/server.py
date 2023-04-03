@@ -222,7 +222,7 @@ def flask_update_project():
 def flask_delete_project():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    res = delete_project(data["pid"], uid)
+    res = delete_project(int(data["pid"]), uid)
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #

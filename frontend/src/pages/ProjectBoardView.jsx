@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { makeRequest } from '../helpers';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from "../components/Column";
 import './Project.css';
 import testData from '../testData';
+import ProjectModalContent from "../components/ProjectModalContent";
+import { Modal } from "@mui/material";
 
 const ProjectBoardView = ({ firebaseApp }) => {
   const [stateIsLoading, setstateIsLoading] = useState('Loading...');
@@ -12,9 +14,14 @@ const ProjectBoardView = ({ firebaseApp }) => {
   const [details, setDetails] = useState();
   const [state, setState] = useState(testData);
   const {pid} = useParams();
+  const uid = firebaseApp.auth().currentUser.uid;
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => {setOpen(true)};
+  const handleClose = () => {setOpen(false)};
 
   useEffect(async () => {
-    const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, uid);
     if (data.error) alert(data.error);
     else {
       setDetails(data);
@@ -79,6 +86,15 @@ const ProjectBoardView = ({ firebaseApp }) => {
     setState(newState);
   };
 
+  const handleDelete = () => {
+    const res = confirm("Are you sure you want to delete this project?");
+    if (res) {
+      const data = makeRequest('/projects/delete', 'POST', {pid: pid}, uid);
+      if (data.error) alert(data.error);
+      else navigate('/projects');
+    }
+  }
+
   return (
     <>
       {detailsIsLoading || (
@@ -91,16 +107,20 @@ const ProjectBoardView = ({ firebaseApp }) => {
           <div id='project-member-block'></div>
         </div>
         <div id='project-buttons'>
-          <button>Create Task</button>
-          <button>Create Epic</button>
+          <button onClick={handleOpen}>Details</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'seagreen'}}>Create Task</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>
         </div>
+        <Modal open={open} onClose={handleClose}>
+          <ProjectModalContent details={details} uid={uid} handleClose={handleClose} setDetails={setDetails} />
+        </Modal>
         <DragDropContext onDragEnd={handleDragEnd}>
           <div id="task-list-container">
           {state.columnOrder.map(columnId => {
             const column = state.columns[columnId];
             const tasks = column.taskIds.map(taskId => state.tasks[taskId]);
 
-            return <Column key={column.id} column={column} tasks={tasks} uid={firebaseApp.auth().currentUser.uid} />;
+            return <Column key={column.id} column={column} tasks={tasks} uid={uid} />;
           })}
           </div>
         </DragDropContext>

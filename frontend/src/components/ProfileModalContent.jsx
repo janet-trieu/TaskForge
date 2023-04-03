@@ -24,10 +24,10 @@ const ProfileModalContent = forwardRef(({ details, setDetails, setOpen, firebase
     <div id="profile-modal">
       <form id="profile-modal-form" onSubmit={handleSave}>
         <label htmlFor="name" style={{fontWeight: 'bold'}}>Display Name</label><br />
-        <input id="name" defaultValue={details.display_name} /><br />
+        <input type="text" id="name" defaultValue={details.display_name} /><br />
         <br />
         <label htmlFor="role" style={{fontWeight: 'bold'}}>Role</label><br />
-        <input id="role" defaultValue={details.role} /><br />
+        <input type="text" id="role" defaultValue={details.role} /><br />
         <br />
         <button type="submit">Save Changes</button>
       </form>
