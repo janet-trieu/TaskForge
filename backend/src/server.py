@@ -4,6 +4,7 @@ from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
 from flask import Flask, request, Response
+from waitress import serve
 
 from .authentication import *
 from .admin import *
@@ -383,4 +384,5 @@ def flask_subtask_assign():
     return
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+    # app.run(port=8000, debug=True)
+    serve(app, host="0.0.0.1", port=8000, debug=True)
