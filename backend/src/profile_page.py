@@ -3,7 +3,7 @@ from firebase_admin import firestore
 from firebase_admin import auth
 
 from .global_counters import *
-from .classes import User
+from .classes import *
 from .error import *
 from .notifications import *
 
@@ -360,7 +360,8 @@ def create_user_firestore(uid):
     """
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [])
+    achievements = get_achievements()
+    user = User(uid, value, "", "", "", False, False, False, achievements, [], [], [], [])
     
     print(users_ref.document(uid).set(user.to_dict()))
 

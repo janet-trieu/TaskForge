@@ -6,6 +6,7 @@ from src.proj_master import *
 from src.projects import *
 from src.helper import *
 from src.taskboard import *
+from src.achievement import *
 
 try:
     pm_uid = create_user_email("achievements.pm@gmail.com", "admin123", "Project Master")

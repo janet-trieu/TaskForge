@@ -1,4 +1,6 @@
 from firebase_admin import firestore
+from .profile_page import *
+
 db = firestore.client()
 
 class User(object):
@@ -424,3 +426,38 @@ class Achievements(object):
                 "time_acquired": ""
             }
         }
+
+    # def get_achievement(self, aid):
+    #     achievements = self.a_types()
+    #     for key, val in achievements.items():
+    #         if key == aid:
+    #             return val
+
+def update_achievements(uid, aid):
+    """
+    Updates the achievements list of the user identified by Uid in firestore database
+
+    Args:
+        uid (str): uid of the user that can be found in auth database
+        aid (int): aid of the new achievement acquired
+
+    Returns:
+        None
+    """
+    user_ref = db.collection("users").document(uid)
+
+    achievement = get_achievement(aid)
+
+    user_ref.update({"achievements": new_achievements})
+
+def get_achievements_uid(uid):
+    """
+    Gets the current achievements list of specified user
+
+    Args:
+        uid (str): uid of the user that can be found in auth database
+
+    Returns:
+        A list of achievements the user has
+    """
+    return get_user_ref(uid).get("achievements")
