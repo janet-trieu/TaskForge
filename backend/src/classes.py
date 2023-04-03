@@ -464,7 +464,7 @@ class Achievements(object):
             7: {
                 "aid": 7,
                 "title": "I am bnoc",
-                "description": "Have at least 10 connections",
+                "description": "Have at least 5 connections",
                 "icon": "abc",
                 "time_acquired": ""
             },
