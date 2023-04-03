@@ -28,5 +28,5 @@ def test_file_upload():
     
     header = {'Authorization': uid}
     params = {'file': 'http_tests/test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
-    resp = requests.get(url + "upload_file", headers=header, params=params)
+    resp = requests.post(url + "upload_file", headers=header, params=params)
     assert(resp.status_code == 200)

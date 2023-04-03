@@ -3,6 +3,7 @@ from flask import Flask, current_app, request, send_from_directory, Response, re
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
+from werkzeug.utils import secure_filename
 
 from .authentication import *
 from .admin import *
@@ -303,14 +304,18 @@ def flask_get_connected_taskmasters():
     return dumps(get_connected_taskmasters(uid))
     
 # TASK MANAGEMENT #	
-@app.route('/upload_file', methods = ['POST', "GET"])
+@app.route('/upload_file', methods = ['POST'])
 def flask_upload_file():
     uid = request.headers.get('Authorization')
-    f = request.files['file']
-    f.save(f.filename)
-    
-    data = request.get_json()
-    upload_file(uid, f.filename, data["destination_name"], data["tid"])
+    if request.method == 'POST':
+        #print("OGINEOGBNOEBGOGOEHG:")
+        f = request.files['file'] #fails here
+        filename = secure_filename(f.filename)
+        #print("JPJGEGEGJP")
+        f.save(filename)
+        #print("HEREHRHRHHRHR")
+        data = request.get_json()
+        upload_file(uid, filename, data["destination_name"], data["tid"])
     return
 
 @app.route('/download_file', methods = ['GET'])
