@@ -17,7 +17,7 @@ const Site = ({ firebaseApp }) => {
       <Sidebar firebaseApp={firebaseApp} />
       <div className='vertical-line' />
       <div id='right-container'>
-        <Header />
+        <Header firebaseApp={firebaseApp} />
         <Routes>
           <Route path='/' element={<Home firebaseApp={firebaseApp} />} />
           <Route path='/projects' element={<Projects firebaseApp={firebaseApp} />} />

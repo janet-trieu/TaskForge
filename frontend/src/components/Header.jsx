@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import notificationIcon from '../assets/notification.png';
 import { useNavigate, useLocation } from "react-router-dom";
+import { Modal } from '@mui/material';
+import NotificationModalContent from "./NotificationModalContent";
 
-const Header = () => {
+const Header = ({ firebaseApp }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [projectCreateHide, setProjectCreateHide] = useState('');
   const [projectViewHide, setProjectViewHide] = useState('');
+  const [openNotifications, setOpenNotifications] = useState(false);
+  const handleOpenNotifications = () => {setOpenNotifications(true)};
+  const handleCloseNotifications = () => {setOpenNotifications(false)};
+  const uid = firebaseApp.auth().currentUser.uid;
 
   useEffect(() => {
     location.pathname === '/projects' 
@@ -33,7 +39,10 @@ const Header = () => {
         <button className={`board-view-button ${projectViewHide}`} onClick={() => {switchView('board')}}>Task Board</button>
       </div>
       <div></div>
-      <img src={notificationIcon} style={{height: '40%', marginRight: '3vw'}}/>
+      <img src={notificationIcon} style={{height: '3em', width: 'auto', marginRight: '3vw'}} onClick={handleOpenNotifications} />
+      <Modal open={openNotifications} onClose={handleCloseNotifications}>
+        <NotificationModalContent handleClose={handleCloseNotifications} uid={uid} />
+      </Modal>
     </div>
   )
 };

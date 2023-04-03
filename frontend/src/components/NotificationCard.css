@@ -1,0 +1,10 @@
+.notification-card {
+    display: flex;
+    align-items: center;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    width: 40em;
+    height: 7.5em;
+    text-align: center;
+    margin: 1em;
+}

@@ -227,18 +227,18 @@ def flask_delete_project():
 
 # NOTIFICATIONS ROUTES #
 @app.route('/notifications/get', methods=['GET'])
-def get_notifications():
+def flask_get_notifications():
     uid = request.headers.get('Authorization')
     return dumps(get_notifications(uid))
 
 @app.route('/notifications/clear', methods=['DELETE'])
-def clear_notification():
+def flask_clear_notification():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     return dumps(clear_notification(uid, data['notf_dict']))
 
 @app.route('/notifications/clearall', methods=['DELETE'])
-def clear_all_notifications():
+def flask_clear_all_notifications():
     uid = request.headers.get('Authorization')
     return dumps(clear_all_notifications(uid))
 
@@ -325,7 +325,8 @@ def flask_create_task():
     Creates a task
     """
     data = request.get_json()
-    return create_task(data["uid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+    uid = request.headers.get("Authorization")
+    return create_task(uid, data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
                 data["workload"], data["priority"], data["status"])
 
 @app.route("/subtask/create", methods=["POST"])

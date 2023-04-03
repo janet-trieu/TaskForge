@@ -38,9 +38,11 @@ const CreateProject = ({ firebaseApp }) => {
     const data1 = await makeRequest("/projects/create", "POST", body, uid);
     if (data1.error) alert(data1.error);
     else {
-      const invites = event.target.invites.value.split(", ");
-      const data2 = makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: data1}, uid)
-      if (data2.error) {alert(data2.error); return;}
+      if (event.target.invites.value) {
+        const invites = event.target.invites.value.split(", ");
+        const data2 = await makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: data1}, uid)
+        if (data2.error) {alert(data2.error); return;}
+      }
       
       alert('Project has been successfully created!');
       navigate('/projects');

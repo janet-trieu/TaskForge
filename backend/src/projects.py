@@ -149,7 +149,6 @@ def search_project(uid, query):
 
     for doc in docs:
         pid = doc.to_dict().get("pid")
-        print(doc)
         project = doc.to_dict();
         pm_uid = project["uid"]
         pm_name = auth.get_user(str(pm_uid)).display_name

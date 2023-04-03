@@ -6,6 +6,7 @@ import Column from "../components/Column";
 import './Project.css';
 import testData from '../testData';
 import ProjectModalContent from "../components/ProjectModalContent";
+import ProjectInviteModalContent from "../components/ProjectInviteModalContent";
 import { Modal } from "@mui/material";
 
 const ProjectBoardView = ({ firebaseApp }) => {
@@ -16,9 +17,12 @@ const ProjectBoardView = ({ firebaseApp }) => {
   const {pid} = useParams();
   const uid = firebaseApp.auth().currentUser.uid;
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => {setOpen(true)};
-  const handleClose = () => {setOpen(false)};
+  const [openDetails, setOpenDetails] = useState(false);
+  const handleOpenDetails = () => {setOpenDetails(true)};
+  const handleCloseDetails = () => {setOpenDetails(false)};
+  const [openInvite, setOpenInvite] = useState(false);
+  const handleOpenInvite = () => {setOpenInvite(true)};
+  const handleCloseInvite = () => {setOpenInvite(false)};
 
   useEffect(async () => {
     const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, uid);
@@ -86,13 +90,17 @@ const ProjectBoardView = ({ firebaseApp }) => {
     setState(newState);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const res = confirm("Are you sure you want to delete this project?");
     if (res) {
-      const data = makeRequest('/projects/delete', 'POST', {pid: pid}, uid);
+      const data = await makeRequest('/projects/delete', 'POST', {pid: pid}, uid);
       if (data.error) alert(data.error);
       else navigate('/projects');
     }
+  }
+
+  const handleCreateTask = () => {
+    
   }
 
   return (
@@ -107,12 +115,16 @@ const ProjectBoardView = ({ firebaseApp }) => {
           <div id='project-member-block'></div>
         </div>
         <div id='project-buttons'>
-          <button onClick={handleOpen}>Details</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'seagreen'}}>Create Task</button>&nbsp;&nbsp;
+          <button onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'cornflowerblue'}} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'seagreen'}} onClick={handleCreateTask}>Create Task</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>
         </div>
-        <Modal open={open} onClose={handleClose}>
-          <ProjectModalContent details={details} uid={uid} handleClose={handleClose} setDetails={setDetails} />
+        <Modal open={openDetails} onClose={handleCloseDetails}>
+          <ProjectModalContent details={details} uid={uid} handleClose={handleCloseDetails} setDetails={setDetails} />
+        </Modal>
+        <Modal open={openInvite} onClose={handleCloseInvite}>
+          <ProjectInviteModalContent uid={uid} pid={pid} handleClose={handleCloseInvite} />
         </Modal>
         <DragDropContext onDragEnd={handleDragEnd}>
           <div id="task-list-container">
