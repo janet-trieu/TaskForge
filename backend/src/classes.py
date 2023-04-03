@@ -222,6 +222,7 @@ class Comments():
             'time': self.time
         }
     
+
 class Review():
     """
     A Review class that is stored in User in firestore.
@@ -316,3 +317,218 @@ def get_project(pid):
     )
 
     return project.to_dict()
+class Project():
+    """
+    A Project class that will be stored in firestore.
+
+    Attributes:
+     - 
+     - 
+    """
+    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks,is_pinned):
+        self.pid = pid
+        self.uid = uid
+        self.name = name
+        self.description = description
+        self.status = status
+        self.due_date = due_date
+        self.team_strength = team_strength
+        self.picture = picture
+        self.project_members = project_members
+        self.epics = epics
+        self.tasks = tasks
+        self.subtasks = subtasks
+        self.is_pinned = is_pinned
+    
+    def to_dict(self):
+        return {
+            "pid": self.pid,
+            "uid": self.uid,
+            "name": self.name,
+            "description": self.description,
+            "status": self.status,
+            "due_date": self.due_date,
+            "team_strength": self.team_strength,
+            "picture": self.picture,
+            "project_members": self.project_members,
+            "epics": self.epics,
+            "tasks": self.tasks,
+            "subtasks": self.subtasks,
+            "is_pinned": self.is_pinned
+        }
+
+def get_project(pid):
+    doc = db.collection("projects").document(str(pid)).get()
+
+    project = Project(
+        doc.get("pid"),
+        doc.get("uid"),
+        doc.get("name"),
+        doc.get("description"),
+        doc.get("status"),
+        doc.get("due_date"),
+        doc.get("team_strength"),
+        doc.get("picture"),
+        doc.get("project_members"),
+        doc.get("epics"),
+        doc.get("tasks"),
+        doc.get("subtasks"),
+        doc.get("is_pinned")
+    )
+
+    return project.to_dict()
+
+class Achievements(object):
+    '''
+    Class for achievements that will be stored in the firestore database
+
+    Attributes:
+     - uid (user id)
+     - aid (achievement id)
+     - title (achievement title)
+     - description (achievement description)
+     - icon
+     - time acquired
+     - 
+    '''
+
+    def __init__(self, uid, aid, title, description, icon, time_acquired):
+        self.uid = uid
+        self.aid = aid
+        self.title = title
+        self.description = description
+        self.icon = icon
+        self.time_acquired = time_acquired
+
+    def to_dict(self):
+        return {
+            "uid": self.uid,
+            "aid": self.aid,
+            "title": self.title,
+            "description": self.description,
+            "icon": self.icon,
+            "time_acquired": self.time_acquired
+        }
+
+    def a_types(self):
+        return {
+            0: {
+                "aid": 0,
+                "title": "Almost Admin",
+                "description": "The very first user",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            1: {
+                "aid": 1,
+                "title": "TBA",
+                "description": "First Task Master to complete a task",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            2: {
+                "aid": 2,
+                "title": "TBA",
+                "description": "First Project Master to complete a project",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            3: {
+                "aid": 3,
+                "title": "Intermediate Task Master",
+                "description": "Complete at least 10 assigned tasks",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            4: {
+                "aid": 4,
+                "title": "Advanced Task Master",
+                "description": "Complete at least 20 assigned tasks",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            5: {
+                "aid": 5,
+                "title": "Intermediate Project Master",
+                "description": "Complete at least 5 projects",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            6: {
+                "aid": 6,
+                "title": "Advanced Project Master",
+                "description": "Complete at least 10 projects",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            7: {
+                "aid": 7,
+                "title": "I am bnoc",
+                "description": "Have at least 10 connections",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            8: {
+                "aid": 8,
+                "title": "I also leave google restaurant reviews",
+                "description": "Leave at least 10 unique reputation reviews",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            9: {
+                "aid": 9,
+                "title": "Problem Solver",
+                "description": "Reputation of teamwork and communication over 4/5",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            10: {
+                "aid": 10,
+                "title": "Fast as Lightning",
+                "description": "Complete a task within the first half of deadline",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            11: {
+                "aid": 11,
+                "title": "There is no 'I' in team",
+                "description": "Reputation of teamwork over 4.5/5",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            12: {
+                "aid": 12,
+                "title": "Megaphone",
+                "description": "Reputation of communication over 4.5/5",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            13: {
+                "aid": 13,
+                "title": "Michelangelo.. is that mE?",
+                "description": "Reputation of quality over 4.5/5",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            14: {
+                "aid": 14,
+                "title": "I am Octopus",
+                "description": "Have more than 8 tasks assigned at one time",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            15: {
+                "aid": 15,
+                "title": "Look at me, I'm StackOverflow Now",
+                "description": "Overall Reputation over 4.5/5",
+                "icon": "abc",
+                "time_acquired": ""
+            },
+            16: {
+                "aid": 16,
+                "title": "Woof Woof Lone Wolf",
+                "description": "Complete a project with only yourself",
+                "icon": "abc",
+                "time_acquired": ""
+            }
+        }
