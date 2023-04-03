@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ConnectionsSearchbar from "../components/ConnectionsSearchbar";
 import ConnectionCard from '../components/ConnectionCard';
+import { makeRequest } from "../helpers";
 import './Connections.css'
 
-const Connections = () => {
+const Connections = ({ firebaseApp }) => {
+  const [connections, setConnections] = useState([]);
+
+  useEffect(async () => {
+    const data = await makeRequest('/connections/get_connected_taskmasters', 'GET', null, firebaseApp.auth().currentUser.uid)
+    if (data.error) alert(data.error);
+    else {
+      setConnections(data);
+    }
+  });
+
   return (
     <>
       <div id="connections-container">
@@ -12,16 +23,9 @@ const Connections = () => {
           <ConnectionsSearchbar />
         </div>
         <div id="connections-card-container">
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
-          <ConnectionCard />
+          {connections.map(uid => (
+            <ConnectionCard key={uid} uid={uid} firebaseApp={firebaseApp} />
+          ))}
         </div>
       </div>
     </>
