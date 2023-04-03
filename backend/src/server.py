@@ -106,6 +106,11 @@ def create_user():
 
 
 #ADMIN ROUTES#
+@app.route("/admin/is_admin", methods=["GET"])
+def admin_is_admin():
+    uid = request.headers.get('Authorization')
+    return dumps(is_admin(uid))
+
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
@@ -211,6 +216,13 @@ def flask_update_project():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     res = update_project(data["pid"], uid, data["updates"])
+    return dumps(res)
+
+@app.route("/projects/delete", methods=["POST"])
+def flask_delete_project():
+    data = request.get_json()
+    uid = request.headers.get('Authorization')
+    res = delete_project(data["pid"], uid)
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
