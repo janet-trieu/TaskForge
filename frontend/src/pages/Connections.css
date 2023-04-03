@@ -1,0 +1,28 @@
+#connections-container {
+    display: flex;
+    align-self: center;
+    flex-wrap: wrap;
+    margin: 1%;
+    width: 95%;
+}
+
+#connections-header {
+    display: flex;
+    margin: 1%;
+    width: 100%;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+#connections-title {
+    font-size: x-large;
+}
+
+#connections-card-container {
+    display: flex;
+    margin: 1%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: center;
+    gap: 2.2ch;
+}

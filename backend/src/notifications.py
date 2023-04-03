@@ -52,295 +52,6 @@ def get_notifications(uid):
     Args:
         uid (string): User getting notifications
     Returns:
-        sorted_notifications (list): List of user's notifications sorted by descending timestamps
-    '''
-    check_valid_uid(uid)
-
-    notf_data = db.collection('notifications').document(uid).get().to_dict()
-
-    # Sort notification dictionaries by time_sent in descending order
-    sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
-
-    return sorted_notifications
-
-def notification_welcome(uid):
-    '''
-    Welcome message to new user.
-    Args:
-        uid (string): User being notified
-    ASSUMPTION that this function is called ONCE per user.
-    '''
-
-    name = auth.get_user(uid).display_name
-
-    notification = {
-        'welcome' : {
-            "has_read": False,
-            "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
-            "time_sent": datetime.now(),
-            "nid": 'welcome'
-        }
-    }
-
-    db.collection("notifications").document(uid).set(notification)
-
-def notification_connection_request(uid, uid_sender):
-    '''
-    Creates and adds notification when a user requests to connect another user.
-    Args:
-        uid (string): User being notified
-        uid_sender (string): User who requests to connect
-    ASSUMPTION that the users are not connected + do not have an existing request
-    '''
-    if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
-    notification_type = 'connection_request'
-    nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = auth.get_user(uid_sender).display_name
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{sender_name} has requested to connect.",
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s connection request.",
-            "decline_msg": f"You declined {sender_name}'s connection request.",
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(str(uid)).update(notification)
-    return nid
-
-def notification_project_invite(uid, uid_sender, pid):
-    '''
-    Creates and adds notification when a user invites another user to a project.
-    Args:
-        uid (string): User being notified
-        uid_sender (string): User that is inviting to the project
-        pid (int): Project being invited to
-    ASSUMPTION that the user sending is in project + user receiving is not in project + do not have an existing request (+ possibly need to be connected?)
-    '''
-
-    notification_type = 'project_invite'
-    nid = create_nid(uid, notification_type) # create notification ID
-    sender_name =  auth.get_user(uid_sender).display_name
-    project_name = db.collection("projects").document(str(pid)).get().get('name')
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{sender_name} has invited you to join {project_name}.",
-            "pid": pid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "uid_sender": uid_sender,
-            "response": False,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_assigned_task(uid, pid, tid):
-    '''
-    Creates and adds notification when a user is assigned a task in a project.
-    Args:
-        uid (string): User being notified
-        pid (int): Project the task is located in
-        tid (int): Task being assigned
-    ASSUMPTION that the user is in project + task is in project
-    '''
-    check_valid_pid(pid)
-    check_valid_tid(tid)
-
-    notification_type = 'assigned_task'
-    nid = create_nid(uid, notification_type) # create notification ID
-    project_name = db.collection("projects").document(str(pid)).get().get('name')
-    task_name = get_task_name(tid)
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"You have been assigned {task_name} in {project_name}.",
-            "pid": pid,
-            "tid": tid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_comment(uid, uid_sender, pid, tid):
-    '''
-    Creates and adds notification when a comment is added to a user's assigned task in a project.
-    Args:
-        uid (string): User being notified
-        uid_sender (string): User who commented
-        pid (int): Project the task is in
-        tid (int): Task that was commented in
-    ASSUMPTION that the user is in the project + task is in the project + user was assigned the task
-    '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-    check_valid_pid(pid)
-    check_valid_tid(tid)
-
-    notification_type = 'comment'
-    nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
-    project_name = get_project_name(pid)
-    task_name = get_task_name(tid)
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{sender_name} has commented in {task_name} in {project_name}.",
-            "pid": pid,
-            "tid": tid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "uid_sender": uid_sender,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_deadline(uid, pid, tid):
-    '''
-    Creates and adds notification when an assigned task's deadline is coming up.
-    Args:
-        uid (string): User being notified
-        pid (int): Project the task is in
-        tid (int): Task that is due soon
-    ASSUMPTION that the user is in the project + task is in project + task assigned to user
-    '''
-    check_valid_uid(uid)
-    check_valid_pid(pid)
-    check_valid_tid(tid)
-
-    notification_type = 'deadline'
-    nid = create_nid(uid, notification_type) # create notification ID
-    project_name = get_project_name(pid)
-    task_name = get_task_name(tid)
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{task_name} from {project_name} is due soon.",
-            "pid": pid,
-            "tid": tid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_review(uid, uid_sender, rid):
-    '''
-    Creates and adds notification when a review is added to a user's profile.
-    Args:
-        uid (string): User being notified
-        uid_sender (string): User who made review
-        rid (int): Review created
-    ASSUMPTION that the users are connected(?)
-    '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-    check_valid_rid(rid)
-
-    notification_type = 'review'
-    nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{sender_name} has reviewed you.",
-            "rid": rid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "uid_sender": uid_sender,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_achievement(uid, achievement_str):
-    '''
-    Creates and adds notification when an achievement has been completed.
-    Args:
-        uid (string): User being notified
-        achievement_str (string): Achievement that has been completed
-    ASSUMPTION that the achievement has been fulfilled
-    '''
-    check_valid_uid(uid)
-    check_valid_achievement(achievement_str)
-
-    notification_type = 'achievement'
-    nid = create_nid(uid, notification_type) # create notification ID
-    achievement_name = get_achievement_name(achievement_str)
-
-    notification = {
-        nid : {
-            "achievement": achievement_str,
-            "has_read": False,
-            "notification_msg": f"You have earned the {achievement_name} achievement.",
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def notification_leave_request(uid, uid_sender, pid):
-    '''
-    Creates and adds notification when a user requests to leave a project to the project master.
-    Args:
-        uid (string): User being notified
-        uid_sender (string): User sending leave request
-        pid (int): Project being left
-    ASSUMPTION that the users are in project + user notified is project master
-    '''
-    check_valid_uid(uid)
-    check_valid_uid(uid_sender)
-    check_valid_pid(pid)
-
-    notification_type = 'leave_request'
-    nid = create_nid(uid, notification_type) # create notification ID
-    sender_name = get_display_name(uid_sender)
-    project_name = get_project_name(pid)
-
-    notification = {
-        nid : {
-            "has_read": False,
-            "notification_msg": f"{sender_name} has requested to leave {project_name}.",
-            "pid": pid,
-            "time_sent": datetime.now(),
-            "type": notification_type,
-            "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s project leave.",
-            "decline_msg": f"You declined {sender_name}'s project leave.",
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(uid).update(notification)
-
-def get_notifications(uid):
-    '''
-    Get the user's notifications in descending time order.
-    Args:
-        uid (string): User getting notifications
-    Returns:
         sorted_notifications (list): List of dictionaries of user's notifications sorted by descending timestamps
     '''
     check_valid_uid(uid)
@@ -376,30 +87,312 @@ def clear_all_notifications(uid):
     notf_data = db.collection('notifications').document(uid)
     notf_data.set({}) #set to nothing
 
-if __name__ == "__main__":
-    # im just gonna keep this here cause i like to test and not keep writing data again and again hehe
-    """ db.collection('users').document('notifytestid').set({'display_name':'John Doe'})
-    db.collection('users').document('notifytestid1').set({'display_name':'Jane Doe'})
-    db.collection('achievements').document('night_owl').set({'name':'Night Owl !!! NOTIFICATION TEST'})
-    db.collection("projects").document('1337').set({'name':'Project Notification !!! NOTIFICATION TEST'})
-    db.collection('tasks').document('1337').set({'name':'Task Notification !!! NOTIFICATION TEST'})
-    db.collection('reviews').document('1337').set({'uid':'notifytestid1'})
-    notification_welcome('notifytestid')
-    notification_connection_request('notifytestid', 'notifytestid1')
-    notification_project_invite('notifytestid', 'notifytestid1', 1337)
-    notification_assigned_task('notifytestid', 1337, 1337)
-    notification_comment('notifytestid', 'notifytestid1', 1337, 1337)
-    notification_deadline('notifytestid', 1337, 1337)
-    notification_review('notifytestid', 'notifytestid1', 1337)
-    notification_achievement('notifytestid', 'night_owl')
-    notification_leave_request('notifytestid', 'notifytestid1', 1337)
-    clear_all_notifications('notifytestid')
-    #checking if nid is unique when deleted a specific notification
-    notification_achievement('notifytestid', 'night_owl')
-    notification_achievement('notifytestid', 'night_owl')
-    notification_achievement('notifytestid', 'night_owl')
-    notflist = get_notifications('notifytestid')
-    clear_notification('notifytestid', notflist[1])
-    notification_achievement('notifytestid', 'night_owl')
-    clear_notification('notifytestid', notflist[1])
-    notification_achievement('notifytestid', 'night_owl') """
+def notification_welcome(uid):
+    '''
+    Welcome message to new user.
+    Args:
+        uid (string): User being notified
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that this function is called ONCE per user.
+    '''
+    nid = 'welcome'
+    name = get_display_name(uid)
+
+    notification = {
+        'welcome' : {
+            "has_read": False,
+            "notification_msg": f"Welcome to TaskForge, {name}. You can view future notifications here!",
+            "time_sent": datetime.now(),
+            "type": nid,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).set(notification)
+    return nid
+
+def notification_connection_request(uid, uid_sender):
+    '''
+    Creates and adds notification when a user requests to connect another user.
+    Args:
+        uid (string): User being notified
+        uid_sender (string): User who requests to connect
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the users are not connected + do not have an existing request
+    '''
+    if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
+    notification_type = 'connection_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = auth.get_user(uid_sender).display_name
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has requested to connect.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "accept_msg": f"You accepted {sender_name}'s connection request.",
+            "decline_msg": f"You declined {sender_name}'s connection request.",
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(str(uid)).update(notification)
+    return nid
+
+def notification_project_invite(uid, uid_sender, pid):
+    '''
+    Creates and adds notification when a user invites another user to a project.
+    Args:
+        uid (string): User being notified
+        uid_sender (string): User that is inviting to the project
+        pid (int): Project being invited to
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user sending is in project + user receiving is not in project + do not have an existing request (+ possibly need to be connected?)
+    '''
+
+    notification_type = 'project_invite'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name =  auth.get_user(uid_sender).display_name
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has invited you to join {project_name}.",
+            "pid": pid,
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "response": False,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_assigned_task(uid, pid, tid):
+    '''
+    Creates and adds notification when a user is assigned a task in a project.
+    Args:
+        uid (string): User being notified
+        pid (int): Project the task is located in
+        tid (int): Task being assigned
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user is in project + task is in project
+    '''
+
+    notification_type = 'assigned_task'
+    nid = create_nid(uid, notification_type) # create notification ID
+    project_name = db.collection("projects").document(str(pid)).get().get('name')
+    task_name = get_task_name(tid)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"You have been assigned {task_name} in {project_name}.",
+            "pid": pid,
+            "tid": tid,
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_comment(uid, uid_sender, pid, tid):
+    '''
+    Creates and adds notification when a comment is added to a user's assigned task in a project.
+    Args:
+        uid (string): User being notified
+        uid_sender (string): User who commented
+        pid (int): Project the task is in
+        tid (int): Task that was commented in
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user is in the project + task is in the project + user was assigned the task
+    '''
+
+    notification_type = 'comment'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+    project_name = get_project_name(pid)
+    task_name = get_task_name(tid)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has commented in {task_name} in {project_name}.",
+            "pid": pid,
+            "tid": tid,
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_review(uid, uid_sender, rid):
+    '''
+    Creates and adds notification when a review is added to a user's profile.
+    Args:
+        uid (string): User being notified
+        uid_sender (string): User who made review
+        rid (int): Review created
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the users are connected(?)
+    '''
+
+    notification_type = 'review'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has reviewed you.",
+            "rid": rid,
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_achievement(uid, achievement_str):
+    '''
+    Creates and adds notification when an achievement has been completed.
+    Args:
+        uid (string): User being notified
+        achievement_str (string): Achievement that has been completed
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the achievement has been fulfilled
+    '''
+
+    notification_type = 'achievement'
+    nid = create_nid(uid, notification_type) # create notification ID
+    achievement_name = get_achievement_name(achievement_str)
+
+    notification = {
+        nid : {
+            "achievement": achievement_str,
+            "has_read": False,
+            "notification_msg": f"You have earned the {achievement_name} achievement.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_leave_request(uid, uid_sender, pid):
+    '''
+    Creates and adds notification when a user requests to leave a project to the project master.
+    Args:
+        uid (string): User being notified
+        uid_sender (string): User sending leave request
+        pid (int): Project being left
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the users are in project + user notified is project master
+    '''
+
+    notification_type = 'leave_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+    project_name = get_project_name(pid)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has requested to leave {project_name}.",
+            "pid": pid,
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "accept_msg": f"You accepted {sender_name}'s project leave.",
+            "decline_msg": f"You declined {sender_name}'s project leave.",
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_accepted_request(uid, uid_sender):
+    '''
+    Creates and add notification when a user's request was accepted.
+    This is non-specific for simplicity sake can refer to:
+        -connection request, project invite, leave request
+    Args:
+        uid (string): User being notified and who sent the request
+        uid_sender (string): User who has responded to the request
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user has sent a request + respondee has accepted
+    '''
+    notification_type = 'accepted_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has accepted your request.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_denied_request(uid, uid_sender):
+    '''
+    Creates and add notification when a user's request was denied.
+    This is non-specific for simplicity sake can refer to:
+        -connection request, project invite, leave request
+    Args:
+        uid (string): User being notified and who sent the request
+        uid_sender (string): User who has responded to the request
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the user has sent a request + respondee has denied
+    '''
+    notification_type = 'denied_request'
+    nid = create_nid(uid, notification_type) # create notification ID
+    sender_name = get_display_name(uid_sender)
+
+    notification = {
+        nid : {
+            "has_read": False,
+            "notification_msg": f"{sender_name} has denied your request.",
+            "time_sent": datetime.now(),
+            "type": notification_type,
+            "uid_sender": uid_sender,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(uid).update(notification)
+    return nid

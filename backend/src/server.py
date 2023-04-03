@@ -47,6 +47,12 @@ def flask_reset_password():
     if res == -1:
         return Response(status=400)
     else:
+        # Send email
+        msg_title = "TaskForge: Reset Password"
+        receipient_email = auth.get_user(uid).email
+        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
+        msg.body = "Click link to reset your password: {res}"
+        mail.send(msg)
         return dumps(res)
     
 #Profile Routes#
@@ -73,12 +79,15 @@ def profile_update():
         email = data["email"]
         role = data["role"]
         photo_url = data["photo_url"]
-        try:
-            update_email(uid, email)
-        except ValueError:
-            return "Invalid Email"
-        update_role(uid, role)
-        update_photo(uid, photo_url)
+        display_name = data["display_name"]
+        if email:
+            try:
+                update_email(uid, email)
+            except ValueError:
+                return "Invalid Email"
+        if role: update_role(uid, role)
+        if photo_url: update_photo(uid, photo_url)
+        if display_name: update_display_name(uid, display_name)
         return Response(status=200)
 
 @app.route('/profile/tasks', methods=['GET'])
@@ -93,9 +102,15 @@ def get_user_tasks():
 def create_user():
     uid = request.headers.get('Authorization')
     create_user_firestore(uid)
+    return Response(status=200)
 
 
 #ADMIN ROUTES#
+@app.route("/admin/is_admin", methods=["GET"])
+def admin_is_admin():
+    uid = request.headers.get('Authorization')
+    return dumps(is_admin(uid))
+
 @app.route("/admin/give_admin", methods=["POST"])
 def admin_give_admin():
     """
@@ -170,7 +185,7 @@ def flask_invite_to_project():
     sender_uid = request.headers.get('Authorization')
 
     uid_list = []
-    for email in data["receiver_uids"]:
+    for email in data["receiver_emails"]:
 
         try:
             uid = auth.get_user_by_email(email).uid
@@ -201,6 +216,13 @@ def flask_update_project():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     res = update_project(data["pid"], uid, data["updates"])
+    return dumps(res)
+
+@app.route("/projects/delete", methods=["POST"])
+def flask_delete_project():
+    data = request.get_json()
+    uid = request.headers.get('Authorization')
+    res = delete_project(data["pid"], uid)
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
@@ -322,7 +344,8 @@ def flask_epic_details():
     Gets epic detail
     """
     eid = int(request.args.get('eid'))
-    return dumps(get_epic_details(eid))
+    uid = request.headers.get("Authorization")
+    return dumps(get_epic_details(uid, eid))
 
 @app.route("/task/details", methods=["GET"])
 def flask_task_details():
@@ -330,7 +353,8 @@ def flask_task_details():
     Gets task detail
     """
     tid = int(request.args.get('tid'))
-    return dumps(get_task_details(tid))
+    uid = request.headers.get("Authorization")
+    return get_task_details(uid, tid)
 
 @app.route("/subtask/details", methods=["GET"])
 def flask_subtask_details():
@@ -338,7 +362,8 @@ def flask_subtask_details():
     Gets subtask detail
     """
     stid = int(request.args.get('stid'))
-    return dumps(get_subtask_details(stid))
+    uid = request.headers.get("Authorization")
+    return dumps(get_subtask_details(uid, stid))
 
 # Update task management
 @app.route("/epic/update", methods=["POST"])

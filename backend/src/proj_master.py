@@ -354,3 +354,36 @@ def update_project(pid, uid, updates):
             raise InputError(f"Specified project detail {key} does not exist")
     
     return 0
+
+def delete_project(pid, uid):
+    '''
+    Delete a specified project
+    - Can only be done by a project master
+
+    Arguments:
+    - pid (project id)
+    - uid (project master id)
+
+    Returns:
+    - 0 for successful update
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid
+    '''
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    db.collection("projects").document(str(pid)).delete()
+
+    return 0
