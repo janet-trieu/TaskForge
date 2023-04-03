@@ -383,6 +383,6 @@ def flask_subtask_assign():
     assign_subtask(data["stid"], data["new_assignees"])
     return
 
-if __name__ == "__main__":
-    # app.run(port=8000, debug=True)
-    serve(app, host="0.0.0.1", port=8000, debug=True)
+# if __name__ == "__main__":
+#     # app.run(port=8000, debug=True)
+#     serve(app, host="0.0.0.1", port=8000, debug=True)
