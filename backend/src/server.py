@@ -218,6 +218,13 @@ def flask_update_project():
     res = update_project(data["pid"], uid, data["updates"])
     return dumps(res)
 
+@app.route("/projects/delete", methods=["POST"])
+def flask_delete_project():
+    data = request.get_json()
+    uid = request.headers.get('Authorization')
+    res = delete_project(data["pid"], uid)
+    return dumps(res)
+
 # NOTIFICATIONS ROUTES #
 @app.route('/notifications/get', methods=['GET'])
 def get_notifications():
