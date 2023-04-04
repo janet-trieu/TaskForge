@@ -3,12 +3,9 @@ from flask import Flask, current_app, redirect, request, send_from_directory, Re
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
-<<<<<<< HEAD
 from werkzeug.utils import secure_filename
-=======
 from flask import Flask, request, Response
 from waitress import serve
->>>>>>> main
 
 from .authentication import *
 from .admin import *
