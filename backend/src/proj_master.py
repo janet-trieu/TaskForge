@@ -39,11 +39,9 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     '''
 
     # setting default values 
-    if due_date == None:
-        due_date = None
-    if team_strength == None:
-        team_strength = None
-    if picture == None:
+    if team_strength == None or team_strength == "":
+        team_strength = ""
+    if picture == None or picture == "":
         picture = "bleh.png"
 
     check_valid_uid(uid)
@@ -56,9 +54,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     # if not due_date == None:
     #     if not isinstance(due_date, date):
     #         raise InputError("Project due date has to be type of date!!!")
-    if not team_strength == None:
-        if not type(team_strength) == int:
-            raise InputError("Project team strength has to be type of int!!!")
+    if not type(team_strength) == str:
+        raise InputError("Project team strength has to be type of str!!!")
     # below will have to have more checks implemented to ensure the input is a valid picture, type of png, jpg or jpeg
     if not type(picture) == str:
         raise InputError("Project picture has to be type of string!!!")
@@ -74,9 +71,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         raise InputError("Project requies a description!!!")
     
     # TO-DO: check for due date being less than 1 day away from today
-    if not team_strength == None:
-        if team_strength < 0:
-            raise InputError("Team strength cannot be less than 0!!!")
+    if not team_strength == "" and int(team_strength) < 0:
+        raise InputError("Team strength cannot be less than 0!!!")
 
     proj_ref = db.collection("projects")
     value = get_curr_pid()
@@ -329,9 +325,9 @@ def update_project(pid, uid, updates):
                     "due_date": val
             })
         elif key == "team_strength":
-            if not type(val) == int:
-                raise InputError("Project team strength has to be type of int")
-            elif val < 0:
+            if not type(val) == str:
+                raise InputError("Project team strength has to be type of str")
+            elif int(val) < 0:
                 raise InputError("Team strength cannot be less than 0!!!")
             else:
                 proj_ref.update({
