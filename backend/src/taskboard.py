@@ -772,7 +772,7 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if type(deadline) != int:
+    if datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
