@@ -31,6 +31,13 @@ def check_valid_eid(eid):
     doc = db.collection('epics').document(str(eid)).get()
     if not doc.exists:
         raise InputError(f'eid {eid} does not exist in database')
+    
+def check_epic_in_project(eid, pid):
+    check_valid_eid(eid)
+    check_valid_pid(pid)
+    epics = db.collection('projects').document(str(pid)).get().get("epics")
+    if eid not in epics:
+        raise InputError(f'eid {eid} does not exist in project {pid}')
 
 def check_valid_pid(pid):
     if not isinstance(pid, int):

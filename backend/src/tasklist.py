@@ -8,7 +8,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
-from .taskboard import get_task_ref
+from .taskboard import get_task_ref, insert_tasklist
 import re
 import time
 
@@ -30,13 +30,7 @@ def get_user_assigned_task(uid, show_completed):
 
     tasks = db.collection("users").document(uid).get().get("tasks")
     if show_completed == True:
-        task_list = {
-            "Not Started": [],
-            "In Progress": [],
-            "Blocked": [],
-            "In Review/Testing": [],
-            "Completed": []
-        }
+        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")
@@ -48,20 +42,16 @@ def get_user_assigned_task(uid, show_completed):
                 "deadline": task_ref.get("deadline"),
                 "priority": task_ref.get("priority"),
                 "status": task_ref.get("status"),
-                "assignees": task_ref.get("assignees")
+                "assignees": task_ref.get("assignees"),
+                "flagged": task_ref.get("flagged")
             }
             if eid == "" or eid == None:
                 task_details['epic'] = "None"
             else:
                 task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-            task_list[task_ref.get("status")].append(task_details)
+            task_list = insert_tasklist(task_list, task_details)
     elif show_completed == False:
-        task_list = {
-            "Not Started": [],
-            "In Progress": [],
-            "Blocked": [],
-            "In Review/Testing": [],
-        } 
+        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")
@@ -74,11 +64,12 @@ def get_user_assigned_task(uid, show_completed):
                     "deadline": task_ref.get("deadline"),
                     "priority": task_ref.get("priority"),
                     "status": task_ref.get("status"),
-                    "assignees": task_ref.get("assignees")
+                    "assignees": task_ref.get("assignees"),
+                    "flagged": task_ref.get("flagged")
                 }
                 if eid == "" or eid == None:
                     task_details['epic'] = "None"
                 else:
                     task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-                task_list[task_ref.get("status")].append(task_details)
+                task_list = insert_tasklist(task_list, task_details)
     return task_list
