@@ -16,6 +16,7 @@ const ProjectBoardView = ({ firebaseApp }) => {
   const [detailsIsLoading, setDetailsIsLoading] = useState('Loading...');
   const [details, setDetails] = useState();
   const [state, setState] = useState(testData);
+  const [isCompleted, setIsCompleted] = useState();
   const {pid} = useParams();
   const uid = firebaseApp.auth().currentUser.uid;
   const navigate = useNavigate();
@@ -38,6 +39,11 @@ const ProjectBoardView = ({ firebaseApp }) => {
     else {
       setDetails(data);
       setDetailsIsLoading(false);
+      if (data.status === 'Completed') {
+        setIsCompleted(true);
+      } else {
+        setIsCompleted(false);
+      }
     }
   }, [])
 
@@ -116,6 +122,11 @@ const ProjectBoardView = ({ firebaseApp }) => {
     }
   }
 
+  const handleRevive = async() => {
+    const data = await makeRequest("/projects/revive", "POST", {pid: Number(pid), new_status: "In Progress"}, uid);
+    if (data.error) alert(data.error);
+  }
+
   return (
     <>
       {detailsIsLoading || (
@@ -128,12 +139,13 @@ const ProjectBoardView = ({ firebaseApp }) => {
           <div id='project-member-block'></div>
         </div>
         <div id='project-buttons'>
-          <button onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'cornflowerblue'}} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'seagreen'}} onClick={handleOpenCreateTask}>Create Task</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'seagreen'}} onClick={handleOpenCreateEpic}>Create Epic</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'gray'}} onClick={handleLeave}>Request to Leave</button>
+          <button className={isCompleted ? "" : "hide"} onClick={handleRevive}>Revive Project</button>
+          <button className={!isCompleted ? "" : "hide"} onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
+          <button className={!isCompleted ? "" : "hide"} style={{backgroundColor: 'cornflowerblue'}} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
+          <button className={!isCompleted ? "" : "hide"} style={{backgroundColor: 'seagreen'}} onClick={handleOpenCreateTask}>Create Task</button>&nbsp;&nbsp;
+          <button className={!isCompleted ? "" : "hide"} style={{backgroundColor: 'seagreen'}} onClick={handleOpenCreateEpic}>Create Epic</button>&nbsp;&nbsp;
+          <button className={!isCompleted ? "" : "hide"} style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
+          <button className={!isCompleted ? "" : "hide"} style={{backgroundColor: 'gray'}} onClick={handleLeave}>Request to Leave</button>
         </div>
         <Modal open={openDetails} onClose={handleCloseDetails}>
           <ProjectModalContent details={details} uid={uid} handleClose={handleCloseDetails} setDetails={setDetails} />
