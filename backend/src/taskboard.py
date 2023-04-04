@@ -515,7 +515,6 @@ def upload_file(uid, fileName, destination_name, tid):
     if (not get_user_ref(uid)): raise InputError('uid invalid')
     path = f"{tid}/{destination_name}"
     storage_upload_file(fileName, path)
-    os.remove(fileName)
     
     data = {
         "time": time.time(),
@@ -530,8 +529,9 @@ def upload_file(uid, fileName, destination_name, tid):
     
 def download_file(uid, fileName):
     if (not get_user_ref(uid)): raise InputError('uid invalid')
-    storage_download_file(fileName, f"UPLOAD_FOLDER/{fileName}")
-
+    print(f"filename is {fileName}")
+    new = re.sub('.*' + '/', '', fileName)# src/
+    storage_download_file(fileName, f"src/{new}")
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):

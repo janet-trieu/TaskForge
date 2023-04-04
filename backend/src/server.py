@@ -1,5 +1,5 @@
 from json import dumps
-from flask import Flask, current_app, request, send_from_directory, Response, render_template
+from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
@@ -304,29 +304,29 @@ def flask_get_connected_taskmasters():
     return dumps(get_connected_taskmasters(uid))
     
 # TASK MANAGEMENT #	
-@app.route('/upload_file', methods = ['POST'])
+@app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(f"src/{filename}")
+    return 'File Uploaded'
+    
+@app.route('/upload_file2', methods = ['POST'])
+def flask_upload_file2():
     uid = request.headers.get('Authorization')
-    if request.method == 'POST':
-        #print("OGINEOGBNOEBGOGOEHG:")
-        f = request.files['file'] #fails here
-        filename = secure_filename(f.filename)
-        #print("JPJGEGEGJP")
-        f.save(filename)
-        #print("HEREHRHRHHRHR")
-        data = request.get_json()
-        upload_file(uid, filename, data["destination_name"], data["tid"])
-    return
+    data = request.get_json()
+    upload_file(uid, data['file'], data["destination_name"], data["tid"])
+    return 'File Saved'
 
 @app.route('/download_file', methods = ['GET'])
 def flask_download_file():
     uid = request.headers.get('Authorization')
-    fileName = request.args.get('fileName')
+    fileName = request.get_json()['fileName']
     download_file(uid, fileName)
-    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
-    rv = send_from_directory(directory=uploads, filename=fileName)
-    os.remove(f"UPLOAD_FOLDER/{fileName}")
-    return rv
+    newName = re.sub('.*' + '/', '', fileName) #test.jpg
+    send_from_directory(app.root_path, newName)
+    os.remove(f"{app.root_path}/{newName}")
+    return 'File Sent'
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])

@@ -26,7 +26,18 @@ def test_file_upload():
     eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
     tid = create_task(uid, pid, eid, [], 'title', 'descr', 0, 0, "", "Not Started")
     
+    file = {'file': open('http_tests/test.jpg', 'rb')}
+    resp = requests.post(url + "upload_file1", headers=header, files=file)
+    assert(resp.status_code == 200)
+    
+    json_dict = {'file':'http_tests/test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
+    resp = requests.post(url + "upload_file2", headers=header, json=json_dict)
+    assert(resp.status_code == 200)
+    
+def test_file_download():
     header = {'Authorization': uid}
-    params = {'file': 'http_tests/test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
-    resp = requests.post(url + "upload_file", headers=header, params=params)
+    
+    json_dict = {'fileName': '20/test.jpg'}
+    resp = requests.get(url + "download_file", headers=header, json=json_dict)
+    
     assert(resp.status_code == 200)
