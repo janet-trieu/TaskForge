@@ -3,7 +3,12 @@ from flask import Flask, current_app, redirect, request, send_from_directory, Re
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
+<<<<<<< HEAD
 from werkzeug.utils import secure_filename
+=======
+from flask import Flask, request, Response
+from waitress import serve
+>>>>>>> main
 
 from .authentication import *
 from .admin import *
@@ -68,7 +73,8 @@ def user_details():
         email = str(get_email(uid))
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
-        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": int(0), "rating": int(0)}), 200
+        connections = len(get_connection_list(uid))
+        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
@@ -219,6 +225,13 @@ def flask_update_project():
     res = update_project(data["pid"], uid, data["updates"])
     return dumps(res)
 
+@app.route("/projects/delete", methods=["POST"])
+def flask_delete_project():
+    data = request.get_json()
+    uid = request.headers.get('Authorization')
+    res = delete_project(data["pid"], uid)
+    return dumps(res)
+
 # NOTIFICATIONS ROUTES #
 @app.route('/notifications/get', methods=['GET'])
 def get_notifications():
@@ -361,8 +374,9 @@ def flask_epic_details():
     """
     Gets epic detail
     """
-    data = request.get_json()
-    return get_epic_details(data["eid"])
+    eid = int(request.args.get('eid'))
+    uid = request.headers.get("Authorization")
+    return dumps(get_epic_details(uid, eid))
 
 @app.route("/task/details", methods=["GET"])
 def flask_task_details():
@@ -378,27 +392,73 @@ def flask_subtask_details():
     """
     Gets subtask detail
     """
-    data = request.get_json()
-    return get_subtask_details(data["stid"])
+    stid = int(request.args.get('stid'))
+    uid = request.headers.get("Authorization")
+    return dumps(get_subtask_details(uid, stid))
 
-# ASSIGNEES #
-@app.route("/task/assign", methods=["POST"])
-def flask_task_assign():
+# Update task management
+@app.route("/epic/update", methods=["POST"])
+def flask_epic_update():
     """
-    Assign new users to task
-    """
-    data = request.get_json()
-    assign_task(data["tid"], data["new_assignees"])
-    return
-
-@app.route("/subtask/assign", methods=["POST"])
-def flask_subtask_assign():
-    """
-    Assign new users to subtask
+    update epic
     """
     data = request.get_json()
-    assign_subtask(data["stid"], data["new_assignees"])
-    return
+    uid = request.headers.get("Authorization")
+    return dumps(update_epic(uid, data["eid"], data["title"], 
+                             data["description"], data["colour"]))
 
-if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+@app.route("/task/update", methods=["POST"])
+def flask_task_update():
+    """
+    update task
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(update_task(uid, data["tid"], data["eid"], data["assignees"], 
+                             data["title"], data["description"], data["deadline"], 
+                             data["workload"], data["priority"], data["status"], data["flagged"]))
+
+@app.route("/subtask/update", methods=["POST"])
+def flask_subtask_update():
+    """
+    update subtask
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(update_subtask(uid, data["stid"], data["eid"], data["assignees"], 
+                                data["title"], data["description"], data["deadline"], 
+                                data["workload"], data["priority"], data["status"]))
+
+@app.route("/task/comment", methods=["POST"])
+def flask_task_comment():
+    """
+    Comment on a task
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return comment_task(uid, data["tid"], data["comment"])
+
+# Taskboard
+@app.route("/taskboard/show", methods=["GET"])
+def flask_taskboard_show():
+    """
+    retrieves the taskboard
+    """
+    uid = request.headers.get("Authorization")
+    pid = request.headers.get("pid")
+    hidden = request.headers.get("hidden")
+    return dumps(get_taskboard(uid, pid, hidden))
+
+# Assigned Task List
+@app.route("/tasklist/show", methods=["GET"])
+def flask_tasklist_show():
+    """
+    Retrieve the tasklist
+    """
+    uid = request.headers.get("Authorization")
+    show_completed = request.headers.get("show_completed")
+    return dumps(get_user_assigned_task(uid, show_completed))
+
+# if __name__ == "__main__":
+#     # app.run(port=8000, debug=True)
+#     serve(app, host="0.0.0.1", port=8000, debug=True)

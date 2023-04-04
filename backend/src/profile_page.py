@@ -291,6 +291,19 @@ def get_tasks(uid):
     """
     return get_user_ref(uid).get("tasks")
 
+### ========= Get Connected TMs ========= ###
+def get_connection_list(uid):
+    """
+    Gets the list of connected TMs uid of the User from firestore database
+
+    Args:
+        uid (str): uid of the user that can be found in auth and firestore database
+
+    Returns:
+        A list of uids that the user is connected with
+    """
+    return get_user_ref(uid).get("connections")
+
 ### ========= is admin ========= ###
 def is_admin(uid):
     """
