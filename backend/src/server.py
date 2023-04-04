@@ -459,9 +459,9 @@ def flask_taskboard_show():
     retrieves the taskboard
     """
     uid = request.headers.get("Authorization")
-    pid = request.headers.get("pid")
-    hidden = request.headers.get("hidden")
-    return dumps(get_taskboard(uid, pid, hidden))
+    pid = request.args.get("pid")
+    hidden = request.args.get("hidden")
+    return dumps(get_taskboard(uid, int(pid), bool(hidden)))
 
 # Search task in project
 @app.route("/taskboard/search", methods=["GET"])

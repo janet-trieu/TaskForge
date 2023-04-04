@@ -216,7 +216,7 @@ def get_task_details(uid, tid):
     doc = get_task_ref(tid)
     task = Task(doc.get("tid"), doc.get("pid"), doc.get("eid"), doc.get("assignees"), doc.get("subtasks"), doc.get("title"), 
                 doc.get("description"), doc.get("deadline"), doc.get("workload"), doc.get("priority"), doc.get("status"), doc.get("comments"),
-                doc.get("flagged"), doc.get("completed"))
+                None, doc.get("flagged"), doc.get("completed"))
     return task.to_dict()
 
 ### ========= Get Assign Task ========= ###
@@ -675,14 +675,22 @@ def get_taskboard(uid, pid, hidden):
         task_ref = get_task_ref(task)
         pid = task_ref.get("pid")
         eid = task_ref.get("eid")
+        assignees = task_ref.get("assignees")
+        assignee_emails = []
+        for assignee in assignees:
+            assignee_emails.append(get_email(assignee))
         task_details = {
             "tid": task,
             "title": task_ref.get("title"),
             "deadline": task_ref.get("deadline"),
             "priority": task_ref.get("priority"),
             "status": task_ref.get("status"),
-            "assignees": task_ref.get("assignees"),
-            "flagged": task_ref.get("flagged")
+            "assignees": assignees,
+            "assignee_emails": assignee_emails,
+            "flagged": task_ref.get("flagged"),
+            "description": task_ref.get("description"),
+            "workload": task_ref.get("workload"),
+            "eid": task_ref.get("eid")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
@@ -779,15 +787,15 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if type(deadline) != int:
+    if type(deadline) != str:
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
-    if type(workload) != int:
+    if type(workload) != str:
         raise InputError(f'workload is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'workload': workload})
-    if priority != "High" or priority != "Moderate" or priority != "Low":
+    if not (priority == "High" or priority == "Moderate" or priority == "Low"):
         raise InputError('priority is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'priority': priority})
