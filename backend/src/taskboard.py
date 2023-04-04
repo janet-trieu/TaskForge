@@ -828,7 +828,7 @@ def update_subtask(uid, stid, eid, assignees, title, description, deadline, work
         raise InputError(f'description is not a string')
     else:
         db.collection("subtasks").document(str(stid)).update({'description': description})
-    if type(deadline) != int:
+    if datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
