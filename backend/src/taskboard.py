@@ -160,6 +160,8 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     task_ref.document(str(value)).set(task.to_dict())
 
     #Assign task to assignees
+    if assignees == []:
+        assignees = [uid]
     assign_task(uid, value, assignees)
 
     # Add task to epic
@@ -253,9 +255,11 @@ def assign_task(uid, tid, new_assignees):
         tasks = user.get("tasks")
         if (tasks is None):
             db.collection('users').document(new_uid).update({"tasks": [tid]})
+            notification_assigned_task(uid, pid, tid)
         else:
             tasks.append(tid)
             db.collection('users').document(new_uid).update({"tasks": tasks})
+            notification_assigned_task(uid, pid, tid)
     # 
     db.collection('tasks').document(str(tid)).update({"assignees": new_assignees})
     return
@@ -506,6 +510,11 @@ def comment_task(uid, tid, comment):
     comments = db.collection("tasks").document(str(tid)).get().get("comments")
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
+
+    # Notify comment to assigned users
+    assignees = db.collection("tasks").document(str(tid)).get().get("assignees")
+    for user in assignees:
+        notification_comment(user, uid, pid, tid)
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):
