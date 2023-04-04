@@ -207,7 +207,7 @@ def request_leave_project(pid, uid, msg):
     return 0
 
 
-def respond_project_invitation(pid, uid, accept, msg):
+def respond_project_invitation(pid, uid, accept):
     '''
     Respond to a project invitation
     - either accept to be added to the project
@@ -216,7 +216,6 @@ def respond_project_invitation(pid, uid, accept, msg):
     Arguments:
     - pid (project id)
     - uid (task master id)
-    - msg (string, msg to respond back to the project master)
 
     Returns:
     - 0 for successful response
@@ -234,9 +233,6 @@ def respond_project_invitation(pid, uid, accept, msg):
     proj_ref = db.collection("projects").document(str(pid))
     if proj_ref == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
-
-    if msg == "":
-        raise InputError("ERROR: Need to give response message to the invitation")
 
     doc = db.collection("notifications").document(uid).get().to_dict()
 
