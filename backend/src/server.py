@@ -321,14 +321,14 @@ def flask_upload_file():
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(f"src/{filename}")
-    return 'File Uploaded'
+    return dumps('File Uploaded')
     
 @app.route('/upload_file2', methods = ['POST'])
 def flask_upload_file2():
     uid = request.headers.get('Authorization')
     data = request.get_json()
     upload_file(uid, data['file'], data["destination_name"], data["tid"])
-    return 'File Saved'
+    return dumps('File Saved')
 
 @app.route('/download_file', methods = ['GET'])
 def flask_download_file():
@@ -338,7 +338,7 @@ def flask_download_file():
     newName = re.sub('.*' + '/', '', fileName) #test.jpg
     send_from_directory(app.root_path, newName)
     os.remove(f"{app.root_path}/{newName}")
-    return 'File Sent'
+    return dumps('File Sent')
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])
@@ -347,7 +347,7 @@ def flask_create_epic():
     Creates an epic
     """
     data = request.get_json()
-    return create_epic(data["uid"], data["pid"], data["title"], data["description"], data["colour"])
+    return dumps(create_epic(data["uid"], data["pid"], data["title"], data["description"], data["colour"]))
 
 @app.route("/task/create", methods=["POST"])
 def flask_create_task():
@@ -356,8 +356,8 @@ def flask_create_task():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return create_task(uid, data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
-                data["workload"], data["priority"], data["status"])
+    return dumps(create_task(uid, data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+                data["workload"], data["priority"], data["status"]))
 
 @app.route("/subtask/create", methods=["POST"])
 def flask_create_subtask():
@@ -365,8 +365,8 @@ def flask_create_subtask():
     Creates a subtask
     """
     data = request.get_json()
-    return create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
-                          data["workload"], data["priority"], data["status"])
+    return dumps(create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+                          data["workload"], data["priority"], data["status"]))
 
 # DETAILS #
 @app.route("/epic/details", methods=["GET"])

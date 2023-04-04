@@ -165,7 +165,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     assign_task(uid, value, assignees)
 
     # Add task to epic
-    if eid != "":
+    if eid != "" and eid != None:
         epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
         epic_tasks.append(value)
         db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
@@ -175,7 +175,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     db.collection("projects").document(str(pid)).update({"tasks": project_tasks})
 
     # Not started is default but will be changed to status
-    change_status(uid, value, status)
+    change_task_status(uid, value, status)
     
     # update tid
     update_tid()
