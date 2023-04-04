@@ -4,6 +4,10 @@ import './ConnectionCard.css';
 import userIcon from '../assets/default user icon.png';
 
 const ConnectionCard = ({ firebaseApp, photo_url, displayName, role }) => {
+  if (!photo_url) {
+    photo_url = userIcon
+  }
+
   return (
       <div className="connection-card">
         <img src={photo_url}></img>
