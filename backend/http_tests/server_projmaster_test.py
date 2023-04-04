@@ -51,7 +51,7 @@ def test_create_project_use_all_vals():
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": "2023-12-31",
-        "team_strength": 5,
+        "team_strength": "5",
         "picture": "test1.jpg"
     })
 
@@ -75,7 +75,7 @@ def test_create_multiple_projects():
         "name": "Project1",
         "description": "Creating Project1 for testing",
         "due_date": "2023-12-31",
-        "team_strength": 5,
+        "team_strength": "5",
         "picture": "test1.jpg"
     })
 
@@ -396,7 +396,7 @@ def test_update_project():
         "description": "description 123",
         "status": "In Progress",
         "due_date": "2023-11-30",
-        "team_strength": 5,
+        "team_strength": "5",
         "picture": "testing.png"
     }
 
@@ -419,7 +419,7 @@ def test_update_project():
     assert description == "description 123"
     assert status == "In Progress"
     assert due_date == "2023-11-30"
-    assert team_strength == 5
+    assert team_strength == "5"
     assert picture == "testing.png"
 
     reset_projects() 
@@ -433,7 +433,7 @@ def test_update_project_invalid_type():
         "description": -1,
         "status": -1,
         "due_date": -1,
-        "team_strength": "hi",
+        "team_strength": -1,
         "picture": -1
     }
 
@@ -456,7 +456,7 @@ def test_update_project_invalid_value():
         "description": "A"*2000,
         "status": "bleh",
         "due_date": "202020",
-        "team_strength": -1,
+        "team_strength": "-1",
         "picture": "hi"
     }
 
