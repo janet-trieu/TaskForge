@@ -317,8 +317,8 @@ def update_project(pid, uid, updates):
                 raise InputError("Project status has to be type of string")
             elif not val in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
                 raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
-            elif val == proj_ref.get().get("status"):
-                raise InputError("Cannot update the status of the project to its current status")
+            # elif val == proj_ref.get().get("status"):
+            #     raise InputError("Cannot update the status of the project to its current status")
             elif proj_ref.get().get("status") == "Completed":
                 raise AccessError(f"ERROR: Cannot update the status of a completed project. Please use revive_completed_project instead")
             else:
@@ -334,7 +334,7 @@ def update_project(pid, uid, updates):
         elif key == "team_strength":
             if not type(val) == str:
                 raise InputError("Project team strength has to be type of str")
-            elif int(val) < 0:
+            elif not val == "" and int(val) < 0:
                 raise InputError("Team strength cannot be less than 0!!!")
             else:
                 proj_ref.update({

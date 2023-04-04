@@ -25,7 +25,7 @@ const ProjectModalContent = forwardRef((props, ref) => {
         name: event.target.name.value,
         description: event.target.description.value,
         due_date: event.target.dueDate.value,
-        team_strength: Number(event.target.teamStrength.value),
+        team_strength: event.target.teamStrength.value,
         status: event.target.status.value,
         picture: icon
       }
