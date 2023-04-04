@@ -155,7 +155,8 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     task_ref = db.collection("tasks")
     value = get_curr_tid()
     # Check Status
-    if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
+    if status not in ["Not Started", "In Progress", "Blocked", "In Review/Testing", "Completed"]:
+    # if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
     task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
@@ -417,7 +418,7 @@ def assign_subtask(uid, stid, new_assignees):
         if (subtasks is None):
             db.collection('users').document(new_uid).update({"subtasks": [stid]})
         else:
-            subtasks.append(tid)
+            subtasks.append(stid)
             db.collection('users').document(new_uid).update({"subtasks": subtasks})
     db.collection('tasks').document(str(stid)).update({"assignees": new_assignees})
     return
@@ -485,7 +486,7 @@ def search_taskboard(uid, pid, query):
             task_details['epic'] = "None"
         else:
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-        if query.lower() in title.lower() or query.lower() in description.lower() or query.lower() in deadline.lower():
+        if query.lower() in task_ref.get("title").lower() or query.lower() in task_ref.get("description").lower() or query.lower() in task_ref.get("deadline").lower():
             task_list = insert_tasklist(task_list, task_details)
 
     return task_list
@@ -719,7 +720,7 @@ def update_epic(uid, eid, title, description, colour):
         db.colection("epics").document(str(eid)).update({'colour': colour})
     return
         
-def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
+def update_task(uid, tid, eid, title, description, deadline, workload, priority, status, flagged):
     """
     Updates task
 
@@ -727,7 +728,6 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
         uid (str): uid of the user updating the task
         tid (int): id of the task that is being updated
         eid (int): id of the new epic that is being updated
-        assignees (list): list of uids that will be assigned to the task
         title (str): string of the new title
         description (str): new description
         deadline (int): unix time stamp of when the task is due
@@ -762,7 +762,7 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
         old_epic_tasks.remove(tid)
         db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
 
-    assign_task(uid, tid, assignees)
+    # assign_task(uid, tid, assignees)
 
     if type(title) != str:
         raise InputError(f'title is not a string')
@@ -788,7 +788,7 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
     flag_task(uid, tid, flagged)
     return
 
-def update_subtask(uid, stid, eid, assignees, title, description, deadline, workload, priority, status):
+def update_subtask(uid, stid, eid, title, description, deadline, workload, priority, status):
     """
     updates subtask
 
@@ -796,7 +796,6 @@ def update_subtask(uid, stid, eid, assignees, title, description, deadline, work
         uid (str): uid of the user updating the task
         stid (int): id of the subtask that is being updated
         eid (int): id of the new epic that is being updated
-        assignees (list): list of uids that will be assigned to the task
         title (str): string of the new title
         description (str): new description
         deadline (int): unix time stamp of when the task is due
@@ -818,7 +817,7 @@ def update_subtask(uid, stid, eid, assignees, title, description, deadline, work
         # Update task epic
         db.collection("subtasks").document(str(stid)).update({'eid': eid})
 
-    assign_subtask(uid, stid, assignees)
+    # assign_subtask(uid, stid, assignees)
 
     if type(title) != str:
         raise InputError(f'title is not a string')

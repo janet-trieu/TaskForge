@@ -15,6 +15,7 @@ from .projects import *
 from .connections import *
 from .taskboard import *
 from .helper import *
+from .tasklist import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -151,15 +152,14 @@ def admin_remove_user():
     uid_user = request.headers.get('Authorization')
     return dumps(remove_user(data["uid_admin"], uid_user))
 
-@app.route("/admin/readd_user", methods=["POST"])
-def admin_readd_user():
-    """
-    readd_user flask
-    """
-    data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(readd_user(data["uid_admin"], uid_user))
-
+# @app.route("/admin/readd_user", methods=["POST"])
+# def admin_readd_user():
+#     """
+#     readd_user flask
+#     """
+#     data = request.get_json()
+#     uid_user = request.headers.get('Authorization')
+#     return dumps(readd_user(data["uid_admin"], uid_user))
 
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
@@ -392,6 +392,25 @@ def flask_subtask_details():
     stid = int(request.args.get('stid'))
     uid = request.headers.get("Authorization")
     return dumps(get_subtask_details(uid, stid))
+
+# Assign task management
+@app.route("/task/assign", methods=["POST"])
+def flask_task_assign():
+    """
+    assign task
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(assign_task(uid, data["tid"], data["new_assignees"]))
+
+@app.route("/subtask/assign", methods=["POST"])
+def flask_subtask_assign():
+    """
+    assign subtask
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(assign_subtask(uid, data["stid"], data["new_assignees"]))
 
 # Update task management
 @app.route("/epic/update", methods=["POST"])
