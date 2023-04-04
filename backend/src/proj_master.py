@@ -241,11 +241,15 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     project_members = project["project_members"]
 
     connection_list = get_connected_taskmasters(sender_uid)
+    connection_uid_list = []
+    for connection in connection_list:
+        connection_uid_list.append(connection["uid"])
+
     for uid in receiver_uids:
         # check whether the specified uid exists
         check_valid_uid(uid)
 
-        if uid not in connection_list:
+        if uid not in connection_uid_list:
             raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:

@@ -7,7 +7,7 @@ const ProjectInviteModalContent = forwardRef((props, ref) => {
     if (!event.target.invites.value) {alert("Please enter at least one member email."); return;}
     const invites = event.target.invites.value.split(", ");
     const data = await makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: Number(props.pid)}, props.uid);
-    console.log(data);
+
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else props.handleClose();
   }
