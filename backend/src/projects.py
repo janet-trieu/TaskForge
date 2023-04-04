@@ -202,7 +202,7 @@ def request_leave_project(pid, uid, msg):
 
     pm_uid = proj_ref.get().get("uid")
 
-    notification_leave_request(uid, pm_uid, pid)
+    notification_leave_request(pm_uid, uid, pid)
 
     return 0
 
