@@ -10,8 +10,8 @@ const Connections = ({ firebaseApp }) => {
   const [isLoading, setIsLoading] = useState('Loading...');
   const [connections, setConnections] = useState();
   const [openConnectionSend, setOpenConnectionSend] = useState(false);
-  const handleOpenConnectionSend = () => {setOpenConnectionSend(true)};
-  const handleCloseConnectionSend = () => {setOpenConnectionSend(false)};
+  const handleOpenConnectionSend = () => { setOpenConnectionSend(true) };
+  const handleCloseConnectionSend = () => { setOpenConnectionSend(false) };
   const currentUser = firebaseApp.auth().currentUser;
 
   useEffect(async () => {
@@ -36,8 +36,8 @@ const Connections = ({ firebaseApp }) => {
         </div>
         {isLoading || (
           <div id="connections-card-container">
-            {connections.map(uid => {
-              return <ConnectionCard key={uid} firebaseApp={firebaseApp} uid={uid} />
+            {connections.map(connection => {
+              return <ConnectionCard key={connection.uid} firebaseApp={firebaseApp} photo={connection.photo_url} displayName={connection.display_name} role={connection.role} />
             })}
           </div>
         )}

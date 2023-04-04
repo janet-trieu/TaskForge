@@ -358,9 +358,11 @@ def create_user_firestore(uid):
     Returns:
         None
     """
+    
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "Task Master", "", "", False, False, False, [], [], [], [], [])
+    photo_url = get_default_profile_img()
+    user = User(uid, value, "Task Master", photo_url, "", False, False, False, [], [], [], [], [])
     
     print(users_ref.document(uid).set(user.to_dict()))
 

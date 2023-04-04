@@ -310,7 +310,7 @@ def notification_leave_request(uid, uid_sender, pid):
     '''
     Creates and adds notification when a user requests to leave a project to the project master.
     Args:
-        uid (string): User being notified
+        uid (string): The project master
         uid_sender (string): User sending leave request
         pid (int): Project being left
     Returns:

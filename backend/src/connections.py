@@ -2,6 +2,7 @@ from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
 
 from .error import *
 from .helper import *
+from .profile_page import *
 
 def connection_request_respond(uid, nid, response):
     '''
@@ -24,6 +25,12 @@ def connection_request_respond(uid, nid, response):
     u_ref = db.collection('users').document(uid_sender)
     u_ref.update({'connections' : ArrayUnion([uid])})
     db.collection('notifications').document(uid).update({nid:DELETE_FIELD})
+
+    if response == True:
+        notification_accepted_request(uid_sender, uid)
+    else:
+        notification_denied_request(uid_sender, uid)
+
     return {}
     
 def get_connection_requests(uid):
@@ -48,8 +55,21 @@ def get_connected_taskmasters(uid):
     Args:
         - uid (string): User for whom the list is being made
     Returns:
-        - conn_list (list of Strings): Users who have connected
+        - connections (list of dictionaries): Users who are connected to current user
     '''
     check_valid_uid(uid)
     user_ref = db.collection('users').document(uid)
-    return user_ref.get().get('connections')
+    connection_uids = user_ref.get().get('connections')
+
+    connections = []
+
+    for uid in connection_uids:
+        connected_tm_data = {
+            'uid': uid,
+            'photo_url': get_photo(uid),
+            'display_name': get_display_name(uid),
+            'role': get_role(uid)
+        }
+        connections.append(connected_tm_data)
+    
+    return connections

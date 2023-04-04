@@ -309,18 +309,6 @@ def flask_get_connected_taskmasters():
     """
     uid = request.headers.get("Authorization")
     return dumps(get_connected_taskmasters(uid))
-
-@app.route('/connections/details', methods=['GET'])
-def connection_details():
-    # name, role, photo_url
-    uid = request.get_json()["uid"]
-    if is_valid_user(uid) == False:
-        return Response(status=400)
-    else:
-        display_name = str(get_display_name(uid))
-        photo_url = str(get_photo(uid))
-        role = str(get_role(uid))
-        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url})
     
 # TASK MANAGEMENT #
 # CREATE #
