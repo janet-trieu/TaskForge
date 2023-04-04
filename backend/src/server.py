@@ -246,7 +246,8 @@ def flask_clear_all_notifications():
 @app.route('/notification/connection/request', methods=['POST'])
 def flask_notification_connection_request():
     data = request.get_json()
-    return dumps(notification_connection_request(data["uid"], data["uid_sender"]))
+    uid = request.headers.get('Authorization')
+    return dumps(notification_connection_request(data["uid"], uid))
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
@@ -293,7 +294,7 @@ def flask_connection_request_respond():
     data = request.get_json()
     return dumps(connection_request_respond(str(uid), data["nid"], data["response"]))
     
-@app.route("/connections/get_connection_requests", methods=["GET", "POST"])
+@app.route("/connections/get_connection_requests", methods=["GET"])
 def flask_get_connection_requests():
     """
     get_connection_requests flask
@@ -312,14 +313,14 @@ def flask_get_connected_taskmasters():
 @app.route('/connections/details', methods=['GET'])
 def connection_details():
     # name, role, photo_url
-    uid = request.get_json()
+    uid = request.get_json()["uid"]
     if is_valid_user(uid) == False:
         return Response(status=400)
     else:
         display_name = str(get_display_name(uid))
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
-        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url}), 200
+        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url})
     
 # TASK MANAGEMENT #
 # CREATE #
