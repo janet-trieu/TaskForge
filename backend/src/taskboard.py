@@ -163,9 +163,10 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     assign_task(uid, value, assignees)
 
     # Add task to epic
-    epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
-    epic_tasks.append(value)
-    db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
+    if eid != "":
+        epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
+        epic_tasks.append(value)
+        db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
     #Add to project
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
     project_tasks.get("Not Started").append(value)
@@ -284,9 +285,10 @@ def delete_task(uid, tid):
     
     # Remove task from epic
     epic = get_epic_ref(task_ref.get("eid"))
-    tasks = epic.get("tasks")
-    tasks.remove(tid)
-    db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
+    if epic != "":
+        tasks = epic.get("tasks")
+        tasks.remove(tid)
+        db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
 
     # Remove task from assigned users
     assignees = db.collection('tasks').document(str(tid)).get().get("assignees")
