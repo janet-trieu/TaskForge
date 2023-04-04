@@ -10,6 +10,7 @@ from .helper import *
 from .profile_page import *
 import re
 import time
+import os
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -157,16 +158,17 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
-    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], False, "")
+    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
     #Assign task to assignees
     assign_task(uid, value, assignees)
 
     # Add task to epic
-    epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
-    epic_tasks.append(value)
-    db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
+    if eid != "":
+        epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
+        epic_tasks.append(value)
+        db.collection('epics').document(str(eid)).update({"tasks": epic_tasks})
     #Add to project
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
     project_tasks.get("Not Started").append(value)
@@ -285,9 +287,10 @@ def delete_task(uid, tid):
     
     # Remove task from epic
     epic = get_epic_ref(task_ref.get("eid"))
-    tasks = epic.get("tasks")
-    tasks.remove(tid)
-    db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
+    if epic != "":
+        tasks = epic.get("tasks")
+        tasks.remove(tid)
+        db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
 
     # Remove task from assigned users
     assignees = db.collection('tasks').document(str(tid)).get().get("assignees")
@@ -458,23 +461,34 @@ def search_taskboard(uid, pid, query):
         query (str): string of the query that will be compared to tasks
 
     Returns:
-        A list of tasks that match the query
+        A list of tasks and their details that match the query (in deadline order)
     """
     check_user_in_project(uid, pid)
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
 
-    tasks = {}
+    task_list = {}
     #task ID, task name, description and/or deadline
     for task in project_tasks:
-        task_ref = db.collection("tasks").document(str(task)).get()
-        title = task_ref.get("title")
-        description = task_ref.get("description")
-        deadline = task_ref.get("deadline")
-
+        task_ref = get_task_ref(task)
+        pid = task_ref.get("pid")
+        eid = task_ref.get("eid")
+        task_details = {
+            "tid": task,
+            "title": task_ref.get("title"),
+            "deadline": task_ref.get("deadline"),
+            "priority": task_ref.get("priority"),
+            "status": task_ref.get("status"),
+            "assignees": task_ref.get("assignees"),
+            "flagged": task_ref.get("flagged")
+        }
+        if eid == "" or eid == None:
+            task_details['epic'] = "None"
+        else:
+            task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         if query.lower() in title.lower() or query.lower() in description.lower() or query.lower() in deadline.lower():
-            tasks.append(task)
+            task_list = insert_tasklist(task_list, task_details)
 
-    return tasks
+    return task_list
 
 ### ========= Comment Task ========= ###
 def comment_task(uid, tid, comment):
@@ -503,10 +517,35 @@ def comment_task(uid, tid, comment):
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": comment,
+        "file": None
     }
     comments = db.collection("tasks").document(str(tid)).get().get("comments")
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
+
+### ========= Files ========= ###
+#prefix is basically the t_id
+def upload_file(uid, fileName, destination_name, tid):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    path = f"{tid}/{destination_name}"
+    storage_upload_file(fileName, path)
+    
+    data = {
+        "time": time.time(),
+        "uid": uid,
+        "display_name": get_display_name(uid),
+        "comment": "",
+        "file": path
+    }
+    files = db.collection("tasks").document(str(tid)).get().get("files")
+    files.append(data)
+    db.collection("tasks").document(str(tid)).update({"files": files})
+    
+def download_file(uid, fileName):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    print(f"filename is {fileName}")
+    new = re.sub('.*' + '/', '', fileName)# src/
+    storage_download_file(fileName, f"src/{new}")
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):

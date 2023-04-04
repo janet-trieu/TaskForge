@@ -1,8 +1,9 @@
 from json import dumps
-from flask import Flask, request, send_from_directory, Response
+from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
 import os
 from flask_mail import Mail, Message
+from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
 from waitress import serve
 
@@ -14,6 +15,7 @@ from .projects import *
 from .connections import *
 from .taskboard import *
 from .tasklist import *
+from .helper import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -313,7 +315,31 @@ def flask_get_connected_taskmasters():
     uid = request.headers.get("Authorization")
     return dumps(get_connected_taskmasters(uid))
     
-# TASK MANAGEMENT #
+# TASK MANAGEMENT #	
+@app.route('/upload_file1', methods = ['POST'])
+def flask_upload_file():
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(f"src/{filename}")
+    return 'File Uploaded'
+    
+@app.route('/upload_file2', methods = ['POST'])
+def flask_upload_file2():
+    uid = request.headers.get('Authorization')
+    data = request.get_json()
+    upload_file(uid, data['file'], data["destination_name"], data["tid"])
+    return 'File Saved'
+
+@app.route('/download_file', methods = ['GET'])
+def flask_download_file():
+    uid = request.headers.get('Authorization')
+    fileName = request.get_json()['fileName']
+    download_file(uid, fileName)
+    newName = re.sub('.*' + '/', '', fileName) #test.jpg
+    send_from_directory(app.root_path, newName)
+    os.remove(f"{app.root_path}/{newName}")
+    return 'File Sent'
+
 # CREATE #
 @app.route("/epic/create", methods=["POST"])
 def flask_create_epic():
@@ -422,6 +448,17 @@ def flask_taskboard_show():
     pid = request.headers.get("pid")
     hidden = request.headers.get("hidden")
     return dumps(get_taskboard(uid, pid, hidden))
+
+# Search task in project
+@app.route("/taskboard/search", methods=["GET"])
+def flask_taskboard_search():
+    """
+    Retrieve list of tasks in project using query
+    """
+    uid = request.headers.get("Authorization")
+    pid = request.headers.get("pid")
+    query = request.headers.get("query")
+    return dumps(search_taskboard(uid, pid, query))
 
 # Assigned Task List
 @app.route("/tasklist/show", methods=["GET"])
