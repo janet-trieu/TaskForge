@@ -43,3 +43,13 @@ Flask and API was the main technical obstacle. Retrieving the correct status cod
 
 Sprint 2 is planned, where tasks was delegated to me. Retrospective report is also planned to be finished.
 
+Week 6
+Beginning sprint 2 I was assigned Task Management. I was quite busy during flex week so I only planned on creating the general class for the three: Epics, Tasks, Subtasks.
+
+I finished the classes for the task management related items and created skeleton functions for the features that needed to be implemented.
+
+The main obstacles was communication with the other members and needing to know where to meet when it comes to cross feature implementation. For example, how does task interact with project, how does task interact with notifications. They were overcome after coming back together and discussing implementation and showing eachother's progress.
+
+The actual functions were not finished yet, but as task management is its own isolated feature, it did not halt the progress of sprint 2.
+
+Finishing every feature in sprint 2 is planned.
