@@ -76,7 +76,14 @@ def create_project(uid, name, description, due_date, team_strength, picture):
 
     proj_ref = db.collection("projects")
     value = get_curr_pid()
-    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], [], [], False)
+    tasks = {
+            "Not Started": [],
+            "In Progress": [],
+            "Blocked": [],
+            "In Review/Testing": [],
+            "Completed": []
+    }
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], tasks, [], False)
     proj_ref.document(str(value)).set(project.to_dict())
     
     # update the pid after creating a project

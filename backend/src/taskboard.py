@@ -523,7 +523,7 @@ def flag_task(uid, tid, boolean):
     db.collection("tasks").document(str(tid)).update({"flagged": boolean})
 
 ### ========= Change status ========= ###
-def change_status(uid, tid, status):
+def change_task_status(uid, tid, status):
     """
     Changes the status of a task
 
@@ -587,9 +587,9 @@ def show_tasks(uid, pid, hidden):
         completed_tasks = tasks.get("Completed")
         for task in completed_tasks:
             task_time = db.collection("tasks").document(str(task)).get().get("completed")
-            # if task has been completed and it has been more than 2 weeks since completed
+            # if task has been completed and it has been more than a weeks since completed
             # this task is hidden
-            if task_time.isdigit() and (curr_time - task_time) >= 604800 * 2:
+            if task_time.isdigit() and (curr_time - task_time) >= 604800:
                 pass
             # this task is not hidden
             else:
@@ -609,6 +609,11 @@ def get_taskboard(uid, pid, hidden):
     Returns:
         a dict of statuses with tasks details inside. Details include: 
         Task details include: id, title, epic, deadline, priority, status, assignees
+        in the priority order:
+        flagged with timestamp
+        flagged with no timestamp
+        not flagged with timestamp
+        not flagged without timestamp
     """
     taskboard_list = show_tasks(uid, pid, hidden)
     task_list = {
@@ -628,11 +633,227 @@ def get_taskboard(uid, pid, hidden):
             "deadline": task_ref.get("deadline"),
             "priority": task_ref.get("priority"),
             "status": task_ref.get("status"),
-            "assignees": task_ref.get("assignees")
+            "assignees": task_ref.get("assignees"),
+            "flagged": task_ref.get("flagged")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
         else:
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-        task_list[task_ref.get("status")].append(task_details)
+        status_list = task_list[task_ref.get("status")]
+        status_list = insert_tasklist(status_list, task_details)
+        task_list[task_ref.get("status")] = status_list
     return task_list
+
+def update_epic(uid, eid, title, description, colour):
+    """
+    updates epic
+
+    Args:
+        uid (str): uid of the user updating the epic
+        eid (int): id of the epic that is being updated
+        title (str): str of the new title
+        description (str): str of the new description
+        colour (str): str of the new colour
+
+    Return:
+        None
+    """
+    pid = get_epic_ref(eid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)    
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("epics").document(str(eid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("epics").document(str(eid)).update({'description': description})
+    match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colour)
+    if not match:
+        raise InputError("Colour is not a valid hex colour")
+    else:
+        db.colection("epics").document(str(eid)).update({'colour': colour})
+    return
+        
+def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
+    """
+    Updates task
+
+    Args:
+        uid (str): uid of the user updating the task
+        tid (int): id of the task that is being updated
+        eid (int): id of the new epic that is being updated
+        assignees (list): list of uids that will be assigned to the task
+        title (str): string of the new title
+        description (str): new description
+        deadline (int): unix time stamp of when the task is due
+        workload (int): new workload
+        priority (str): new priority
+        status (str): new status
+        flagged (boolean): new flagged
+
+    Returns:
+        None
+
+    """
+    pid = get_task_ref(tid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)
+    
+    # Update epics
+    old_epic = get_task_ref(tid).get("eid")
+    # new epic is different
+    if not old_epic == eid:
+        # Update subtask epic
+        subtasks = get_task_ref(tid).get("subtasks")
+        for subtask in subtasks:
+            db.collection("subtasks").document(str(subtask)).update({'eid': eid})
+        # Update task epic
+        db.collection("tasks").document(str(tid)).update({'eid': eid})
+        # Update new epic to include tid
+        new_epic_tasks = get_epic_ref(eid).get("tasks")
+        db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks.append(tid)})
+        # Remove tid from old epic
+        old_epic_tasks = get_epic_ref(old_epic).get("tasks")
+        old_epic_tasks.remove(tid)
+        db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
+
+    assign_task(uid, tid, assignees)
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("tasks").document(str(tid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("tasks").document(str(tid)).update({'description': description})
+    if type(deadline) != int:
+        raise InputError(f'deadline is not valid')
+    else:
+        db.collection("tasks").document(str(tid)).update({'deadline': deadline})
+    if type(workload) != int:
+        raise InputError(f'workload is not valid')
+    else:
+        db.collection("tasks").document(str(tid)).update({'workload': workload})
+    if priority != "High" or priority != "Moderate" or priority != "Low":
+        raise InputError('priority is not valid')
+    else:
+        db.collection("tasks").document(str(tid)).update({'priority': priority})
+    change_task_status(uid, tid, status)
+    flag_task(uid, tid, flagged)
+    return
+
+def update_subtask(uid, stid, eid, assignees, title, description, deadline, workload, priority, status):
+    """
+    updates subtask
+
+    Args:
+        uid (str): uid of the user updating the task
+        stid (int): id of the subtask that is being updated
+        eid (int): id of the new epic that is being updated
+        assignees (list): list of uids that will be assigned to the task
+        title (str): string of the new title
+        description (str): new description
+        deadline (int): unix time stamp of when the task is due
+        workload (int): new workload
+        priority (str): new priority
+        status (str): new status   
+    
+    Return:
+        None
+    """
+    pid = get_task_ref(stid).get("pid")
+    check_user_in_project(uid, pid)
+    check_epic_in_project(eid, pid)
+    
+    # Update epics
+    old_epic = get_subtask_ref(stid).get("eid")
+    # new epic is different
+    if not old_epic == eid:
+        # Update task epic
+        db.collection("subtasks").document(str(stid)).update({'eid': eid})
+
+    assign_subtask(uid, stid, assignees)
+
+    if type(title) != str:
+        raise InputError(f'title is not a string')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'title': title})
+    if type(description) != str:
+        raise InputError(f'description is not a string')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'description': description})
+    if type(deadline) != int:
+        raise InputError(f'deadline is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
+    if type(workload) != int:
+        raise InputError(f'workload is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'workload': workload})
+    if priority != "High" or priority != "Moderate" or priority != "Low":
+        raise InputError('priority is not valid')
+    else:
+        db.collection("subtasks").document(str(stid)).update({'priority': priority})
+    
+    if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
+        raise InputError("Not a valid status")
+    else:
+        db.collection("subtasks").document(str(stid)).update({'status': status})
+    return    
+
+### ========= Insert into tasklist ========= ###
+def insert_tasklist(tasklist, task):
+    length = len(tasklist)
+    if length == 0:
+        tasklist.append(task)
+        return tasklist
+    i = 0
+    
+    while i < length:
+        if less_than(task, tasklist[i]):
+            tasklist.insert(i, task)
+            return tasklist
+        i += 1
+    tasklist.append(task)
+    return tasklist
+
+### ========= Less than helper ========= ###
+def less_than(task_one, task_two):
+    task_one_flagged = task_one['flagged']
+    task_two_flagged = task_two['flagged']
+    if (task_one['deadline'] == "" or task_one['deadline'] == None):
+        task_one_deadline = None
+    else: 
+        task_one_deadline = task_one['deadline']
+    if (task_two['deadline'] == "" or task_two['deadline'] == None):
+        task_two_deadline = None
+    else:         
+        task_two_deadline = task_two['deadline']
+
+    if ((task_one_flagged == True and task_two_flagged == True) or (task_one_flagged == False and task_two_flagged == False)):
+        # Both have time stamps
+        if (task_one_deadline != None and task_two_deadline != None):
+            if (task_one_deadline < task_two_deadline):
+                return True
+            else:
+                return False       
+        # Indexed has a time stamp but task doesnt
+        if (task_one_deadline == None and task_two_deadline != None):
+            return False
+        # Both do not have timestamps
+        if (task_one_deadline == None and task_two_deadline == None):
+            return True
+        # Indexed does not have a timestamp so task should be added infront of it
+        if (task_one_deadline != None and task_two_deadline == None):
+            return True
+    # task one isnt flagged so should be after flagged task
+    elif (task_one_flagged == False and task_two_flagged == True):
+        return False
+    # Task one is flagged and task two isnt so task should be inserted infront
+    elif (task_one_flagged == True and task_two_flagged == False):
+        return True
