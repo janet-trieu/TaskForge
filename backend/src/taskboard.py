@@ -457,23 +457,34 @@ def search_taskboard(uid, pid, query):
         query (str): string of the query that will be compared to tasks
 
     Returns:
-        A list of tasks that match the query
+        A list of tasks and their details that match the query (in deadline order)
     """
     check_user_in_project(uid, pid)
     project_tasks = db.collection("projects").document(str(pid)).get().get("tasks")
 
-    tasks = {}
+    task_list = {}
     #task ID, task name, description and/or deadline
     for task in project_tasks:
-        task_ref = db.collection("tasks").document(str(task)).get()
-        title = task_ref.get("title")
-        description = task_ref.get("description")
-        deadline = task_ref.get("deadline")
-
+        task_ref = get_task_ref(task)
+        pid = task_ref.get("pid")
+        eid = task_ref.get("eid")
+        task_details = {
+            "tid": task,
+            "title": task_ref.get("title"),
+            "deadline": task_ref.get("deadline"),
+            "priority": task_ref.get("priority"),
+            "status": task_ref.get("status"),
+            "assignees": task_ref.get("assignees"),
+            "flagged": task_ref.get("flagged")
+        }
+        if eid == "" or eid == None:
+            task_details['epic'] = "None"
+        else:
+            task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         if query.lower() in title.lower() or query.lower() in description.lower() or query.lower() in deadline.lower():
-            tasks.append(task)
+            task_list = insert_tasklist(task_list, task_details)
 
-    return tasks
+    return task_list
 
 ### ========= Comment Task ========= ###
 def comment_task(uid, tid, comment):

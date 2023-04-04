@@ -420,6 +420,17 @@ def flask_taskboard_show():
     hidden = request.headers.get("hidden")
     return dumps(get_taskboard(uid, pid, hidden))
 
+# Search task in project
+@app.route("/taskboard/search", methods=["GET"])
+def flask_taskboard_search():
+    """
+    Retrieve list of tasks in project using query
+    """
+    uid = request.headers.get("Authorization")
+    pid = request.headers.get("pid")
+    query = request.headers.get("query")
+    return dumps(search_taskboard(uid, pid, query))
+
 # Assigned Task List
 @app.route("/tasklist/show", methods=["GET"])
 def flask_tasklist_show():
