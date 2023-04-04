@@ -304,135 +304,6 @@ class Achievements(object):
             "time_acquired": self.time_acquired
         }
 
-    def a_types(self):
-        return {
-            0: {
-                "aid": 0,
-                "title": "Almost Admin",
-                "description": "The very first user",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            1: {
-                "aid": 1,
-                "title": "TBA",
-                "description": "First Task Master to complete a task",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            2: {
-                "aid": 2,
-                "title": "TBA",
-                "description": "First Project Master to complete a project",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            3: {
-                "aid": 3,
-                "title": "Intermediate Task Master",
-                "description": "Complete at least 10 assigned tasks",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            4: {
-                "aid": 4,
-                "title": "Advanced Task Master",
-                "description": "Complete at least 20 assigned tasks",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            5: {
-                "aid": 5,
-                "title": "Intermediate Project Master",
-                "description": "Complete at least 5 projects",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            6: {
-                "aid": 6,
-                "title": "Advanced Project Master",
-                "description": "Complete at least 10 projects",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            7: {
-                "aid": 7,
-                "title": "I am bnoc",
-                "description": "Have at least 5 connections",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            8: {
-                "aid": 8,
-                "title": "I also leave google restaurant reviews",
-                "description": "Leave at least 10 unique reputation reviews",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            9: {
-                "aid": 9,
-                "title": "Problem Solver",
-                "description": "Reputation of teamwork and communication over 4/5",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            10: {
-                "aid": 10,
-                "title": "Fast as Lightning",
-                "description": "Complete a task within the first half of deadline",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            11: {
-                "aid": 11,
-                "title": "There is no 'I' in team",
-                "description": "Reputation of teamwork over 4.5/5",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            12: {
-                "aid": 12,
-                "title": "Megaphone",
-                "description": "Reputation of communication over 4.5/5",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            13: {
-                "aid": 13,
-                "title": "Michelangelo.. is that mE?",
-                "description": "Reputation of quality over 4.5/5",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            14: {
-                "aid": 14,
-                "title": "I am Octopus",
-                "description": "Have more than 8 tasks assigned at one time",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            15: {
-                "aid": 15,
-                "title": "Look at me, I'm StackOverflow Now",
-                "description": "Overall Reputation over 4.5/5",
-                "icon": "abc",
-                "time_acquired": ""
-            },
-            16: {
-                "aid": 16,
-                "title": "Woof Woof Lone Wolf",
-                "description": "Complete a project with only yourself",
-                "icon": "abc",
-                "time_acquired": ""
-            }
-        }
-
-    # def get_achievement(self, aid):
-    #     achievements = self.a_types()
-    #     for key, val in achievements.items():
-    #         if key == aid:
-    #             return val
-
 def update_achievements(uid, aid):
     """
     Updates the achievements list of the user identified by Uid in firestore database
@@ -446,11 +317,11 @@ def update_achievements(uid, aid):
     """
     user_ref = db.collection("users").document(uid)
 
-    achievement = get_achievement(aid)
+    new_achievement = get_achievement(aid)
 
-    user_ref.update({"achievements": new_achievements})
+    user_ref.update({"achievements": new_achievement})
 
-def get_achievements_uid(uid):
+def get_achievements_list(uid):
     """
     Gets the current achievements list of specified user
 
@@ -460,4 +331,4 @@ def get_achievements_uid(uid):
     Returns:
         A list of achievements the user has
     """
-    return get_user_ref(uid).get("achievements")
+    return db.collection("users").document(str(uid)).get().get("achievements")
