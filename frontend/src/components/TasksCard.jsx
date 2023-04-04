@@ -9,8 +9,8 @@ const TasksCard = (props) => {
   else if (props.status === "Completed") statusClass = 'completed';
   else statusClass = 'ongoing';
   return (
-    <div className="task-card" onClick={() => navigate(`/projects/${pid}`)}>
-      <div style={{fontWeight: 'bold', fontSize: '1.2em'}}>{props.name}</div>
+    <div className="tasks-card" onClick={() => navigate(`/projects/${props.pid}`)}>
+      <div style={{fontWeight: 'bold', fontSize: '1.2em'}}>{props.title}</div>
       <div>{props.description}</div>
       <div className={statusClass}>{props.status}</div>
     </div>

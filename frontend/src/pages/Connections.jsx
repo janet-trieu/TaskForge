@@ -36,8 +36,8 @@ const Connections = ({ firebaseApp }) => {
         </div>
         {isLoading || (
           <div id="connections-card-container">
-            {connections.map(connection => {
-              return <ConnectionCard key={connection.uid} firebaseApp={firebaseApp} photo={connection.photo_url} displayName={connection.display_name} role={connection.role} />
+            {connections.map((connection, idx) => {
+              return <ConnectionCard key={idx} photo={connection.photo_url} displayName={connection.display_name} role={connection.role} uid={connection.uid}/>
             })}
           </div>
         )}

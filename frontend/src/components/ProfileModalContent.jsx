@@ -7,6 +7,7 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
     let newDetails = details;
     newDetails.display_name = event.target.name.value;
     newDetails.role = event.target.role.value;
+    newDetails.email = event.target.email.value;
 
     const uid = firebaseApp.auth().currentUser.uid;
     const body = {
@@ -27,6 +28,9 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
         <br />
         <label htmlFor="role" style={{fontWeight: 'bold'}}>Role</label><br />
         <input type="text" id="role" defaultValue={details.role} /><br />
+        <br />
+        <label htmlFor="email" style={{fontWeight: 'bold'}}>Email</label><br />
+        <input type="text" id="email" defaultValue={details.email} /><br />
         <br />
         <button type="submit">Save Changes</button>
       </form>

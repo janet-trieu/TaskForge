@@ -314,7 +314,20 @@ def flask_get_connected_taskmasters():
     """
     uid = request.headers.get("Authorization")
     return dumps(get_connected_taskmasters(uid))
-    
+
+@app.route('/connections/details', methods=['GET'])
+def connection_details():
+    # name, role, photo_url
+    uid = request.args.get("uid")
+    if is_valid_user(uid) == False:
+        return Response(status=400)
+    else:
+        display_name = str(get_display_name(uid))
+        photo_url = str(get_photo(uid))
+        role = str(get_role(uid))
+        connections = len(get_connection_list(uid))
+        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections)})
+
 # TASK MANAGEMENT #	
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():

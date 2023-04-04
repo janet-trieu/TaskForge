@@ -14,6 +14,7 @@ const Tasks = ({ firebaseApp }) => {
     else {
       setTasks(data);
       setIsLoading(false);
+      console.log(data);
     }
   }, [showCompleted])
 
@@ -24,7 +25,7 @@ const Tasks = ({ firebaseApp }) => {
         {isLoading || (
           tasks.map((details, idx) => {
             if (showCompleted || details.status !== "Completed") {
-              return <TasksCard name={details.name} description={details.description} status={details.status} picture={details.picture} pid={details.pid} key={idx} />
+              return <TasksCard title={details.title} description={details.description} status={details.status} pid={details.pid} key={idx} />
             }
           })
         )}

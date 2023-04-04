@@ -59,7 +59,7 @@ const Sidebar = ({ firebaseApp }) => {
         <div id='sidebar-middle'>
           <div className={`sidebar-button ${homeHighlight}`} onClick={() => navigate('/')}><img src={homeIcon} />Home</div>
           <div className={`sidebar-button ${projectsHighlight}`} onClick={() => navigate('/projects')}><img src={projectsIcon} />Projects</div>
-          <div className={`sidebar-button ${tasksHighlight}`} onClick={() => navigate('/tasks')}><img src={tasksIcon} />Tasks</div>
+          <div className={`sidebar-button ${tasksHighlight}`} onClick={() => navigate('/tasks')}><img src={tasksIcon} />Assigned Tasks</div>
           <div className={`sidebar-button ${profileHighlight}`} onClick={() => navigate('/profile')}><img src={profileIcon} />Profile</div>
           <div className={`sidebar-button ${connectionsHighlight}`} onClick={() => navigate('/connections')}><img src={connectionsIcon} />Connections</div>
         </div>
