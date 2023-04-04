@@ -68,7 +68,8 @@ def user_details():
         email = str(get_email(uid))
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
-        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": int(0), "rating": int(0)}), 200
+        connections = len(get_connection_list(uid))
+        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
