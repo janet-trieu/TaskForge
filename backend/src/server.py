@@ -441,6 +441,19 @@ def flask_tasklist_show():
     show_completed = request.headers.get("show_completed")
     return dumps(get_user_assigned_task(uid, show_completed))
 
+@app.route("tasklist/search", methods=["GET"])
+def flask_tasklist_search():
+    """
+    searches the tasklist using a couple of queries
+    including id, title, description and deadline
+    """
+    uid = request.headers.get("Authorization")
+    query_tid = request.headers.get("query_tid")
+    query_title = request.headers.get("query_title")
+    query_description = request.headers.get("query_description")
+    query_deadline = request.headers.get("query_deadline")
+    return dumps(search_tasklist(uid, query_tid, query_title, query_description, query_deadline))
+
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)
 #     serve(app, host="0.0.0.1", port=8000, debug=True)
