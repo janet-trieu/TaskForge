@@ -78,3 +78,19 @@ firestore database, and google cloud storage. I created a small storage_examples
 
 We have to finish off sprint 2, a little work left for backend, but still alot to go for frontend. With Janet assisting joseph, it
 should come along more quickly. 
+
+============================================================================================================================
+
+Week 7
+
+Since I finished connection management quite quickly, I took file uploading and downloading from Francis, since tasks had so many
+user stories.
+
+Although it was not much code at all, it took alot of time to implement and test correctly. For example, in file_upload, there were
+issues with sending the files AND the data with the same route, so we had to break them up into two separate routes, which seems
+very janky, but it appears to work. At this point in time, frontend has not called them yet so we shall see. Dabin helped alot
+with file_upload, and for file_download, I spent alot of time just figuring out the correct args and sequencing of calls. 
+
+All of backend funcitonality for sprint 2 is complete, we just have to wait on frontend implementation. This is top priority because
+second demo is just around the corner. Sprint 3 also started several days ago, and I was tasked with workload as well as supply &
+demand. 
