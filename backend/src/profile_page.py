@@ -50,25 +50,6 @@ def create_user_email(email, password, display_name):
         print('Sucessfully created new user: {0}'.format(user.uid))
         return user.uid
 
-### ========= Delete User ========= ###
-def delete_user(uid):
-    """
-    Deletes User from auth and firestore database
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        None
-    """
-    try:
-        auth.delete_user(uid)
-        # tuid = get_user_ref(uid).get("tuid")
-        db.collection("users").document(str(uid)).delete()
-        db.collection('notifications').document(uid).delete()
-    except:
-        print("uid does not correspond to a current user")
-
 ### ========= Updaters ========= ###
 ### ========= Update email ========= ###
 def update_email(uid, new_email):
@@ -310,6 +291,19 @@ def get_tasks(uid):
     """
     return get_user_ref(uid).get("tasks")
 
+### ========= Get Connected TMs ========= ###
+def get_connection_list(uid):
+    """
+    Gets the list of connected TMs uid of the User from firestore database
+
+    Args:
+        uid (str): uid of the user that can be found in auth and firestore database
+
+    Returns:
+        A list of uids that the user is connected with
+    """
+    return get_user_ref(uid).get("connections")
+
 ### ========= is admin ========= ###
 def is_admin(uid):
     """
@@ -379,9 +373,9 @@ def create_user_firestore(uid):
     """
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", "", False, False, False, [], [], [], [])
+    user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [])
     
-    users_ref.document(uid).set(user.to_dict())
+    print(users_ref.document(uid).set(user.to_dict()))
 
     # Add welcome notification to new user
     notification_welcome(uid)
@@ -397,7 +391,7 @@ def get_user_ref(uid):
     Returns:
         A User document from firestore that corresponds to the UID given. 
     """
-    return db.collection('users').document(uid).get()
+    return db.collection('users').document(str(uid)).get()
 
 ### ========= is valid user ========= ###
 def is_valid_user(uid):

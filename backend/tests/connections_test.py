@@ -1,14 +1,10 @@
-import pytest
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-from src.connections import connection_request_respond, get_connection_requests, get_connected_taskmasters
+from src.connections import *
 from src.error import *
 from src.helper import *
 from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
+from src.test_helpers import *
 
 try:
     uid1 = create_user_email("conn1@gmail.com", "conn112312321", "conn1123123")
@@ -86,7 +82,7 @@ def test_get_connected_taskmasters():
     assert(len(result) == 2)
     assert(uid1 in result)
     assert(uid2 in result)
-    
+
 def test_clean_up():
     try:
         delete_user(uid1)
