@@ -84,9 +84,6 @@ def extract_epics(pid):
             "colour": epic_doc.get("colour")
         }
         return_list.append(return_dict)
-    
-    if len(return_list) == 1:
-        return return_list[0]
 
     return return_list
 

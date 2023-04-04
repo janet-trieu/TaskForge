@@ -113,7 +113,7 @@ def get_project_name(pid):
 
 def get_task_name(tid):
     check_valid_tid(tid)
-    name = db.collection('tasks').document(str(tid)).get().get('name')
+    name = db.collection('tasks').document(str(tid)).get().get('title')
     return name
 
 def get_achievement_name(achievement_str):

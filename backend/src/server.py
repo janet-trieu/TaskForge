@@ -347,7 +347,8 @@ def flask_create_epic():
     Creates an epic
     """
     data = request.get_json()
-    return dumps(create_epic(data["uid"], data["pid"], data["title"], data["description"], data["colour"]))
+    uid = request.headers.get("Authorization")
+    return dumps(create_epic(uid, data["pid"], data["title"], data["description"], data["colour"]))
 
 @app.route("/task/create", methods=["POST"])
 def flask_create_task():

@@ -1,11 +1,11 @@
 import React, { forwardRef } from "react";
 import { makeRequest } from "../helpers";
 
-const ProjectModalContent = forwardRef((props, ref) => {
+const TaskCreateModalContent = forwardRef((props, ref) => {
 
   const epicList = []
   for (const epic of props.epics) {
-    epicList.push(<select value={epic.title}>{epic.title}</select>);
+    epicList.push(<option value={epic.title}>{epic.title}</option>);
   }
 
   const handleSubmit = async (event) => {
@@ -14,7 +14,7 @@ const ProjectModalContent = forwardRef((props, ref) => {
     const assignees = assigneesValue ? assigneesValue.split(", ") : [];
     let eid = null;
     for (const epic of props.epics) {
-      if (epic.title === event.target.epics.value) {eid = epic.eid};
+      if (epic.title === event.target.epic.value) {eid = epic.eid};
     }
     const body = {
       pid: Number(props.pid),
@@ -96,4 +96,4 @@ const ProjectModalContent = forwardRef((props, ref) => {
   );
 });
 
-export default ProjectModalContent;
+export default TaskCreateModalContent;
