@@ -158,3 +158,32 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
 
 ??? What is planned for the next period (e.g., next week) ???
 - Finish off admin frontend + any other sprint1/2 frontend stuff I might get assigned too
+
+///////////////////////////////////////////
+
+## Week 7 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Finish off admin frontend + any other sprint1/2 frontend stuff I might get assigned too
+
+??? What was finished ???
+- Admin frontend
+- Connection frontend
+- Notification clear all/specific frontend
+- revive project frontend
+- project admin remove memeber frontend
+- pin/unpin project frontend
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- Frontend bugs and not understanding some concepts
+  - Asked Joseph when I had bugs I didn't know how to fix, they always end up getting fixed
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Issue 15 as we are going to contest? about it in the tute
+- Issue 40 waiting for some backend work
+
+??? What is planned for the next period (e.g., next week) ???
+- Assign sprint 3 tasks
+- Fix tests that are definitely going to fail due to last-minute tweaking before demo
+- Finish overdue sprint tasks
+- Work on sprint 3 tasks
