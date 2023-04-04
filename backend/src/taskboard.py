@@ -227,7 +227,7 @@ def assign_task(uid, tid, new_assignees):
     Args:
         uid (str): id of the user thats assigning tasks
         tid (int): id of the task that can be found in firestore database
-        new_assignees (list): a list of UIDs (str) that will become the new assignee list
+        new_assignees (list): a list of emails (str) that will become the new assignee list
     
     Returns:
         None
@@ -236,14 +236,17 @@ def assign_task(uid, tid, new_assignees):
     check_valid_tid(tid)
     check_user_in_project(uid, get_task_ref(tid).get("pid"))
     # Check if all UIDs in new_assignee are valid and in the project
+    new_assignees_uids = []
+    for assignee in new_assignees:
+        new_assignees_uids.append(get_uid_from_email(assignee))
     pid = get_task_ref(tid).get("pid")
     old_assignees = get_task_ref(tid).get("assignees")
-    for uid in new_assignees:
+    for uid in new_assignees_uids:
         check_valid_uid(uid)
         check_user_in_project(uid, pid)
     
-    removed_assignees = list(set(old_assignees) - set(new_assignees))
-    added_assignees = list(set(new_assignees) - set(old_assignees))
+    removed_assignees = list(set(old_assignees) - set(new_assignees_uids))
+    added_assignees = list(set(new_assignees_uids) - set(old_assignees))
 
     # remove task from assignees that are no longer assigned
     for new_uid in removed_assignees:
@@ -264,7 +267,7 @@ def assign_task(uid, tid, new_assignees):
             db.collection('users').document(new_uid).update({"tasks": tasks})
             notification_assigned_task(uid, pid, tid)
     # 
-    db.collection('tasks').document(str(tid)).update({"assignees": new_assignees})
+    db.collection('tasks').document(str(tid)).update({"assignees": new_assignees_uids})
     return
 
 ### ========= Delete Task ========= ###
@@ -734,7 +737,7 @@ def update_epic(uid, eid, title, description, colour):
         db.colection("epics").document(str(eid)).update({'colour': colour})
     return
         
-def update_task(uid, tid, eid, assignees, title, description, deadline, workload, priority, status, flagged):
+def update_task(uid, tid, eid, title, description, deadline, workload, priority, status, flagged):
     """
     Updates task
 
@@ -777,8 +780,6 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
         old_epic_tasks.remove(tid)
         db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
 
-    assign_task(uid, tid, assignees)
-
     if type(title) != str:
         raise InputError(f'title is not a string')
     else:
@@ -803,7 +804,7 @@ def update_task(uid, tid, eid, assignees, title, description, deadline, workload
     flag_task(uid, tid, flagged)
     return
 
-def update_subtask(uid, stid, eid, assignees, title, description, deadline, workload, priority, status):
+def update_subtask(uid, stid, eid, title, description, deadline, workload, priority, status):
     """
     updates subtask
 
@@ -832,8 +833,6 @@ def update_subtask(uid, stid, eid, assignees, title, description, deadline, work
     if not old_epic == eid:
         # Update task epic
         db.collection("subtasks").document(str(stid)).update({'eid': eid})
-
-    assign_subtask(uid, stid, assignees)
 
     if type(title) != str:
         raise InputError(f'title is not a string')

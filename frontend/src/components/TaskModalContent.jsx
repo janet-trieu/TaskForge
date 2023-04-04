@@ -1,8 +1,14 @@
 import React, { forwardRef, useState, useEffect } from "react";
 import { makeRequest } from "../helpers";
+import { Modal } from "@mui/material";
+import TaskAssignModalContent from "./TaskAssignModalContent";
 
 const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
-  console.log(details)
+
+  const [openAssign, setOpenAssign] = useState(false);
+  const handleOpenAssign = () => { setOpenAssign(true) };
+  const handleCloseAssign = () => { setOpenAssign(false) };
+
   const epicList = []
   for (const epic of epics) {
     epicList.push(<option value={epic.title} selected={epic.title === details.epic}>{epic.title}</option>);
@@ -93,6 +99,12 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
             <option value={true} selected={details.flagged === true}>Yes</option>
             <option value={false} selected={details.flagged === false}>No</option>
           </select>
+          <br />
+          <br />
+          <button onClick={handleOpenAssign}>Reassign Task</button>
+          <Modal open={openAssign} onClose={handleCloseAssign}>
+            <TaskAssignModalContent uid={uid} tid={details.tid} emails={details.assignee_emails} handleClose={handleCloseAssign} />
+          </Modal>
         </div>
       </div>
     </form>

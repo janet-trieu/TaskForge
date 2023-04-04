@@ -410,6 +410,24 @@ def flask_subtask_details():
     uid = request.headers.get("Authorization")
     return dumps(get_subtask_details(uid, stid))
 
+@app.route("/task/assign", methods=["POST"])
+def flask_task_assign():
+    """
+    assign task
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(assign_task(uid, data["tid"], data["new_assignees"]))
+
+@app.route("/subtask/assign", methods=["POST"])
+def flask_subtask_assign():
+    """
+    assign subtask
+    """
+    data = request.get_json()
+    uid = request.headers.get("Authorization")
+    return dumps(assign_subtask(uid, data["stid"], data["new_assignees"]))
+
 # Update task management
 @app.route("/epic/update", methods=["POST"])
 def flask_epic_update():
@@ -428,7 +446,7 @@ def flask_task_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_task(uid, data["tid"], data["eid"], data["assignees"], 
+    return dumps(update_task(uid, data["tid"], data["eid"], 
                              data["title"], data["description"], data["deadline"], 
                              data["workload"], data["priority"], data["status"], data["flagged"]))
 
