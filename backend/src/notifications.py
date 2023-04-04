@@ -112,17 +112,20 @@ def notification_welcome(uid):
     db.collection("notifications").document(uid).set(notification)
     return nid
 
-def notification_connection_request(uid, uid_sender):
+def notification_connection_request(user_email, uid_sender):
     '''
     Creates and adds notification when a user requests to connect another user.
     Args:
-        uid (string): User being notified
+        user_email (string): Email of user being notified
         uid_sender (string): User who requests to connect
     Returns:
         nid (string): Notification ID of newly created notification
-    ASSUMPTION that the users are not connected + do not have an existing request
     '''
+    uid = auth.get_user_by_email(user_email).uid # get uid of requestee by email
+    check_valid_uid(uid_sender)
+
     if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
+
     notification_type = 'connection_request'
     nid = create_nid(uid, notification_type) # create notification ID
     sender_name = auth.get_user(uid_sender).display_name

@@ -247,7 +247,7 @@ def flask_clear_all_notifications():
 def flask_notification_connection_request():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    return dumps(notification_connection_request(data["uid"], uid))
+    return dumps(notification_connection_request(data["user_email"], uid))
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
