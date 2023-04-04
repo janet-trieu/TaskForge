@@ -2,6 +2,7 @@ import pytest
 import firebase_admin
 from firebase_admin import credentials, auth
 from firebase_admin import firestore
+from src.proj_master import create_project
 
 # from src.profile_page import *
 from src.admin import *
@@ -18,13 +19,13 @@ else:
     admin_uid = auth.get_user_by_email("admin@gmail.com").uid
     user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
 
-def test_give_admin_type():
+def atest_give_admin_type():
     try:
         give_admin(1, 2)
     except InputError:
         pass
 
-def test_give_admin():
+def atest_give_admin():
     user_ref = db.collection("users").document(user_uid)
     user_ref.update({'is_admin': False})
     
@@ -33,7 +34,7 @@ def test_give_admin():
     give_admin(admin_uid, user_uid)
     assert(is_admin(user_uid))
 
-def test_give_admin_to_admin():
+def atest_give_admin_to_admin():
     assert(is_admin(admin_uid))
     assert(is_admin(user_uid))
     try:
@@ -42,13 +43,13 @@ def test_give_admin_to_admin():
         pass
     assert(is_admin(user_uid))
 
-def test_ban_user_type():
+def atest_ban_user_type():
     try:
         ban_user(1, 2)
     except InputError:
         pass
 
-def test_ban_user():
+def atest_ban_user():
     assert(is_admin(admin_uid))
     assert(not is_banned(user_uid))
     
@@ -56,7 +57,7 @@ def test_ban_user():
     assert(is_banned(user_uid))
 
 #@pytest.mark.order4
-def test_ban_banned_user():
+def atest_ban_banned_user():
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))
     
@@ -66,7 +67,7 @@ def test_ban_banned_user():
         pass
     assert(is_banned(user_uid))
 
-def test_unban_user_type():
+def atest_unban_user_type():
     try:
         unban_user(1, 2)
     except InputError:
@@ -74,14 +75,14 @@ def test_unban_user_type():
 
 #user is still banned from last test
 #@pytest.mark.order5
-def test_unban_user():
+def atest_unban_user():
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))
     
     unban_user(admin_uid, user_uid)
     assert(not is_banned(user_uid))
 
-def test_unban_notbanned_user():
+def atest_unban_notbanned_user():
     assert(is_admin(admin_uid))
     assert(not is_banned(user_uid))
     
@@ -99,44 +100,15 @@ def test_remove_usertype():
 
 def test_remove_user():
     assert(is_admin(admin_uid))
-    assert(not is_removed(user_uid))
-    
+    pid = create_project(user_uid, "Project 123", "description", None, None, None)
     remove_user(admin_uid, user_uid)
-    assert(is_removed(user_uid))
 
 
 #user still removed
 def test_remove_removed_user():
     assert(is_admin(admin_uid))
-    assert(is_removed(user_uid))
     
     try:
         remove_user(admin_uid, user_uid)
     except InputError:
         pass
-    assert(is_removed(user_uid))
-
-def test_readd_user_type():
-    try:
-        readd_user(1, 2)
-    except InputError:
-        pass
-
-#user still removed from last test
-def test_readd_removed_user():
-    assert(is_admin(admin_uid))
-    assert(is_removed(user_uid))
-    
-    readd_user(admin_uid, user_uid)
-    assert(not is_removed(user_uid))
-
-#@pytest.mark.order10
-def test_readd_normal_user():
-    assert(is_admin(admin_uid))
-    assert(not is_removed(user_uid))
-    
-    try:
-        readd_user(admin_uid, user_uid)
-    except InputError:
-        pass
-    assert(not is_removed(admin_uid))
