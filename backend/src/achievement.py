@@ -8,6 +8,7 @@ Functionalities:
 '''
 from .helper import *
 from .profile_page import *
+from .classes import *
 import time
 
 def add_achievements():
@@ -135,15 +136,41 @@ def add_achievements():
     }
 
     for key,val in achievements.items():
-        db.collection("achievements").document(str(key)).set(val)
+        db.collection("achievements").document(str(key)).set(str(val))
 
 def get_achievement(aid):
-    return db.collection("achievements").document(str(aid)).to_dict()
 
-def update_time_acquired(aid):
-    achievement = get_achievement(aid)
+    achievement = db.collection("achievements").document(str(aid)).get().to_dict()
 
     achievement.update({"time_acquired": time.time()})
+
+    return achievement
+
+def update_achievements(uid, aid):
+    """
+    Updates the achievements list of the user identified by Uid in firestore database
+
+    Args:
+        uid (str): uid of the user that can be found in auth database
+        aid (int): aid of the new achievement acquired
+
+    Returns:
+        None
+    """
+    user_ref = db.collection("users").document(uid)
+
+    new_achievement = get_achievement(aid)
+    ####################
+
+    print(f"this is new achievement: {new_achievement}")
+
+    user_achievements = user_ref.get().get("achievements")
+    user_achievements.append(new_achievement)
+
+    user_ref.update({"achievements": user_achievements})
+
+    # reset time acquired
+    new_achievement.update({"time_acquired": ""})
 
 def check_achievement(a_type, uid):
     '''
@@ -166,20 +193,12 @@ def check_achievement(a_type, uid):
     check_valid_uid(uid)
 
     user_db = db.collection("users").get()
-    # print(f"this is user_db: {user_db}")
-    # print(f"this is user_db type: {type(user_db)}")
-
-    achievements = get_achievements_list(uid)
 
     if a_type == "user_creation":
         if len(user_db) > 1:
             return False
         else:
-            achievement = get_achievement(0)
-            update_time_acquired(0)
-
-            achievements.append(achievements)
-            update_achievements(uid, achievements)
+            update_achievements(uid, 0)
 
     elif a_type == "task_completion":
         pass

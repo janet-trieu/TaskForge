@@ -14,13 +14,17 @@ def test_get_0():
     res = check_achievement("user_creation", pm_uid)
 
     assert res == True
-    assert 0 in get_achievements_uid(pm_uid)
+    assert get_user_achievements(pm_uid) == [{
+        "aid": 0,
+        "description": "The very first user",
+        "icon": "abc",
+        "title": "Almost Admin",
+        "time_acquired": time.time()
+    }]
 
     tm1_uid = create_user_email("achievements.tm1@gmail.com", "fuckingpassword123", "Task Master")
 
     res = check_achievement("user_creation", tm1_uid)
 
     assert res == False
-    assert 0 not in get_achievements_uid(tm1_uid)
-
-    reset_database()
+    assert get_user_achievements(tm1_uid) == []
