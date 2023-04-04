@@ -22,7 +22,7 @@ const NotificationModalContent = forwardRef((props, ref) => {
     <div id="notifications-modal">
       {isLoading || (
         data.map((info, idx) => {
-          return <NotificationCard key={idx} content={info} />
+          return <NotificationCard key={idx} content={info} uid={props.firebaseApp.auth().currentUser.uid}/>
         })
       )}
     </div>
