@@ -13,6 +13,7 @@ from .profile_page import *
 from .projects import *
 from .connections import *
 from .taskboard import *
+from .tasklist import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -429,7 +430,7 @@ def flask_tasklist_show():
     Retrieve the tasklist
     """
     uid = request.headers.get("Authorization")
-    show_completed = request.headers.get("show_completed")
+    show_completed = True
     return dumps(get_user_assigned_task(uid, show_completed))
 
 # if __name__ == "__main__":

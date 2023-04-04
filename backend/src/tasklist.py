@@ -29,8 +29,8 @@ def get_user_assigned_task(uid, show_completed):
     check_valid_uid(uid)
 
     tasks = db.collection("users").document(uid).get().get("tasks")
+    task_list = []
     if show_completed == True:
-        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")
@@ -51,7 +51,6 @@ def get_user_assigned_task(uid, show_completed):
                 task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
             task_list = insert_tasklist(task_list, task_details)
     elif show_completed == False:
-        task_list = []
         for task in tasks:
             task_ref = get_task_ref(task)
             pid = task_ref.get("pid")

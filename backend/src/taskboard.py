@@ -147,6 +147,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     Returns:
         An int that corresponds to the id to the task.
     """
+    print(uid);
     # Check whether UID or PID is valid and if UID is in PID
     check_user_in_project(uid, pid)
 

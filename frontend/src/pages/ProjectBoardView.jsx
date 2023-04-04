@@ -7,10 +7,11 @@ import './Project.css';
 import testData from '../testData';
 import ProjectModalContent from "../components/ProjectModalContent";
 import ProjectInviteModalContent from "../components/ProjectInviteModalContent";
+import TaskCreateModalContent from "../components/TaskCreateModalContent";
 import { Modal } from "@mui/material";
 
 const ProjectBoardView = ({ firebaseApp }) => {
-  const [stateIsLoading, setstateIsLoading] = useState('Loading...');
+  const [stateIsLoading, setStateIsLoading] = useState('Loading...');
   const [detailsIsLoading, setDetailsIsLoading] = useState('Loading...');
   const [details, setDetails] = useState();
   const [state, setState] = useState(testData);
@@ -23,6 +24,9 @@ const ProjectBoardView = ({ firebaseApp }) => {
   const [openInvite, setOpenInvite] = useState(false);
   const handleOpenInvite = () => {setOpenInvite(true)};
   const handleCloseInvite = () => {setOpenInvite(false)};
+  const [openCreate, setOpenCreate] = useState(false);
+  const handleOpenCreate = () => {setOpenCreate(true)};
+  const handleCloseCreate = () => {setOpenCreate(false)};
 
   useEffect(async () => {
     const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, uid);
@@ -99,10 +103,6 @@ const ProjectBoardView = ({ firebaseApp }) => {
     }
   }
 
-  const handleCreateTask = () => {
-    
-  }
-
   const handleLeave = async () => {
     const res = confirm("Are you sure you want to request to leave this project?");
     if (res) {
@@ -126,7 +126,7 @@ const ProjectBoardView = ({ firebaseApp }) => {
         <div id='project-buttons'>
           <button onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'cornflowerblue'}} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'seagreen'}} onClick={handleCreateTask}>Create Task</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'seagreen'}} onClick={handleOpenCreate}>Create Task</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'gray'}} onClick={handleLeave}>Request to Leave</button>
         </div>
@@ -135,6 +135,9 @@ const ProjectBoardView = ({ firebaseApp }) => {
         </Modal>
         <Modal open={openInvite} onClose={handleCloseInvite}>
           <ProjectInviteModalContent uid={uid} pid={pid} handleClose={handleCloseInvite} />
+        </Modal>
+        <Modal open={openCreate} onClose={handleCloseCreate}>
+          <TaskCreateModalContent uid={uid} pid={pid} epics={details.epics} handleClose={handleCloseCreate} />
         </Modal>
         <DragDropContext onDragEnd={handleDragEnd}>
           <div id="task-list-container">
