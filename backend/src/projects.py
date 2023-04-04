@@ -54,7 +54,8 @@ def view_project(pid, uid):
             "project_members": project["project_members"],
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
-            "is_pinned": project["is_pinned"]
+            "is_pinned": project["is_pinned"],
+            "uid": project["uid"]
     }
 
 def extract_epics(pid):
