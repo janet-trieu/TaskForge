@@ -102,7 +102,7 @@ class Task():
         flagged (boolean): a boolean that corresponds to whether the task has been flagged or not
         completed (int): an int that corresponds to the unix time that the task has been completed
     """
-    def __init__(self, tid, pid, eid, assignees, subtasks, title, description, deadline, workload, priority, status, comments, flagged, completed):
+    def __init__(self, tid, pid, eid, assignees, subtasks, title, description, deadline, workload, priority, status, comments, files, flagged, completed):
         self.tid = tid
         self.pid = pid
         self.eid = eid
@@ -115,6 +115,7 @@ class Task():
         self.status = status
         self.subtasks = subtasks
         self.comments = comments
+        self.files = files
         self.flagged = flagged
         self.completed = completed
 
@@ -132,6 +133,7 @@ class Task():
             'priority': self.priority,
             'status': self.status,
             'comments': self.comments,
+            'files': self.files,
             'flagged': self.flagged,
             'completed': self.completed
         }
