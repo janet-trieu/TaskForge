@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { makeRequest } from "../helpers";
 
-const ProjectRemoveModalContent = forwardRef((props) => {
+const ProjectRemoveModalContent = forwardRef((props, ref) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!event.target.remove.value) {
