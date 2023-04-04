@@ -7,3 +7,7 @@
     overflow: auto;
     overflow-x: hidden;
 }
+
+#clear-button {
+    margin: 0.5vw;
+}
