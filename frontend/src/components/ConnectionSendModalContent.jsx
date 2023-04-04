@@ -5,9 +5,9 @@ const ConnectionSendModalContent = forwardRef((props, ref) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(event.target.connectionInvite.value);
-    //const data = await makeRequest('/notification/connection/request', 'POST', {email: event.target.connectionInvite.value});
-    props.handleClose();
+    const data = await makeRequest('/notification/connection/request', 'POST', {user_email: event.target.connectionInvite.value}, props.uid);
+    if (data.error) alert(data.error);
+    else props.handleClose();
   }
 
   return (

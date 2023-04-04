@@ -88,7 +88,7 @@ def profile_update():
         if role: update_role(uid, role)
         if photo_url: update_photo(uid, photo_url)
         if display_name: update_display_name(uid, display_name)
-        return Response(status=200)
+        return dumps({})
 
 @app.route('/profile/tasks', methods=['GET'])
 def get_user_tasks():

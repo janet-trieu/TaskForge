@@ -55,7 +55,7 @@ const Profile = ({ firebaseApp }) => {
           <button style={{marginLeft: '45vw'}} onClick={handleOpen}>Edit</button>
         </div>
         <Modal open={open} onClose={handleClose}>
-          <ProfileModalContent details={details} setDetails={setDetails} setOpen={setOpen} firebaseApp={firebaseApp} />
+          <ProfileModalContent details={details} setDetails={setDetails} handleClose={handleClose} firebaseApp={firebaseApp} />
         </Modal>
         <div className="profile-row">
           <div className='profile-box'>

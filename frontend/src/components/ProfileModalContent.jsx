@@ -1,7 +1,7 @@
 import React, {forwardRef} from "react";
 import { makeRequest } from "../helpers";
 
-const ProfileModalContent = forwardRef(({ details, setDetails, setOpen, firebaseApp }, ref) => {
+const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, firebaseApp }, ref) => {
   const handleSave = async (event) => {
     event.preventDefault();
     let newDetails = details;
@@ -16,9 +16,8 @@ const ProfileModalContent = forwardRef(({ details, setDetails, setOpen, firebase
       photo_url: null
     }
     await makeRequest('/profile/update', 'PUT', body, uid)
-
     setDetails(newDetails);
-    setOpen(false);
+    handleClose();
   } 
   return (
     <div id="profile-modal">

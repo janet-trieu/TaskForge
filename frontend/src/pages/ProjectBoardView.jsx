@@ -103,6 +103,15 @@ const ProjectBoardView = ({ firebaseApp }) => {
     
   }
 
+  const handleLeave = async () => {
+    const res = confirm("Are you sure you want to request to leave this project?");
+    if (res) {
+      const data = await makeRequest('/projects/leave', 'POST', {pid: Number(pid), msg: "The user is requesting to leave the project"}, uid);
+      if (data.error) alert(data.error);
+      else alert('Request to leave project has been sent!');
+    }
+  }
+
   return (
     <>
       {detailsIsLoading || (
@@ -118,7 +127,8 @@ const ProjectBoardView = ({ firebaseApp }) => {
           <button onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'cornflowerblue'}} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
           <button style={{backgroundColor: 'seagreen'}} onClick={handleCreateTask}>Create Task</button>&nbsp;&nbsp;
-          <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>
+          <button style={{backgroundColor: 'firebrick'}} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
+          <button style={{backgroundColor: 'gray'}} onClick={handleLeave}>Request to Leave</button>
         </div>
         <Modal open={openDetails} onClose={handleCloseDetails}>
           <ProjectModalContent details={details} uid={uid} handleClose={handleCloseDetails} setDetails={setDetails} />

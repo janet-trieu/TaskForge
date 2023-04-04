@@ -9,13 +9,22 @@ const NotificationCard = ({ content, uid }) => {
   const [hasResponded, setHasResponded] = useState(false);
 
   const handleResponse = async (response) => {
-    let data = {};
+    let data = null;
     if (content.type === "connection_request") {
-      //data = await makeRequest('/connections/request_respond', 'POST', {nid: content.nid, response: response === "accept"}, uid);
+      data = await makeRequest('/connections/request_respond', 'POST', {nid: content.nid, response: response === "accept"}, uid);
     } else if (content.type === "project_invite") {
-
+      const body = {
+        pid: content.pid,
+        accept: response === "accept",
+        msg: response === "accept" ? "The user has accepted." : "The user has declined."
+      }
+      data = await makeRequest('/projects/invite/respond', 'POST', body, uid);
     } else {
-      
+      if (response === "accept") {
+        data = await makeRequest('/projects/remove', 'POST', {pid: content.pid, uid_to_be_removed: content.uid_sender}, uid);
+      } else {
+        data = {};
+      }
     }
     if (data.error) alert(data.error);
     else {
