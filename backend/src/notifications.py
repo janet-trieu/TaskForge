@@ -63,15 +63,14 @@ def get_notifications(uid):
 
     return sorted_notifications
 
-def clear_notification(uid, notf_dict):
+def clear_notification(uid, nid):
     '''
-    Clears all the user's notification
+    Clears a user's specific notification
     Args:
-        uid (string): User getting notifications
-        notf_dict (dictionary): Dictionary of notification data
+        uid (string): User with notification to delete
+        nid (string): Notification ID of notification being deleted
     '''
     check_valid_uid(uid)
-    nid = notf_dict['nid']
     doc_ref = db.collection('notifications').document(uid)
     doc_ref.update({
         nid: firestore.DELETE_FIELD
@@ -81,7 +80,7 @@ def clear_all_notifications(uid):
     '''
     Clears all the user's notification
     Args:
-        uid (string): User getting notifications
+        uid (string): User with notifications to delete
     '''
     check_valid_uid(uid)
     notf_data = db.collection('notifications').document(uid)
