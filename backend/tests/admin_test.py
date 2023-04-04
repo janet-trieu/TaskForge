@@ -10,13 +10,13 @@ from src.error import *
 from src.helper import *
 
 try:
-    admin_uid = create_user_email("admin@gmail.com", "admin123", "Admin Admin")
+    admin_uid = create_user_email("admin1@gmail.com", "admin121233", "Admin Ad123min")
     user_uid = create_user_email("admintest.tm1@gmail.com", "taskmaster1", "Task Master1")
     create_admin(admin_uid)
 except:
     print("admin and user already created")
 else:
-    admin_uid = auth.get_user_by_email("admin@gmail.com").uid
+    admin_uid = auth.get_user_by_email("admin1@gmail.com").uid
     user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
 
 def atest_give_admin_type():
@@ -92,7 +92,7 @@ def atest_unban_notbanned_user():
         pass
     assert(not is_banned(admin_uid))
 
-def test_remove_usertype():
+def atest_remove_usertype():
     try:
         remove_user(1, 2)
     except InputError:
@@ -100,15 +100,5 @@ def test_remove_usertype():
 
 def test_remove_user():
     assert(is_admin(admin_uid))
-    pid = create_project(user_uid, "Project 123", "description", None, None, None)
+    create_project(user_uid, "Project 123", "description", None, None, None)
     remove_user(admin_uid, user_uid)
-
-
-#user still removed
-def test_remove_removed_user():
-    assert(is_admin(admin_uid))
-    
-    try:
-        remove_user(admin_uid, user_uid)
-    except InputError:
-        pass

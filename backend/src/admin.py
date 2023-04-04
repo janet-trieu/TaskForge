@@ -75,6 +75,9 @@ def remove_user(uid_admin, uid_user):
     if (not is_admin(uid_admin)): raise InputError('You are not an admin')
     if (is_removed(uid_user)): raise InputError('User is already removed')
     
+    #delete from auth db
+    auth.delete_user(uid_user)
+    
     #delete user field
     db.collection('users').document(uid_user).delete()
     
@@ -84,16 +87,20 @@ def remove_user(uid_admin, uid_user):
     
     #remove from projects
     projs = db.collection('users').document(uid_user).get().get("projects")
-    for proj in projs:
-        proj_mems = db.collection('projects').document(proj).get().get('project_members')
-        proj_mems.remove(uid_user)
-        db.collection("project").document(uid_user).update({"project_members": proj_mems})
+    if (projs is not None):
+        for proj in projs:
+            proj_mems = db.collection('projects').document(proj).get().get('project_members')
+            proj_mems.remove(uid_user)
+            if (proj_mems == ""):
+                db.collection('projects').document(proj).delete()
+            db.collection("project").document(uid_user).update({"project_members": proj_mems})
         
     #remove from tasks
     tasks = db.collection('users').document(uid_user).get().get("tasks")
-    for task in tasks:
-        assignees = db.collection('tasks').document(task).get().get('assignees')
-        assignees.remove(uid_user)
-        db.collection("tasks").document(uid_user).update({"assignees": assignees})
+    if (tasks is not None):
+        for task in tasks:
+            assignees = db.collection('tasks').document(task).get().get('assignees')
+            assignees.remove(uid_user)
+            db.collection("tasks").document(uid_user).update({"assignees": assignees})
         
     return {}
