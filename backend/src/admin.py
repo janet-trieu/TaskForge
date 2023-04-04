@@ -76,12 +76,11 @@ def remove_user(uid_admin, uid_user):
     if (is_removed(uid_user)): raise InputError('User is already removed')
     
     #delete user field
-    user_ref = db.collection('users').document(uid_user)
-    user_ref.update({uid_user: firestore.DELETE_FIELD})
+    db.collection('users').document(uid_user).delete()
     
     #delete notifications of users
-    user_ref = db.collection('notifications').document(uid_user)
-    user_ref.update({uid_user: firestore.DELETE_FIELD})
+    db.collection('notifications').document(uid_user).delete()
+    
     
     #remove from projects
     projs = db.collection('users').document(uid_user).get().get("projects")
