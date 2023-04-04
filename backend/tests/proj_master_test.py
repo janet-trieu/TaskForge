@@ -40,7 +40,7 @@ def test_create_project_every_args():
     reset_projects()
     
     # test for project creation
-    pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023-12-31", 5, "test1.jpg")
+    pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023-12-31", "5", "test1.jpg")
 
     assert pid == 0
 
@@ -125,14 +125,14 @@ def test_create_project_invalid_description_length():
 def test_create_project_invalid_team_strength():
 
     with pytest.raises(InputError):
-        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, -1, None)
+        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, "-1", None)
 
     reset_projects()
 
 def test_create_project_invalid_team_strength_type():
 
     with pytest.raises(InputError):
-        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, "None", None)
+        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, -1, None)
 
     reset_projects()
 
@@ -410,7 +410,7 @@ def test_update_project():
         "description": "description 123",
         "status": "In Progress",
         "due_date": "2023-11-30",
-        "team_strength": 5,
+        "team_strength": "5",
         "picture": "testing.png"
     }
 
@@ -428,7 +428,7 @@ def test_update_project():
     assert description == "description 123"
     assert status == "In Progress"
     assert due_date == "2023-11-30"
-    assert team_strength == 5
+    assert team_strength == "5"
     assert picture == "testing.png"
 
 def test_update_project_invalid_name_type():
@@ -508,14 +508,14 @@ def test_update_project_invalid_team_strength_type():
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
-        update_project(pid, pm_uid, {"team_strength": "5"})
+        update_project(pid, pm_uid, {"team_strength": 5})
 
 def test_update_project_invalid_team_strength_value():
 
     pid = create_project(pm_uid, "Project 0", "description", None, None, None)
 
     with pytest.raises(InputError):
-        update_project(pid, pm_uid, {"team_strength": -1})
+        update_project(pid, pm_uid, {"team_strength": "-1"})
 
 def test_update_project_invalid_picture_type():
 
