@@ -2,6 +2,7 @@ from firebase_admin import firestore, auth
 
 from .error import *
 from .global_counters import *
+from firebase_admin import storage
 
 db = firestore.client()
 
@@ -131,6 +132,25 @@ def create_admin(uid):
     }
 
     db.collection('users').document(uid).set(data)
+    
+############################################################
+#                       Storage                            #
+############################################################
+def storage_upload_file(fileName, destination_name):
+    bucket = storage.bucket()
+    blob = bucket.blob(destination_name)
+    blob.upload_from_filename(fileName)
+    blob.make_public()
+
+def storage_download_file(fileName, destination_name): 
+    bucket = storage.bucket()
+    blob = bucket.blob(fileName)
+    blob.download_to_filename(destination_name)
+
+def storage_delete_file(fileName):
+    bucket = storage.bucket()
+    blob = bucket.blob(fileName)
+    blob.delete()
 
 ############################################################
 #                    Sorting Functions                     #

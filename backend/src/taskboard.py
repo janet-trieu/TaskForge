@@ -10,6 +10,7 @@ from .helper import *
 from .profile_page import *
 import re
 import time
+import os
 
 ### ========= EPICS ========= ###
 ### ========= Create Epic ========= ###
@@ -156,7 +157,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
-    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], False, "")
+    task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
     #Assign task to assignees
@@ -515,10 +516,35 @@ def comment_task(uid, tid, comment):
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": comment,
+        "file": None
     }
     comments = db.collection("tasks").document(str(tid)).get().get("comments")
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
+
+### ========= Files ========= ###
+#prefix is basically the t_id
+def upload_file(uid, fileName, destination_name, tid):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    path = f"{tid}/{destination_name}"
+    storage_upload_file(fileName, path)
+    
+    data = {
+        "time": time.time(),
+        "uid": uid,
+        "display_name": get_display_name(uid),
+        "comment": "",
+        "file": path
+    }
+    files = db.collection("tasks").document(str(tid)).get().get("files")
+    files.append(data)
+    db.collection("tasks").document(str(tid)).update({"files": files})
+    
+def download_file(uid, fileName):
+    if (not get_user_ref(uid)): raise InputError('uid invalid')
+    print(f"filename is {fileName}")
+    new = re.sub('.*' + '/', '', fileName)# src/
+    storage_download_file(fileName, f"src/{new}")
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):
