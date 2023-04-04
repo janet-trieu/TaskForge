@@ -240,7 +240,7 @@ def flask_get_notifications():
 def flask_clear_notification():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    return dumps(clear_notification(uid, data['notf_dict']))
+    return dumps(clear_notification(uid, data['nid']))
 
 @app.route('/notifications/clearall', methods=['DELETE'])
 def flask_clear_all_notifications():
