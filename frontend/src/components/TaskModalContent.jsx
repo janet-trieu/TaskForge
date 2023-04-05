@@ -2,12 +2,20 @@ import React, { forwardRef, useState, useEffect } from "react";
 import { makeRequest } from "../helpers";
 import { Modal } from "@mui/material";
 import TaskAssignModalContent from "./TaskAssignModalContent";
+import TaskCommentsModalContent from "./TaskCommentsModalContent";
+import TaskSubtasksModalContent from "./TaskSubtasksModalContent";
 
 const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
 
   const [openAssign, setOpenAssign] = useState(false);
   const handleOpenAssign = () => { setOpenAssign(true) };
   const handleCloseAssign = () => { setOpenAssign(false) };
+  const [openComments, setOpenComments] = useState(false);
+  const handleOpenComments = () => { setOpenComments(true) };
+  const handleCloseComments = () => { setOpenComments(false) };
+  const [openSubtasks, setOpenSubtasks] = useState(false);
+  const handleOpenSubtasks = () => { setOpenSubtasks(true) };
+  const handleCloseSubtasks = () => { setOpenSubtasks(false) };
 
   const epicList = []
   for (const epic of epics) {
@@ -59,8 +67,15 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
         <input type="text" id="title" name="title" defaultValue={details.title}/>
         <label htmlFor="description"><h3>Description</h3></label>
         <textarea placeholder="Add a description..." id="description" name="description" defaultValue={details.description} />
-        <h3>Attachments</h3>
-        <h3>Comments</h3>
+        {/* <h3>Attachments</h3> */}
+        <button type="button" onClick={handleOpenComments}>Comments</button>
+        <Modal open={openComments} onClose={handleCloseComments}>
+          <TaskCommentsModalContent uid={uid} tid={details.tid} comments={details.comments} handleClose={handleCloseComments} />
+        </Modal>
+        <button type="button" onClick={handleOpenSubtasks}>Subtasks</button>
+        <Modal open={openSubtasks} onClose={handleCloseSubtasks}>
+          <TaskSubtasksModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} />
+        </Modal>
       </div>
       <div id="task-right-section">
         <div>
@@ -101,7 +116,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
           </select>
           <br />
           <br />
-          <button onClick={handleOpenAssign}>Reassign Task</button>
+          <button type="button" onClick={handleOpenAssign}>Reassign Task</button>
           <Modal open={openAssign} onClose={handleCloseAssign}>
             <TaskAssignModalContent uid={uid} tid={details.tid} emails={details.assignee_emails} handleClose={handleCloseAssign} />
           </Modal>

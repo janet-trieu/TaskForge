@@ -468,7 +468,7 @@ def flask_task_comment():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return comment_task(uid, data["tid"], data["comment"])
+    return dumps(comment_task(uid, data["tid"], data["comment"]))
 
 # Taskboard
 @app.route("/taskboard/show", methods=["GET"])

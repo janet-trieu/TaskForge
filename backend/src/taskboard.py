@@ -512,7 +512,7 @@ def comment_task(uid, tid, comment):
     """
     pid = get_task_ref(tid).get("pid")
     check_user_in_project(uid, pid)
-    check_valid_stid(tid)
+    check_valid_tid(tid)
 
     if len(comment) <= 0:
         raise InputError("Comment must not be empty")
@@ -529,6 +529,8 @@ def comment_task(uid, tid, comment):
     comments = db.collection("tasks").document(str(tid)).get().get("comments")
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
+
+    return data
 
 ### ========= Files ========= ###
 #prefix is basically the t_id
@@ -682,6 +684,8 @@ def get_taskboard(uid, pid, hidden):
         assignee_emails = []
         for assignee in assignees:
             assignee_emails.append(get_email(assignee))
+        comments = task_ref.get("comments")
+        comments.sort(key=(lambda x: x["time"]), reverse=True)
         task_details = {
             "tid": task,
             "title": task_ref.get("title"),
@@ -693,7 +697,9 @@ def get_taskboard(uid, pid, hidden):
             "flagged": task_ref.get("flagged"),
             "description": task_ref.get("description"),
             "workload": task_ref.get("workload"),
-            "eid": task_ref.get("eid")
+            "eid": task_ref.get("eid"),
+            "comments": comments,
+            "subtasks": task_ref.get("subtasks")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
