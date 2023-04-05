@@ -5,9 +5,15 @@ import { makeRequest } from "../helpers";
 const TasksSearchbar = ({ setTasks, setIsLoading, uid, showCompleted, setShowCompleted }) => {
   const handleSearch = async (event) => {
     event.preventDefault();
-    console.log(event)
     setIsLoading('Loading...');
-    const data = await makeRequest('/projects/search', 'GET', {query: event.target.searchbar.value}, uid);
+
+    const body = {
+      query_tid: event.target.id.value,
+      query_title: event.target.title.value,
+      query_description: event.target.description.value,
+      query_deadline: event.target.deadline.value
+    }
+    const data = await makeRequest('/tasklist/search', 'GET', body, uid);
     if (data.error) alert(data.error);
     else {
       setTasks(data);
@@ -23,7 +29,10 @@ const TasksSearchbar = ({ setTasks, setIsLoading, uid, showCompleted, setShowCom
   return (
     <div id='searchbar-container'>
       <form onSubmit={handleSearch}>
-        <input id='searchbar' placeholder="Search tasks" />
+        <input type="text" id='id' placeholder="Task ID" />
+        <input type="text" id='title' placeholder="Task title" />
+        <input type="text" id='description' placeholder="Task description" />
+        <input type="text" id='deadline' placeholder="Deadline as DD/MM/YYYY" />
         <button type='submit'>Search</button>
       </form>
       <div id="toggle-container">

@@ -11,7 +11,7 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const assigneesValue = event.target.assignees.value;
-    const assignees = assigneesValue ? assigneesValue.split(", ") : [];
+    const assignees = assigneesValue === [""] ? assigneesValue.split(", ") : [];
     let eid = null;
     for (const epic of props.epics) {
       if (epic.title === event.target.epic.value) {eid = epic.eid};

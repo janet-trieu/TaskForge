@@ -94,7 +94,7 @@ def search_tasklist(uid, query_tid, query_title, query_description, query_deadli
     """
     check_valid_uid(uid)
     tasks = db.collection("users").document(uid).get().get("tasks")
-    if (datetime.strptime(query_deadline, "%d/%m/%Y")):
+    if (not query_deadline == "" and datetime.strptime(query_deadline, "%d/%m/%Y")):
         pass
     task_list = []
     for task in tasks:
@@ -109,7 +109,8 @@ def search_tasklist(uid, query_tid, query_title, query_description, query_deadli
             "priority": task_ref.get("priority"),
             "status": task_ref.get("status"),
             "assignees": task_ref.get("assignees"),
-            "flagged": task_ref.get("flagged")
+            "flagged": task_ref.get("flagged"),
+            "description": task_ref.get("description")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
@@ -117,8 +118,8 @@ def search_tasklist(uid, query_tid, query_title, query_description, query_deadli
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         date = datetime.now()
         date = date.strftime("%d/%m/%Y")
-        if ((query_tid == "" or query_tid == task) and (query_title == "" or query_title.lower() in task_ref.get("title")
-                                                        and (query_description == "" or query_description.lower() in task_ref.get("description"))
-                                                        and (query_deadline == "" or query_deadline == date))):
+        if ((query_tid == "" or query_tid == task) and (query_title == "" or (query_title.lower() in task_ref.get("title").lower()))
+                                                        and (query_description == "" or (query_description.lower() in task_ref.get("description").lower()))
+                                                        and (query_deadline == "" or query_deadline == date)):
             task_list = insert_tasklist(task_list, task_details)
     return task_list

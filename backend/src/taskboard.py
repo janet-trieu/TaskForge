@@ -164,7 +164,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
 
     #Assign task to assignees
     if assignees == []:
-        assignees = [uid]
+        assignees = [get_email(uid)]
     assign_task(uid, value, assignees)
 
     # Add task to epic

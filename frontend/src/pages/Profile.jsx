@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { makeRequest } from "../helpers";
 import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
@@ -9,6 +9,7 @@ import ProfileModalContent from "../components/ProfileModalContent";
 
 const Profile = ({ firebaseApp }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState("Loading...");
   const [details, setDetails] = useState();
   const [isUser, setIsUser] = useState();
@@ -65,6 +66,7 @@ const Profile = ({ firebaseApp }) => {
             <div className='profile-box-header'>
               <div className='profile-box-header-icon'><img src={taskIcon}/></div>
               <div className='profile-box-header-title'></div>
+              <button onClick={() => {navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}}>Assigned Task List</button>
             </div>
             <div>
 
