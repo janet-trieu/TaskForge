@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import logo from '../assets/logo_no_text.png'
+import logo from '../assets/logo_no_text.png';
+import { makeRequest } from '../helpers';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -17,7 +18,12 @@ const Auth = () => {
     ],
     callbacks: {
       // Avoid redirects after sign-in.
-      signInSuccessWithAuthResult: () => false,
+      signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+        if (authResult.additionalUserInfo.isNewUser) {
+          makeRequest('/profile/create', 'PUT', null, firebase.auth().currentUser.uid)
+        }
+        return false;
+      },
     },
   }
 

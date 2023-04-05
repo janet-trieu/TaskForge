@@ -41,3 +41,8 @@ pip-delete-this-directory.txt
 # Flask stuff:
 instance/
 .webassets-cache
+
+#Images
+*.jpg
+*.jpeg
+*.png

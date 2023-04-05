@@ -13,6 +13,8 @@ from .global_counters import *
 from .error import *
 from .notifications import *
 from .helper import *
+from .connections import *
+from .proj_class import *
 
 db = firestore.client()
 
@@ -37,11 +39,9 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     '''
 
     # setting default values 
-    if due_date == None:
-        due_date = None
-    if team_strength == None:
-        team_strength = None
-    if picture == None:
+    if team_strength == None or team_strength == "":
+        team_strength = ""
+    if picture == None or picture == "":
         picture = "bleh.png"
 
     check_valid_uid(uid)
@@ -54,9 +54,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     # if not due_date == None:
     #     if not isinstance(due_date, date):
     #         raise InputError("Project due date has to be type of date!!!")
-    if not team_strength == None:
-        if not type(team_strength) == int:
-            raise InputError("Project team strength has to be type of int!!!")
+    if not type(team_strength) == str:
+        raise InputError("Project team strength has to be type of str!!!")
     # below will have to have more checks implemented to ensure the input is a valid picture, type of png, jpg or jpeg
     if not type(picture) == str:
         raise InputError("Project picture has to be type of string!!!")
@@ -72,34 +71,25 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         raise InputError("Project requies a description!!!")
     
     # TO-DO: check for due date being less than 1 day away from today
-    if not team_strength == None:
-        if team_strength < 0:
-            raise InputError("Team strength cannot be less than 0!!!")
+    if not team_strength == "" and int(team_strength) < 0:
+        raise InputError("Team strength cannot be less than 0!!!")
 
-    data = {
-        "uid": uid,
-        "name": name,
-        "description": description,
-        "status": "Not Started",
-        "due_date": due_date,
-        "team_strength": team_strength,
-        "picture": picture,
-        "project_members": [uid],
-        "epics": [],
-        "tasks": [],
-        "subtasks": [],
-        "is_pinned": False
+    proj_ref = db.collection("projects")
+    value = get_curr_pid()
+    tasks = {
+            "Not Started": [],
+            "In Progress": [],
+            "Blocked": [],
+            "In Review/Testing": [],
+            "Completed": []
     }
-
-    # get the current pid to return
-    curr_pid = get_curr_pid()
-
-    db.collection("projects").document(str(curr_pid)).set(data)
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], tasks, [], False)
+    proj_ref.document(str(value)).set(project.to_dict())
     
     # update the pid after creating a project
     update_pid()
 
-    return curr_pid
+    return value
 
 def is_user_project_master(pid, uid):
     '''
@@ -244,16 +234,19 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    project = get_project(pid)
+    if project == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
-    project_members = proj_ref.get().get("project_members")
+    project_members = project["project_members"]
 
+    connection_list = get_connected_taskmasters(sender_uid)
     for uid in receiver_uids:
-
         # check whether the specified uid exists
         check_valid_uid(uid)
+
+        if uid not in connection_list:
+            raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
             raise InputError(f"ERROR: Specified uid:{uid} is already a project member of project:{pid}")
@@ -339,9 +332,9 @@ def update_project(pid, uid, updates):
                     "due_date": val
             })
         elif key == "team_strength":
-            if not type(val) == int:
-                raise InputError("Project team strength has to be type of int")
-            elif val < 0:
+            if not type(val) == str:
+                raise InputError("Project team strength has to be type of str")
+            elif int(val) < 0:
                 raise InputError("Team strength cannot be less than 0!!!")
             else:
                 proj_ref.update({
@@ -356,4 +349,37 @@ def update_project(pid, uid, updates):
         else:
             raise InputError(f"Specified project detail {key} does not exist")
     
+    return 0
+
+def delete_project(pid, uid):
+    '''
+    Delete a specified project
+    - Can only be done by a project master
+
+    Arguments:
+    - pid (project id)
+    - uid (project master id)
+
+    Returns:
+    - 0 for successful update
+
+    Raises:
+    - AccessError for incorrect uid
+    - InputError for invalid pid
+    '''
+
+    if pid < 0:
+        raise InputError(f"ERROR: Invalid project id supplied {pid}")
+    
+    is_valid_uid = is_user_project_master(pid, uid)
+
+    if not is_valid_uid == 0:
+        raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
+
+    proj_ref = db.collection("projects").document(str(pid))
+    if proj_ref == None:
+        raise InputError(f"ERROR: Failed to get reference for project {pid}")
+
+    db.collection("projects").document(str(pid)).delete()
+
     return 0
