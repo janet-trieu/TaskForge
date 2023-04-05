@@ -10,6 +10,7 @@ from .helper import *
 from .profile_page import *
 import re
 import time
+from datetime import datetime, time
 import os
 
 ### ========= EPICS ========= ###
@@ -518,9 +519,9 @@ def comment_task(uid, tid, comment):
         raise InputError("Comment must not be empty")
     if len(comment) > 1000:
         raise InputError("Comment must not be longer than 1000 characters")
-    
+    now = datetime.now()
     data = {
-        "time": time.time(),
+        "time": now.strftime("%d/%m/%Y"),
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": comment,
@@ -597,7 +598,8 @@ def change_task_status(uid, tid, status):
         raise InputError("Not a valid status")
     
     if status == "Completed":
-        db.collection("tasks").document(str(tid)).update({"completed": time.time()})
+        now = datetime.now()
+        db.collection("tasks").document(str(tid)).update({"completed": now.strftime("%d/%m/%Y")})
     else:
         db.collection("tasks").document(str(tid)).update({"completed": ""})
 
@@ -625,7 +627,7 @@ def show_tasks(uid, pid, hidden):
     """
     task_list = []
     check_user_in_project(uid, pid)
-    curr_time = time.time()
+    curr_time = datetime.now()
 
     tasks = db.collection("projects").document(str(pid)).get().get("tasks")
     task_list.extend(tasks.get("Not Started"))
@@ -642,10 +644,10 @@ def show_tasks(uid, pid, hidden):
             task_time = db.collection("tasks").document(str(task)).get().get("completed")
             # if task has been completed and it has been more than a weeks since completed
             # this task is hidden
-            if task_time.isdigit() and (curr_time - task_time) >= 604800:
-                pass
-            # this task is not hidden
-            else:
+            if task_time != "":
+                task_time = datetime.strptime(task_time, "%d/%m/%Y")
+                difference = curr_time - task_time
+            if difference.days <= 7:
                 task_list.append(task)
         return task_list
     
@@ -794,7 +796,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if type(deadline) != str:
+    if datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
@@ -848,7 +850,7 @@ def update_subtask(uid, stid, eid, title, description, deadline, workload, prior
         raise InputError(f'description is not a string')
     else:
         db.collection("subtasks").document(str(stid)).update({'description': description})
-    if type(deadline) != int:
+    if datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
@@ -890,11 +892,11 @@ def less_than(task_one, task_two):
     if (task_one['deadline'] == "" or task_one['deadline'] == None):
         task_one_deadline = None
     else: 
-        task_one_deadline = task_one['deadline']
+        task_one_deadline = datetime.strptime(task_one['deadline'], "%d/%m/%Y")
     if (task_two['deadline'] == "" or task_two['deadline'] == None):
         task_two_deadline = None
     else:         
-        task_two_deadline = task_two['deadline']
+        task_two_deadline = datetime.strptime(task_two['deadline'], "%d/%m/%Y")
 
     if ((task_one_flagged == True and task_two_flagged == True) or (task_one_flagged == False and task_two_flagged == False)):
         # Both have time stamps
