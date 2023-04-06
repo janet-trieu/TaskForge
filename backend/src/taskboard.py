@@ -796,7 +796,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if datetime.strptime(deadline, "%d/%m/%Y"):
+    if deadline and datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
@@ -804,7 +804,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError(f'workload is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'workload': workload})
-    if not (priority == "High" or priority == "Moderate" or priority == "Low"):
+    if priority and not (priority == "High" or priority == "Moderate" or priority == "Low"):
         raise InputError('priority is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'priority': priority})

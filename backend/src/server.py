@@ -278,7 +278,7 @@ def flask_request_leave_project():
 def flask_respond_project_invitation():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    res = respond_project_invitation(data["pid"], uid, data["accept"], data["msg"])
+    res = respond_project_invitation(data["pid"], uid, data["accept"])
     return dumps(res)
 
 @app.route("/projects/pin", methods=["POST"])
@@ -446,7 +446,7 @@ def flask_task_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_task(uid, data["tid"], data["eid"], 
+    return dumps(update_task(uid, data["tid"], int(data["eid"]), 
                              data["title"], data["description"], data["deadline"], 
                              data["workload"], data["priority"], data["status"], data["flagged"]))
 

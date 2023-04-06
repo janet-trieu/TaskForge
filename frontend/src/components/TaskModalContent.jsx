@@ -67,7 +67,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
         <input type="text" id="title" name="title" defaultValue={details.title}/>
         <label htmlFor="description"><h3>Description</h3></label>
         <textarea placeholder="Add a description..." id="description" name="description" defaultValue={details.description} />
-        {/* <h3>Attachments</h3> */}
+        <h3>Attachments</h3><br />
         <button type="button" onClick={handleOpenComments}>Comments</button>
         <Modal open={openComments} onClose={handleCloseComments}>
           <TaskCommentsModalContent uid={uid} tid={details.tid} comments={details.comments} handleClose={handleCloseComments} />
