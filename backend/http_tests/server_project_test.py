@@ -43,7 +43,6 @@ def test_view_project():
     assert view_resp.status_code == 200
     view_json = view_resp.json()
 
-
     assert view_json == {
         "pid": pid,
         "name": project["name"],
@@ -55,10 +54,9 @@ def test_view_project():
         "project_members": project["project_members"],
         "epics": extract_epics(pid),
         "tasks": extract_tasks(pid),
-        "is_pinned": project["is_pinned"]
+        "is_pinned": False
     }
 
-    reset_projects()
 
 def test_view_project_invalid_pid():
 
@@ -210,14 +208,14 @@ def test_search_partial_member():
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
     pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
 
-    add_tm_to_project(pid1, tm1_uid)
-    add_tm_to_project(pid2, tm1_uid)
+    add_tm_to_project(pid1, tm3_uid)
+    add_tm_to_project(pid2, tm3_uid)
 
     proj1 = get_project(pid1)
     proj2 = get_project(pid2)
 
     query = "Project"
-    header = {'Authorization': tm1_uid}
+    header = {'Authorization': tm3_uid}
     params = {'query': query}
     search_resp = requests.get(url + "projects/search", headers=header, params=params)
     assert search_resp.status_code == 200
@@ -346,13 +344,11 @@ def test_accept_invitation():
     assert pid == notif_pid
 
     accept = True
-    msg = "Hi Project Master, I will gladly join Project A!"
 
     header = {'Authorization': tm1_uid}
     respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
         "pid": pid,
-        "accept": accept,
-        "msg": msg
+        "accept": accept
     })
 
     assert respond_resp.status_code == 200
@@ -391,13 +387,11 @@ def test_reject_invitation():
     assert pid == notif_pid
 
     accept = False
-    msg = "Hi Project Master, I cannot join"
 
     header = {'Authorization': tm2_uid}
     respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
         "pid": pid,
-        "accept": accept,
-        "msg": msg
+        "accept": accept
     })
 
     assert respond_resp.status_code == 200
@@ -417,43 +411,6 @@ def test_reject_invitation():
 
     reset_projects()
 
-def test_reject_invitation_no_msg():
-    
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-
-    nid = notification_connection_request(tm3_uid, pm_uid)
-    connection_request_respond(tm3_uid, nid, True)
-
-    res = invite_to_project(pid, pm_uid, [tm3_uid])
-    assert res == 0
-
-    invite_ref = get_notif_ref_proj_invite(pid, tm3_uid)
-
-    notif_pid = invite_ref.get("pid")
-    has_read = invite_ref.get("has_read")
-    response = invite_ref.get("response")
-
-    assert has_read == False
-    assert response == False
-    assert pid == notif_pid
-
-    accept = True
-    msg = ""
-
-    header = {'Authorization': tm3_uid}
-    respond_resp = requests.post(url + "projects/invite/respond", headers=header, json={
-        "pid": pid,
-        "accept": accept,
-        "msg": msg
-    })
-
-    assert respond_resp.status_code == 400
-
-    proj_ref = db.collection("projects").document(str(pid))
-    project_members = proj_ref.get().get("project_members")
-
-    assert not tm3_uid in project_members
-
 ############################################################
 #                     Test for pin_project                 #
 ############################################################
@@ -461,56 +418,45 @@ def test_pin_unpin_project():
 
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
-    project = get_project(pid)
-    is_pinned = project["is_pinned"]
-
-    assert is_pinned == False
+    user_ref = get_user_ref(pm_uid)
+    assert pid not in user_ref.get("pinned_projects")
 
     # pin project
     header = {'Authorization': pm_uid}
     pin_resp = requests.post(url + "projects/pin", headers=header, json={
         "pid": pid,
-        "is_pinned": True
+        "action": 0
     })
     assert pin_resp.status_code == 200
 
-    project = get_project(pid)
-    is_pinned = project["is_pinned"]
-
-    assert is_pinned == True
+    user_ref = get_user_ref(pm_uid)
+    assert pid in user_ref.get("pinned_projects")
 
     # unpin project
     unpin_resp = requests.post(url + "projects/pin", headers=header, json={
         "pid": pid,
-        "is_pinned": False
+        "action": 1
     })
     assert unpin_resp.status_code == 200
 
-    project = get_project(pid)
-    is_pinned = project["is_pinned"]
-
-    assert is_pinned == False
+    user_ref = get_user_ref(pm_uid)
+    assert pid not in user_ref.get("pinned_projects")
 
     # unpin project again
     unpin_resp = requests.post(url + "projects/pin", headers=header, json={
         "pid": pid,
-        "is_pinned": False
+        "action": 1
     })
     assert unpin_resp.status_code == 400
 
 def test_pin_invalid_project():
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
-    project = get_project(pid)
-    is_pinned = project["is_pinned"]
-
-    assert is_pinned == False
-
     # pin project
     header = {'Authorization': pm_uid}
     pin_resp = requests.post(url + "projects/pin", headers=header, json={
         "pid": -1,
-        "is_pinned": True
+        "action": 0
     })
     assert pin_resp.status_code == 400
 
@@ -518,15 +464,10 @@ def test_pin_not_in_project():
 
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
-    project = get_project(pid)
-    is_pinned = project["is_pinned"]
-
-    assert is_pinned == False
-
     # pin project
-    header = {'Authorization': tm1_uid}
+    header = {'Authorization': tm3_uid}
     pin_resp = requests.post(url + "projects/pin", headers=header, json={
         "pid": pid,
-        "is_pinned": True
+        "action": 0
     })
     assert pin_resp.status_code == 403

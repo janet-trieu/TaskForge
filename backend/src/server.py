@@ -276,14 +276,14 @@ def flask_request_leave_project():
 def flask_respond_project_invitation():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    res = respond_project_invitation(data["pid"], uid, data["accept"], data["msg"])
+    res = respond_project_invitation(data["pid"], uid, data["accept"])
     return dumps(res)
 
 @app.route("/projects/pin", methods=["POST"])
 def flask_pin_project():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    res = pin_project(data["pid"], uid, data["is_pinned"])
+    res = pin_project(data["pid"], uid, data["action"])
     return dumps(res)
 
 # CONNECTION ROUTES #
@@ -467,7 +467,7 @@ def flask_tasklist_show():
     show_completed = request.headers.get("show_completed")
     return dumps(get_user_assigned_task(uid, show_completed))
 
-@app.route("tasklist/search", methods=["GET"])
+@app.route("/tasklist/search", methods=["GET"])
 def flask_tasklist_search():
     """
     searches the tasklist using a couple of queries
