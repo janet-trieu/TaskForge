@@ -610,6 +610,15 @@ def change_task_status(uid, tid, status):
     if status == "Completed":
         now = datetime.now()
         db.collection("tasks").document(str(tid)).update({"completed": now.strftime("%d/%m/%Y")})
+        #workload stuff
+        task_ref = db.collection('tasks').document(tid)
+        workload = task_ref.get().get("workload")
+        user_list = task_ref.get().get("assignees")
+        for user in user_list:
+            user_ref = db.collection('users').document(user)
+            user_wl = user_ref.get().get('workload')
+            user_wl -= workload
+            user_ref.set({'workload': user_wl})
     else:
         db.collection("tasks").document(str(tid)).update({"completed": ""})
 
