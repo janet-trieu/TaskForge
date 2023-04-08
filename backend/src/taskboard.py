@@ -8,6 +8,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
+from .workload import *
 import re
 import time
 from datetime import datetime, time
@@ -163,7 +164,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
 
     #Assign task to assignees
     assign_task(uid, value, assignees)
-
+    
     # Add task to epic
     if eid != "":
         epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
@@ -243,6 +244,7 @@ def assign_task(uid, tid, new_assignees):
     removed_assignees = list(set(old_assignees) - set(new_assignees))
     added_assignees = list(set(new_assignees) - set(old_assignees))
 
+    
     # remove task from assignees that are no longer assigned
     for new_uid in removed_assignees:
         user = get_user_ref(new_uid)
@@ -261,6 +263,28 @@ def assign_task(uid, tid, new_assignees):
             db.collection('users').document(new_uid).update({"tasks": tasks})
     # 
     db.collection('tasks').document(str(tid)).update({"assignees": new_assignees})
+    
+    
+    #workload stuff
+    task_ref = db.collection('tasks').document(tid)
+    status = task_ref.get().get('status')
+    if (status == "In Progress" or status == "Blocked" or status == "In Review/Testing"):
+        workload = task_ref.get().get('workload')
+        
+        #remove workload from old assignees
+        for assignee in old_assignees:
+            user_ref = db.collection('users').document(assignee)
+            user_wl = user_ref.get().get('workload')
+            user_wl -= workload
+            user_ref.set({'workload': user_wl})
+        
+        #add workload to new assignees
+        for assignee in added_assignees:
+            user_ref = db.collection('users').document(assignee)
+            user_wl = user_ref.get().get('workload')
+            user_wl += workload
+            user_ref.set({'workload': user_wl})
+    
     return
 
 ### ========= Delete Task ========= ###

@@ -26,7 +26,7 @@ class User(object):
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, pinned_projects, tasks, subtasks, connections):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -34,13 +34,13 @@ class User(object):
         self.DOB = DOB
         self.is_admin = is_admin
         self.is_banned = is_banned
-        self.is_removed = is_removed
         self.achievements = achievements
         self.projects = projects
         self.pinned_projects = pinned_projects
         self.tasks = tasks
         self.subtasks = subtasks
         self.connections = connections
+        self.workload = workload
         
         
     def to_dict(self):
@@ -52,13 +52,13 @@ class User(object):
             'DOB': self.DOB,
             'is_admin': self.is_admin,
             'is_banned': self.is_banned,
-            'is_removed': self.is_removed,
             "achievements": self.achievements,
             "projects": self.projects,
             "pinned_projects": self.pinned_projects,
             "tasks": self.tasks,
             "subtasks": self.subtasks,
-            "connections": self.connections
+            "connections": self.connections,
+            "workload": self.workload
         }
 
 class Epic():
