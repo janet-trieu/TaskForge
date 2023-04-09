@@ -371,6 +371,7 @@ def create_user_firestore(uid):
     Returns:
         None
     """
+    
     users_ref = db.collection("users")
     value = get_curr_tuid()
     user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [], [])

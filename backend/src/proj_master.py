@@ -248,11 +248,15 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     project_members = project["project_members"]
 
     connection_list = get_connected_taskmasters(sender_uid)
+    connection_uid_list = []
+    for connection in connection_list:
+        connection_uid_list.append(connection["uid"])
+
     for uid in receiver_uids:
         # check whether the specified uid exists
         check_valid_uid(uid)
 
-        if uid not in connection_list:
+        if uid not in connection_uid_list:
             raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
@@ -324,8 +328,8 @@ def update_project(pid, uid, updates):
                 raise InputError("Project status has to be type of string")
             elif not val in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
                 raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
-            elif val == proj_ref.get().get("status"):
-                raise InputError("Cannot update the status of the project to its current status")
+            # elif val == proj_ref.get().get("status"):
+            #     raise InputError("Cannot update the status of the project to its current status")
             elif proj_ref.get().get("status") == "Completed":
                 raise AccessError(f"ERROR: Cannot update the status of a completed project. Please use revive_completed_project instead")
             else:
@@ -341,7 +345,7 @@ def update_project(pid, uid, updates):
         elif key == "team_strength":
             if not type(val) == str:
                 raise InputError("Project team strength has to be type of str")
-            elif int(val) < 0:
+            elif not val == "" and int(val) < 0:
                 raise InputError("Team strength cannot be less than 0!!!")
             else:
                 proj_ref.update({

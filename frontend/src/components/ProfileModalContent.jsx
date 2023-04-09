@@ -1,12 +1,13 @@
 import React, {forwardRef} from "react";
 import { makeRequest } from "../helpers";
 
-const ProfileModalContent = forwardRef(({ details, setDetails, setOpen, firebaseApp }, ref) => {
-  const handleSave = (event) => {
+const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, firebaseApp }, ref) => {
+  const handleSave = async (event) => {
     event.preventDefault();
     let newDetails = details;
     newDetails.display_name = event.target.name.value;
     newDetails.role = event.target.role.value;
+    newDetails.email = event.target.email.value;
 
     const uid = firebaseApp.auth().currentUser.uid;
     const body = {
@@ -15,19 +16,21 @@ const ProfileModalContent = forwardRef(({ details, setDetails, setOpen, firebase
       email: null,
       photo_url: null
     }
-    makeRequest('/profile/update', 'PUT', body, uid)
-
+    await makeRequest('/profile/update', 'PUT', body, uid)
     setDetails(newDetails);
-    setOpen(false);
+    handleClose();
   } 
   return (
     <div id="profile-modal">
       <form id="profile-modal-form" onSubmit={handleSave}>
         <label htmlFor="name" style={{fontWeight: 'bold'}}>Display Name</label><br />
-        <input id="name" defaultValue={details.display_name} /><br />
+        <input type="text" id="name" defaultValue={details.display_name} /><br />
         <br />
         <label htmlFor="role" style={{fontWeight: 'bold'}}>Role</label><br />
-        <input id="role" defaultValue={details.role} /><br />
+        <input type="text" id="role" defaultValue={details.role} /><br />
+        <br />
+        <label htmlFor="email" style={{fontWeight: 'bold'}}>Email</label><br />
+        <input type="text" id="email" defaultValue={details.email} /><br />
         <br />
         <button type="submit">Save Changes</button>
       </form>
