@@ -243,7 +243,7 @@ def assign_task(uid, tid, new_assignees):
     # Check if all UIDs in new_assignee are valid and in the project
     new_assignees_uids = []
     for assignee in new_assignees:
-        new_assignees_uids.append(get_uid_from_email(assignee))
+        new_assignees_uids.append(assignee)
     pid = get_task_ref(tid).get("pid")
     old_assignees = get_task_ref(tid).get("assignees")
     for uid in new_assignees_uids:
@@ -348,7 +348,7 @@ def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, 
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
     subtask = Subtask(value, tid, pid, eid, "", title, description, deadline, workload, priority, status)
-    subtask_ref.document(value).set(subtask.to_dict())
+    subtask_ref.document(str(value)).set(subtask.to_dict())
 
     assign_subtask(uid, value, assignees)
 
@@ -372,7 +372,7 @@ def get_subtask_ref(stid):
     # Check if user is in project
     check_valid_stid(stid)
  
-    return db.collection('subtasks').document(stid).get()
+    return db.collection('subtasks').document(str(stid)).get()
 
 ### ========= Get Subtask Details ========= ###
 def get_subtask_details(uid, stid):
@@ -406,7 +406,7 @@ def assign_subtask(uid, stid, new_assignees):
         None
     """
     # Check if user is in project
-    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))
+    check_user_in_project(uid, get_subtask_ref(stid).get("pid"))
     # Check if all UIDs in new_assignee are valid and in the project
     pid = get_subtask_ref(stid).get("pid")
     old_assignees = get_subtask_ref(stid).get("assignees")
@@ -430,7 +430,7 @@ def assign_subtask(uid, stid, new_assignees):
         if (subtasks is None):
             db.collection('users').document(new_uid).update({"subtasks": [stid]})
         else:
-            subtasks.append(tid)
+            subtasks.append(stid)
             db.collection('users').document(new_uid).update({"subtasks": subtasks})
     db.collection('tasks').document(str(stid)).update({"assignees": new_assignees})
     return

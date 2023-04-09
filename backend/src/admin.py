@@ -73,7 +73,6 @@ def remove_user(uid_admin, uid_user):
     if (not get_user_ref(uid_admin) or not get_user_ref(uid_user)): raise InputError('uid invalid')
     if (is_banned(uid_admin)): raise AccessError('You are banned')
     if (not is_admin(uid_admin)): raise InputError('You are not an admin')
-    if (is_removed(uid_user)): raise InputError('User is already removed')
     
     #delete from auth db
     auth.delete_user(uid_user)
@@ -102,5 +101,13 @@ def remove_user(uid_admin, uid_user):
             assignees = db.collection('tasks').document(task).get().get('assignees')
             assignees.remove(uid_user)
             db.collection("tasks").document(uid_user).update({"assignees": assignees})
-        
+    
+    #remove from subtasks
+    subtasks = db.collection('users').document(uid_user).get().get("subtasks")
+    if (subtasks is not None):
+        for subtask in subtasks:
+            assignees = db.collection('subtasks').document(subtask).get().get('assignees')
+            assignees.remove(uid_user)
+            db.collection("subtasks").document(uid_user).update({"assignees": assignees})
+    
     return {}
