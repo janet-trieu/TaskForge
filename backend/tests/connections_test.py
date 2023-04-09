@@ -31,7 +31,8 @@ def test_uid_type_connection_request_respond():
 def test_success_connection_request_respond_deny():
     assert(not is_connected(uid1, uid2))
     assert(not is_connected(uid2, uid1))
-    nid = notification_connection_request(uid2, uid1)
+    user2_email = get_email(uid2)
+    nid = notification_connection_request(user2_email, uid1)
 
     connection_request_respond(uid2, nid, False)
     assert(not is_connected(uid1, uid2))
@@ -41,7 +42,8 @@ def test_success_connection_request_respond_deny():
 def test_success_connection_request_respond_accept():
     assert(not is_connected(uid1, uid2))
     assert(not is_connected(uid2, uid1))
-    nid = notification_connection_request(uid2, uid1)
+    user2_email = get_email(uid2)
+    nid = notification_connection_request(user2_email, uid1)
 
     connection_request_respond(uid2, nid, True)
     assert(is_connected(uid1, uid2))
@@ -55,8 +57,9 @@ def test_uid_type_get_connection_requests():
         pass
 
 def test_get_connection_requests():
-    notification_connection_request(uid3, uid1)
-    notification_connection_request(uid3, uid2)
+    user3_email = get_email(uid3)
+    notification_connection_request(user3_email, uid1)
+    notification_connection_request(user3_email, uid2)
     
     result = get_connection_requests(uid3)
     assert(len(result) == 2)
@@ -73,15 +76,25 @@ def test_uid_type_get_connected_taskmasters():
         pass
         
 def test_get_connected_taskmasters():
-    notification_connection_request(uid3, uid1)
-    notification_connection_request(uid3, uid2)
+    user3_email = get_email(uid3)
+    notification_connection_request(user3_email, uid1)
+    notification_connection_request(user3_email, uid2)
     connection_request_respond(uid3, 'connection_request0', True)
     connection_request_respond(uid3, 'connection_request1', True)
     
     result = get_connected_taskmasters(uid3)
     assert(len(result) == 2)
-    assert(uid1 in result)
-    assert(uid2 in result)
+    assert(uid1 in result[0].get("uid"))
+    assert(uid2 in result[1].get("uid"))
+
+
+def test_remove_connected_taskmaster():
+    assert(is_connected(uid1, uid2))
+    assert(is_connected(uid2, uid1))
+    remove_connected_taskmaster(uid1, uid2)
+    assert(not is_connected(uid1, uid2))
+    assert(not is_connected(uid2, uid1))
+
 
 def test_clean_up():
     try:

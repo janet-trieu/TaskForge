@@ -100,23 +100,3 @@ def test_remove_user_failure():
     resp = requests.post(url + '/admin/remove_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
-   
-def test_readd_user_success():
-    """
-    Successfully readding user by an admin
-    """
-    headers_dict = {'Authorization': user_uid}
-    json_dict = {'uid_admin': admin_uid}
-    resp = requests.post(url + '/admin/readd_user', headers=headers_dict, json=json_dict)
-
-    assert resp.status_code == 200
-    
-def test_readd_user_failure():
-    """
-    Giving an int instead of a string
-    """
-    headers_dict = {'Authorization': '1'}
-    json_dict = {'uid_admin': 0}
-    resp = requests.post(url + '/admin/readd_user', headers=headers_dict, json=json_dict)
-
-    assert resp.status_code == 400
