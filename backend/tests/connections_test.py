@@ -87,6 +87,15 @@ def test_get_connected_taskmasters():
     assert(uid1 in result[0].get("uid"))
     assert(uid2 in result[1].get("uid"))
 
+
+def test_remove_connected_taskmaster():
+    assert(is_connected(uid1, uid2))
+    assert(is_connected(uid2, uid1))
+    remove_connected_taskmaster(uid1, uid2)
+    assert(not is_connected(uid1, uid2))
+    assert(not is_connected(uid2, uid1))
+
+
 def test_clean_up():
     try:
         delete_user(uid1)
