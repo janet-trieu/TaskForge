@@ -285,7 +285,7 @@ def flask_respond_project_invitation():
 def flask_pin_project():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    res = pin_project(data["pid"], uid, data["is_pinned"])
+    res = pin_project(data["pid"], uid, data["action"])
     return dumps(res)
 
 # CONNECTION ROUTES #

@@ -185,3 +185,25 @@ What was not finished, why this happened, how this affects the overall project p
 
 What is planned for the next period (e.g., next week)
 - Continue working on sprint 2, finish all frontend tasks ASAP
+
+=== Week 7 ===
+
+General Content:
+- Sprint 2 complete 
+
+What was planned for the period since the last work diary entry
+- Continue working on sprint 2
+
+What was finished
+- backend and frontend for sp2, and the sp1 frontend stuff
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- N/A
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- Task attachments, which was quite complex
+- will go through the sp3 functionalities to filter out possibly complex functionalities, and start researching earlier
+
+What is planned for the next period (e.g., next week)
+- Start working on sp3,
+- complete Retro B

@@ -1,7 +1,21 @@
 from firebase_admin import firestore, auth
 from .global_counters import *
+from .profile_page import *
 
 db = firestore.client()
+
+############################################################
+#                   Helpers for create user                #
+############################################################
+
+def create_test_user(test_type, num):
+    try:
+        uid = create_user_email(f"{test_type}.user{num}@gmail.com", "PaSsWoRd123", f"User User{num}")
+    except auth.EmailAlreadyExistsError:
+        pass
+    uid = auth.get_user_by_email(f"{test_type}.user{num}@gmail.com").uid
+
+    return uid
 
 ############################################################
 #                 Helpers for Project Master               #
@@ -11,12 +25,20 @@ def add_tm_to_project(pid, new_uid):
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
+    user_ref = db.collection("users").document(str(new_uid))
+
     if not new_uid in project_members:
         project_members.append(new_uid)
 
     proj_ref.update({
         "project_members": project_members
     })
+
+    user_projects = user_ref.get().get("projects")
+    if not pid in user_projects:
+        user_projects.append(pid)
+
+    user_ref.update({"projects": user_projects})
 
 ############################################################
 #                    Helpers for Projects                  #
