@@ -160,6 +160,9 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
+    if (not isinstance(workload, int)):
+        workload = None
+    
     task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
@@ -270,27 +273,6 @@ def assign_task(uid, tid, new_assignees):
             db.collection('users').document(new_uid).update({"tasks": tasks})
             notification_assigned_task(uid, pid, tid)
     # 
-    
-    #workload stuff
-    task_ref = db.collection('tasks').document(tid)
-    status = task_ref.get().get('status')
-    if (status == "In Progress" or status == "Blocked" or status == "In Review/Testing"):
-        workload = task_ref.get().get('workload')
-        
-        #remove workload from old assignees
-        for assignee in old_assignees:
-            user_ref = db.collection('users').document(assignee)
-            user_wl = user_ref.get().get('workload')
-            user_wl -= workload
-            user_ref.set({'workload': user_wl})
-        
-        #add workload to new assignees
-        for assignee in added_assignees:
-            user_ref = db.collection('users').document(assignee)
-            user_wl = user_ref.get().get('workload')
-            user_wl += workload
-            user_ref.set({'workload': user_wl})
-    
     db.collection('tasks').document(str(tid)).update({"assignees": new_assignees_uids})
     return
 
@@ -623,15 +605,6 @@ def change_task_status(uid, tid, status):
     if status == "Completed":
         now = datetime.now()
         db.collection("tasks").document(str(tid)).update({"completed": now.strftime("%d/%m/%Y")})
-        #workload stuff
-        task_ref = db.collection('tasks').document(tid)
-        workload = task_ref.get().get("workload")
-        user_list = task_ref.get().get("assignees")
-        for user in user_list:
-            user_ref = db.collection('users').document(user)
-            user_wl = user_ref.get().get('workload')
-            user_wl -= workload
-            user_ref.set({'workload': user_wl})
     else:
         db.collection("tasks").document(str(tid)).update({"completed": ""})
 
