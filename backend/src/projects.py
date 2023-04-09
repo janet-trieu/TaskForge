@@ -63,7 +63,8 @@ def view_project(pid, uid):
             "project_members": project["project_members"],
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
-            "is_pinned": is_pinned
+            "is_pinned": is_pinned,
+            "uid": project["uid"]
     }
 
 def extract_epics(pid):
@@ -93,9 +94,6 @@ def extract_epics(pid):
             "colour": epic_doc.get("colour")
         }
         return_list.append(return_dict)
-    
-    if len(return_list) == 1:
-        return return_list[0]
 
     return return_list
 
@@ -221,7 +219,7 @@ def request_leave_project(pid, uid, msg):
 
     pm_uid = proj_ref.get().get("uid")
 
-    notification_leave_request(uid, pm_uid, pid)
+    notification_leave_request(pm_uid, uid, pid)
 
     return 0
 
