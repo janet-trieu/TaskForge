@@ -8,6 +8,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
+from .workload import *
 import re
 import time
 from datetime import datetime, time
@@ -159,6 +160,9 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
+    if (not isinstance(workload, int)):
+        workload = None
+    
     task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
 
@@ -166,7 +170,7 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if assignees == []:
         assignees = [get_email(uid)]
     assign_task(uid, value, assignees)
-
+    
     # Add task to epic
     if eid != "" and eid != None:
         epic_tasks = db.collection('epics').document(str(eid)).get().get("tasks")
@@ -239,7 +243,7 @@ def assign_task(uid, tid, new_assignees):
     # Check if all UIDs in new_assignee are valid and in the project
     new_assignees_uids = []
     for assignee in new_assignees:
-        new_assignees_uids.append(get_uid_from_email(assignee))
+        new_assignees_uids.append(assignee)
     pid = get_task_ref(tid).get("pid")
     old_assignees = get_task_ref(tid).get("assignees")
     for uid in new_assignees_uids:
@@ -249,6 +253,7 @@ def assign_task(uid, tid, new_assignees):
     removed_assignees = list(set(old_assignees) - set(new_assignees_uids))
     added_assignees = list(set(new_assignees_uids) - set(old_assignees))
 
+    
     # remove task from assignees that are no longer assigned
     for new_uid in removed_assignees:
         user = get_user_ref(new_uid)
@@ -343,7 +348,7 @@ def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, 
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
     subtask = Subtask(value, tid, pid, eid, "", title, description, deadline, workload, priority, status)
-    subtask_ref.document(value).set(subtask.to_dict())
+    subtask_ref.document(str(value)).set(subtask.to_dict())
 
     assign_subtask(uid, value, assignees)
 
@@ -367,7 +372,7 @@ def get_subtask_ref(stid):
     # Check if user is in project
     check_valid_stid(stid)
  
-    return db.collection('subtasks').document(stid).get()
+    return db.collection('subtasks').document(str(stid)).get()
 
 ### ========= Get Subtask Details ========= ###
 def get_subtask_details(uid, stid):
@@ -401,7 +406,7 @@ def assign_subtask(uid, stid, new_assignees):
         None
     """
     # Check if user is in project
-    check_user_in_project(uid, get_subtask_ref(uid, stid).get("pid"))
+    check_user_in_project(uid, get_subtask_ref(stid).get("pid"))
     # Check if all UIDs in new_assignee are valid and in the project
     pid = get_subtask_ref(stid).get("pid")
     old_assignees = get_subtask_ref(stid).get("assignees")
@@ -425,7 +430,7 @@ def assign_subtask(uid, stid, new_assignees):
         if (subtasks is None):
             db.collection('users').document(new_uid).update({"subtasks": [stid]})
         else:
-            subtasks.append(tid)
+            subtasks.append(stid)
             db.collection('users').document(new_uid).update({"subtasks": subtasks})
     db.collection('tasks').document(str(stid)).update({"assignees": new_assignees})
     return

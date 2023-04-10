@@ -74,6 +74,12 @@ def check_valid_rid(rid):
     if not doc.exists:
         raise InputError(f'rid {rid} does not exist in database')
 
+def check_connected(uid1, uid2):
+    user_ref = db.collection('users').document(str(uid1))
+    connected = user_ref.get().get("connections")
+    if (uid2 not in connected):
+        raise InputError(f'You are not connected to this taskmaster')
+
 def check_valid_achievement(achievement_str):
     if not isinstance(achievement_str, str):
         raise InputError('achievement_str needs to be a string')
@@ -89,7 +95,24 @@ def check_user_in_project(uid, pid):
     project_members = doc.get("project_members")
     if uid not in project_members:
         raise InputError(f'UID {uid} does not belong in project {pid}')
-    
+
+def check_user_in_task(uid, tid):
+    check_valid_uid(uid)
+    check_valid_tid(tid)
+    doc = db.collection("tasks").document(str(tid)).get()
+    assignees = doc.get("assignees")
+    if uid not in assignees:
+        raise InputError(f'UID {uid} does not belong in task {tid}')
+
+def check_user_in_subtask(uid, tid, stid):
+    check_valid_uid(uid)
+    check_valid_tid(tid)
+    check_valid_stid(stid)
+    doc = db.collection("subtasks").document(str(stid)).get()
+    assignees = doc.get("assignees")
+    if uid not in assignees:
+        raise InputError(f'UID {uid} does not belong in task {stid}')
+
 def does_nid_exists(uid, nid):
     doc_ref = db.collection('notifications').document(uid)
 

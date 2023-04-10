@@ -73,3 +73,16 @@ def get_connected_taskmasters(uid):
         connections.append(connected_tm_data)
     
     return connections
+    
+def remove_connected_taskmaster(uid, uid_remove):
+    check_valid_uid(uid)
+    check_valid_uid(uid_remove)
+    check_connected(uid, uid_remove)
+    
+    connections1 = db.collection('users').document(str(uid)).get().get('connections')
+    connections1.remove(uid_remove)
+    db.collection("users").document(str(uid)).update({"connections": connections1})
+    
+    connections2 = db.collection('users').document(str(uid_remove)).get().get('connections')
+    connections2.remove(uid)
+    db.collection("users").document(str(uid_remove)).update({"connections": connections2})
