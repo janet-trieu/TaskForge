@@ -42,7 +42,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
     for (const epic of epics) {
       if (epic.title === event.target.epic.value) {eid = epic.eid}
     }
-
+    console.log(eid, "eid")
     const body = {
       tid: details.tid,
       eid: eid === "None" ? "None" : Number(eid),

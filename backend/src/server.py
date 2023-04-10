@@ -346,7 +346,8 @@ def flask_upload_file2():
 @app.route('/download_file', methods = ['GET'])
 def flask_download_file():
     uid = request.headers.get('Authorization')
-    fileName = request.get_json()['fileName']
+    fileName = request.args.get("fileName")
+    # fileName = request.get_json()['fileName']
     download_file(uid, fileName)
     newName = re.sub('.*' + '/', '', fileName) #test.jpg
     send_from_directory(app.root_path, newName)
@@ -488,8 +489,8 @@ def flask_taskboard_search():
     Retrieve list of tasks in project using query
     """
     uid = request.headers.get("Authorization")
-    pid = request.headers.get("pid")
-    query = request.headers.get("query")
+    pid = request.args.get("pid")
+    query = request.args.get("query")
     return dumps(search_taskboard(uid, pid, query))
 
 # Assigned Task List
