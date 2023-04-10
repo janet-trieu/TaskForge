@@ -4,6 +4,7 @@ import { makeRequest } from "../helpers";
 import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
 import taskIcon from '../assets/tasks.png';
+import achievementIcon from '../assets/profile achievement.png'
 import { Modal } from "@mui/material";
 import ProfileModalContent from "../components/ProfileModalContent";
 
@@ -94,8 +95,8 @@ const Profile = ({ firebaseApp }) => {
           </div>
           <div className='profile-box'>
             <div className='profile-box-header'>
-              <div className='profile-box-header-icon'><img /></div>
-              <div className='profile-box-header-title'></div>
+              <div className='profile-box-header-icon'><img src={achievementIcon}/></div>
+              <div className='profile-box-header-title'> Achievements</div>
             </div>
             <div>
 
