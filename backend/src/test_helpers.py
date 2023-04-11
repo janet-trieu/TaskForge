@@ -116,10 +116,21 @@ def reset_database():
     for proj_doc_ref in db.collection('projects').list_documents():
         proj_doc_ref.delete()
 
-    # TODO: Add more if you have created more collections!
+    # TASKS deletion
+    for tasks_doc_ref in db.collection('tasks').list_documents():
+        tasks_doc_ref.delete()
+
+    # SUBTASKS deletion
+    for subtasks_doc_ref in db.collection('subtasks').list_documents():
+        subtasks_doc_ref.delete()
+
+    # EPICS deletion
+    for epics_doc_ref in db.collection('epics').list_documents():
+        epics_doc_ref.delete()
 
     # Reset counters
-    init_tuid()
-    init_pid()
     init_eid()
+    init_pid()
+    init_stid()
     init_tid()
+    init_tuid()
