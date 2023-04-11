@@ -536,6 +536,11 @@ def comment_task(uid, tid, comment):
     comments.append(data)
     db.collection("tasks").document(str(tid)).update({"comments": comments})
 
+    # Notify comment to assigned users
+    assignees = db.collection("tasks").document(str(tid)).get().get("assignees")
+    for user in assignees:
+        notification_comment(user, uid, pid, tid)
+
     return data
 
 ### ========= Files ========= ###
@@ -561,10 +566,6 @@ def download_file(uid, fileName):
     print(f"filename is {fileName}")
     new = re.sub('.*' + '/', '', fileName)# src/
     storage_download_file(fileName, f"src/{new}")
-    # Notify comment to assigned users
-    assignees = db.collection("tasks").document(str(tid)).get().get("assignees")
-    for user in assignees:
-        notification_comment(user, uid, pid, tid)
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):
