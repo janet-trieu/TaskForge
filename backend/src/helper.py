@@ -146,6 +146,12 @@ def get_achievement_name(achievement_str):
     name = db.collection('achievements').document(achievement_str).get().get('name')
     return name
 
+def get_pid(project_str):
+    for doc in db.collection('projects').stream():
+        if doc.to_dict().get('name') == project_str:
+            return doc.id
+    raise AccessError
+
 ############################################################
 #                       Create Users                       #
 ############################################################

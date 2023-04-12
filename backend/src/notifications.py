@@ -136,8 +136,6 @@ def notification_connection_request(user_email, uid_sender):
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s connection request.",
-            "decline_msg": f"You declined {sender_name}'s connection request.",
             "nid": nid
         }
     }
@@ -330,8 +328,6 @@ def notification_leave_request(uid, uid_sender, pid):
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
-            "accept_msg": f"You accepted {sender_name}'s project leave.",
-            "decline_msg": f"You declined {sender_name}'s project leave.",
             "nid": nid
         }
     }
