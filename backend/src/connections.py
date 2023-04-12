@@ -113,14 +113,18 @@ def search_taskmasters(uid, search_string):
     users = db.collection('users').stream()
     for user in users:
         user_dict = user.to_dict()
-        display_name = user_dict["display_name"].lower()
+        if (uid == user_dict["uid"]): continue
+        display_name = get_display_name(user_dict["uid"]).lower()
         email = get_email(user_dict["uid"]).lower()
         if (search_string in display_name or search_string in email):
-            matches.append(user)
+            matches.append(user_dict)
     
     #sort so that connected tms are at start of list
-    for idx, user in enumerate(matches):
-        user_uid = user_dict["uid"]
-        if (is_connected(uid, user_uid)):
-            matches.insert(0, matches.pop(matches.index(idx)))
-    return matches
+    sorted1 = []
+    sorted2 = []
+    for user in matches:
+        if (is_connected(uid, user["uid"])):
+            sorted1.append(user)
+        else:
+            sorted2.append(user)
+    return sorted1 + sorted2 #connected tms first
