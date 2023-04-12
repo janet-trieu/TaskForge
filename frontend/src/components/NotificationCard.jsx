@@ -36,8 +36,8 @@ const NotificationCard = ({ content, uid }) => {
 
   const handleDeleteNotification  = async () => {
     const response = await makeRequest('/notifications/clear', 'DELETE', { nid: content.nid }, uid)
-    if (response.error) alert(response.error);
-    else setShow(false);
+    // if (response.error) alert(response.error);
+    // setShow(false);
   }
   return (
     <div className="notification-card">
