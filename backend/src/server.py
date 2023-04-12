@@ -328,6 +328,24 @@ def connection_details():
         connections = len(get_connection_list(uid))
         return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections)})
 
+@app.route('/connections/remove_taskmaster', methods=['POST'])
+def flask_remove_connected_taskmaster():
+    """
+    remove_connected_taskmaster flask
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(remove_connected_taskmaster(uid, data["uid_remove"]))
+
+@app.route('/connections/search_taskmasters', methods=['GET'])
+def flask_search_taskmasters():
+    """
+    search_taskmasters flask
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(search_taskmasters(uid, data["search_string"]))
+    
 # TASK MANAGEMENT #	
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
