@@ -31,6 +31,7 @@ def test_connection_request_respond_decline_success():
     
     assert resp.status_code == 200
     nid = resp.json()
+    headers_dict = {'Authorization': uid1}
     json_dict = {'nid': nid, 'response' : False}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
@@ -46,6 +47,7 @@ def test_connection_request_respond_accept_success():
     
     assert resp.status_code == 200
     nid = resp.json()
+    headers_dict = {'Authorization': uid1}
     json_dict = {'uid': uid2, 'nid': nid, 'response' : True}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
@@ -76,14 +78,27 @@ def test_connected_taskmasters_success():
     assert resp.status_code == 200
     nid = resp.json()
     
+    headers_dict = {'Authorization': uid2}
     json_dict = {'nid': nid, 'response' : True}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
     json_dict = {'uid': uid3}
-    resp = requests.post(url + '/connections/get_connected_taskmasters', headers=headers_dict, json=json_dict)
+    resp = requests.get(url + '/connections/get_connected_taskmasters', headers=headers_dict, json=json_dict)
     
+    assert resp.status_code == 200
+
+def test_search_taskmasters():
+    headers_dict = {'Authorization': uid3}
+    json_dict = {'search_string': "conn"}
+    resp = requests.get(url + '/connections/search_taskmasters', headers=headers_dict, json=json_dict)
+    assert resp.status_code == 200
+
+def test_remove_connected_taskmaster():
+    headers_dict = {'Authorization': uid1}
+    json_dict = {'uid_remove': uid2}
+    resp = requests.post(url + '/connections/remove_taskmaster', headers=headers_dict, json=json_dict)
     assert resp.status_code == 200
 
 def test_clean_up():
