@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { makeRequest } from "../helpers";
 import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
@@ -9,14 +9,17 @@ import ProfileModalContent from "../components/ProfileModalContent";
 
 const Profile = ({ firebaseApp }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState("Loading...");
   const [details, setDetails] = useState();
+  const [isUser, setIsUser] = useState();
   const [open, setOpen] = useState(false);
   const handleOpen = () => {setOpen(true)};
   const handleClose = () => {setOpen(false)};
 
   const getInformation = async () => {
     if (location.pathname === '/profile') {
+      setIsUser(true);
       const uid = await firebaseApp.auth().currentUser.uid;
       const data = await makeRequest('/profile/details', 'GET', null, uid);
       if (data.error) alert(data.error);
@@ -25,9 +28,10 @@ const Profile = ({ firebaseApp }) => {
         setIsLoading(false);
       }
     } else {
+      setIsUser(false);
       const uid = await firebaseApp.auth().currentUser.uid;
       const requested_uid = location.pathname.split('/')[2];
-      const data = await makeRequest(`/profile/${uid}`, 'GET', {uid: requested_uid}, uid);
+      const data = await makeRequest(`/connections/details?uid=${requested_uid}`, 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
         setDetails(data);
@@ -52,16 +56,17 @@ const Profile = ({ firebaseApp }) => {
             </div>
             <div>{details.num_connections} connection(s)</div>
           </div>
-          <button style={{marginLeft: '45vw'}} onClick={handleOpen}>Edit</button>
+          <button className={isUser ? "" : "hide"} style={{marginLeft: '45vw'}} onClick={handleOpen}>Edit</button>
         </div>
         <Modal open={open} onClose={handleClose}>
-          <ProfileModalContent details={details} setDetails={setDetails} setOpen={setOpen} firebaseApp={firebaseApp} />
+          <ProfileModalContent details={details} setDetails={setDetails} handleClose={handleClose} firebaseApp={firebaseApp} />
         </Modal>
         <div className="profile-row">
           <div className='profile-box'>
             <div className='profile-box-header'>
               <div className='profile-box-header-icon'><img src={taskIcon}/></div>
               <div className='profile-box-header-title'></div>
+              <button onClick={() => {navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}}>Assigned Task List</button>
             </div>
             <div>
 

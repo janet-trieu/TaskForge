@@ -1,7 +1,8 @@
-from firebase_admin import firestore
-from .profile_page import *
-from .achievement import *
+'''
+File to store the all the classes
+'''
 
+from firebase_admin import firestore
 db = firestore.client()
 
 class User(object):
@@ -24,7 +25,7 @@ class User(object):
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, tasks, subtasks, connections):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -32,12 +33,13 @@ class User(object):
         self.DOB = DOB
         self.is_admin = is_admin
         self.is_banned = is_banned
-        self.is_removed = is_removed
         self.achievements = achievements
         self.projects = projects
+        self.pinned_projects = pinned_projects
         self.tasks = tasks
         self.subtasks = subtasks
         self.connections = connections
+        self.workload = workload
         
         
     def to_dict(self):
@@ -49,12 +51,13 @@ class User(object):
             'DOB': self.DOB,
             'is_admin': self.is_admin,
             'is_banned': self.is_banned,
-            'is_removed': self.is_removed,
             "achievements": self.achievements,
             "projects": self.projects,
+            "pinned_projects": self.pinned_projects,
             "tasks": self.tasks,
             "subtasks": self.subtasks,
-            "connections": self.connections
+            "connections": self.connections,
+            "workload": self.workload
         }
 
 class Epic():
@@ -108,7 +111,7 @@ class Task():
         flagged (boolean): a boolean that corresponds to whether the task has been flagged or not
         completed (int): an int that corresponds to the unix time that the task has been completed
     """
-    def __init__(self, tid, pid, eid, assignees, subtasks, title, description, deadline, workload, priority, status, comments, flagged, completed):
+    def __init__(self, tid, pid, eid, assignees, subtasks, title, description, deadline, workload, priority, status, comments, files, flagged, completed):
         self.tid = tid
         self.pid = pid
         self.eid = eid
@@ -121,6 +124,7 @@ class Task():
         self.status = status
         self.subtasks = subtasks
         self.comments = comments
+        self.files = files
         self.flagged = flagged
         self.completed = completed
 
@@ -138,6 +142,7 @@ class Task():
             'priority': self.priority,
             'status': self.status,
             'comments': self.comments,
+            'files': self.files,
             'flagged': self.flagged,
             'completed': self.completed
         }
@@ -220,7 +225,7 @@ class Project():
      - 
      - 
     """
-    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks,is_pinned):
+    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks):
         self.pid = pid
         self.uid = uid
         self.name = name
@@ -233,7 +238,6 @@ class Project():
         self.epics = epics
         self.tasks = tasks
         self.subtasks = subtasks
-        self.is_pinned = is_pinned
     
     def to_dict(self):
         return {
@@ -248,8 +252,7 @@ class Project():
             "project_members": self.project_members,
             "epics": self.epics,
             "tasks": self.tasks,
-            "subtasks": self.subtasks,
-            "is_pinned": self.is_pinned
+            "subtasks": self.subtasks
         }
 
 def get_project(pid):
@@ -267,8 +270,7 @@ def get_project(pid):
         doc.get("project_members"),
         doc.get("epics"),
         doc.get("tasks"),
-        doc.get("subtasks"),
-        doc.get("is_pinned")
+        doc.get("subtasks")
     )
 
     return project.to_dict()
@@ -317,3 +319,7 @@ def get_user_achievements(uid):
     """
     # print(db.collection("users").document(str(uid)).get().get("achievements"))
     return db.collection("users").document(str(uid)).get().get("achievements")
+    #     doc.get("subtasks")
+    # )
+
+    # return project.to_dict()

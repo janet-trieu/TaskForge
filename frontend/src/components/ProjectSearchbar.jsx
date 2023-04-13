@@ -2,7 +2,7 @@ import React from "react";
 import './Searchbar.css';
 import { makeRequest } from "../helpers";
 
-const ProjectSearchbar = ({ setProjects, setIsLoading, uid }) => {
+const ProjectSearchbar = ({ setProjects, setIsLoading, uid, showCompleted, setShowCompleted }) => {
   const handleSearch = async (event) => {
     event.preventDefault();
     console.log(event)
@@ -14,6 +14,12 @@ const ProjectSearchbar = ({ setProjects, setIsLoading, uid }) => {
       setIsLoading(false);
     }
   }
+
+  const handleToggle = () => {
+    const temp = showCompleted;
+    setShowCompleted(!temp);
+  }
+
   return (
     <div id='searchbar-container'>
       <form onSubmit={handleSearch}>
@@ -23,7 +29,7 @@ const ProjectSearchbar = ({ setProjects, setIsLoading, uid }) => {
       <div id="toggle-container">
         Show completed projects
         <label className="switch">
-          <input type="checkbox" id="completed-projects" />
+          <input onChange={handleToggle} type="checkbox" id="completed-projects" />
           <span className="slider round"></span>
         </label>
       </div>

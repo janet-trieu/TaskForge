@@ -1,7 +1,21 @@
 from firebase_admin import firestore, auth
 from .global_counters import *
+from .profile_page import *
 
 db = firestore.client()
+
+############################################################
+#                   Helpers for create user                #
+############################################################
+
+def create_test_user(test_type, num):
+    try:
+        uid = create_user_email(f"{test_type}.user{num}@gmail.com", "PaSsWoRd123", f"User User{num}")
+    except auth.EmailAlreadyExistsError:
+        pass
+    uid = auth.get_user_by_email(f"{test_type}.user{num}@gmail.com").uid
+
+    return uid
 
 ############################################################
 #                 Helpers for Project Master               #
@@ -11,12 +25,20 @@ def add_tm_to_project(pid, new_uid):
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
+    user_ref = db.collection("users").document(str(new_uid))
+
     if not new_uid in project_members:
         project_members.append(new_uid)
 
     proj_ref.update({
         "project_members": project_members
     })
+
+    user_projects = user_ref.get().get("projects")
+    if not pid in user_projects:
+        user_projects.append(pid)
+
+    user_ref.update({"projects": user_projects})
 
 ############################################################
 #                    Helpers for Projects                  #
@@ -94,10 +116,21 @@ def reset_database():
     for proj_doc_ref in db.collection('projects').list_documents():
         proj_doc_ref.delete()
 
-    # TODO: Add more if you have created more collections!
+    # TASKS deletion
+    for tasks_doc_ref in db.collection('tasks').list_documents():
+        tasks_doc_ref.delete()
+
+    # SUBTASKS deletion
+    for subtasks_doc_ref in db.collection('subtasks').list_documents():
+        subtasks_doc_ref.delete()
+
+    # EPICS deletion
+    for epics_doc_ref in db.collection('epics').list_documents():
+        epics_doc_ref.delete()
 
     # Reset counters
-    init_tuid()
-    init_pid()
     init_eid()
+    init_pid()
+    init_stid()
     init_tid()
+    init_tuid()

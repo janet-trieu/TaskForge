@@ -20,6 +20,7 @@ const accountButtons = [
 ]
 
 const Settings = ({ firebaseApp }) => {
+  
   return (
     <>
       <SettingsContainer firebaseApp={firebaseApp} title="Admin" description="Manage and configure user accounts." buttons={adminButtons} />

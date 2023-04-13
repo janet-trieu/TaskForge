@@ -15,6 +15,7 @@ from .notifications import *
 from .helper import *
 from .connections import *
 from .classes import *
+from .profile_page import *
 
 db = firestore.client()
 
@@ -39,11 +40,9 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     '''
 
     # setting default values 
-    if due_date == None:
-        due_date = None
-    if team_strength == None:
-        team_strength = None
-    if picture == None:
+    if team_strength == None or team_strength == "":
+        team_strength = ""
+    if picture == None or picture == "":
         picture = "bleh.png"
 
     check_valid_uid(uid)
@@ -56,9 +55,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
     # if not due_date == None:
     #     if not isinstance(due_date, date):
     #         raise InputError("Project due date has to be type of date!!!")
-    if not team_strength == None:
-        if not type(team_strength) == int:
-            raise InputError("Project team strength has to be type of int!!!")
+    if not type(team_strength) == str:
+        raise InputError("Project team strength has to be type of str!!!")
     # below will have to have more checks implemented to ensure the input is a valid picture, type of png, jpg or jpeg
     if not type(picture) == str:
         raise InputError("Project picture has to be type of string!!!")
@@ -74,14 +72,26 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         raise InputError("Project requies a description!!!")
     
     # TO-DO: check for due date being less than 1 day away from today
-    if not team_strength == None:
-        if team_strength < 0:
-            raise InputError("Team strength cannot be less than 0!!!")
+    if not team_strength == "" and int(team_strength) < 0:
+        raise InputError("Team strength cannot be less than 0!!!")
 
     proj_ref = db.collection("projects")
     value = get_curr_pid()
-    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], [], [], False)
+    tasks = {
+            "Not Started": [],
+            "In Progress": [],
+            "Blocked": [],
+            "In Review/Testing": [],
+            "Completed": []
+    }
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], tasks, [])
     proj_ref.document(str(value)).set(project.to_dict())
+
+    # add the newly generated pid into the project master's project list
+    user_ref = db.collection("users").document(str(uid))
+    proj_list = user_ref.get().get("projects")
+    proj_list.append(value)
+    user_ref.update({"projects": proj_list})
     
     # update the pid after creating a project
     update_pid()
@@ -238,11 +248,15 @@ def invite_to_project(pid, sender_uid, receiver_uids):
     project_members = project["project_members"]
 
     connection_list = get_connected_taskmasters(sender_uid)
+    connection_uid_list = []
+    for connection in connection_list:
+        connection_uid_list.append(connection["uid"])
+
     for uid in receiver_uids:
         # check whether the specified uid exists
         check_valid_uid(uid)
 
-        if uid not in connection_list:
+        if uid not in connection_uid_list:
             raise InputError(f"ERROR: specifid uid {uid} is not connected to the project master {sender_uid}")
 
         if uid in project_members:
@@ -314,8 +328,8 @@ def update_project(pid, uid, updates):
                 raise InputError("Project status has to be type of string")
             elif not val in ("Not Started", "In Progress", "In Review", "Blocked", "Completed"):
                 raise InputError("Project status is incorrect. Please choose an appropriate staus of 'Not Started', 'In Progress', 'In Review', 'Blocked', 'Completed'.")
-            elif val == proj_ref.get().get("status"):
-                raise InputError("Cannot update the status of the project to its current status")
+            # elif val == proj_ref.get().get("status"):
+            #     raise InputError("Cannot update the status of the project to its current status")
             elif proj_ref.get().get("status") == "Completed":
                 raise AccessError(f"ERROR: Cannot update the status of a completed project. Please use revive_completed_project instead")
             else:
@@ -329,9 +343,9 @@ def update_project(pid, uid, updates):
                     "due_date": val
             })
         elif key == "team_strength":
-            if not type(val) == int:
-                raise InputError("Project team strength has to be type of int")
-            elif val < 0:
+            if not type(val) == str:
+                raise InputError("Project team strength has to be type of str")
+            elif not val == "" and int(val) < 0:
                 raise InputError("Team strength cannot be less than 0!!!")
             else:
                 proj_ref.update({

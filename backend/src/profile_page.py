@@ -292,6 +292,19 @@ def get_tasks(uid):
     """
     return get_user_ref(uid).get("tasks")
 
+### ========= Get Connected TMs ========= ###
+def get_connection_list(uid):
+    """
+    Gets the list of connected TMs uid of the User from firestore database
+
+    Args:
+        uid (str): uid of the user that can be found in auth and firestore database
+
+    Returns:
+        A list of uids that the user is connected with
+    """
+    return get_user_ref(uid).get("connections")
+
 ### ========= is admin ========= ###
 def is_admin(uid):
     """
@@ -359,9 +372,10 @@ def create_user_firestore(uid):
     Returns:
         None
     """
+    
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [])
+    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], 0)
     
     print(users_ref.document(uid).set(user.to_dict()))
 

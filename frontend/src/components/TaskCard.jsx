@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from 'styled-components';
-import { Draggable } from 'react-beautiful-dnd';
 import Modal from '@mui/material/Modal';
 import TaskModalContent from "./TaskModalContent";
 
@@ -17,21 +16,14 @@ const TaskCard = (props) => {
   const handleOpen = () => {setOpen(true)};
   const handleClose = () => {setOpen(false)};
   return (
-    <Draggable draggableId={props.task.id} index={props.index}>
-      {provided => (<>
-        <Container
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          onClick={handleOpen}
-        >
-          {props.task.content}
-        </Container>
-        <Modal open={open} onClose={handleClose}>
-          <TaskModalContent tid={props.task.id} uid={props.uid} />
-        </Modal>
-      </>)}
-    </Draggable>
+    <>
+      <Container onClick={handleOpen}>
+        {props.task.title}
+      </Container>
+      <Modal open={open} onClose={handleClose}>
+        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics}/>
+      </Modal>
+    </>
   );
 }
 
