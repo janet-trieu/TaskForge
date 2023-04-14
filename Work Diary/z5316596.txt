@@ -69,3 +69,13 @@ As a result, sprint 2 was unofficially extended a week until the demo for front 
 
 I was delegated reputation for sprint 3.
 
+Week 8
+Starting sprint 3 and bug fixing sprint 2 was planned for this period
+
+I finished many of the tests for reputation and the skeleton functions for reputation.
+
+There was no real trouble with this week except for communicating with my team and finalising how reputation should be implemented in the database. It is planned for everything reputation to be stored in the user with fields such as reviews and the averages of the scores over time to make it easier for the trend functions.
+
+The actual implementation of the functions have not been finished yet. This does not set back the project by anything as the sprint is 2 weeks and it is relatively easy to finish in the next upcoming week.
+
+Finishing reputation is planned to be finished for the next period.
