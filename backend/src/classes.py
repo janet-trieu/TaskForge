@@ -21,12 +21,14 @@ class User(object):
         is_removed (boolean): removal status of the user
         achievements (list): list of achievements the user has obtained
         projects (list): list of project ids that the user has joined
+        pinned_projects (list): list of project ids that the user has pinned
         epics (list): list of epic ids that the user has been assigned
         tasks (list): list of tasks ids that the user has been assigned
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
+        reputation (dict): a dict of reviews and averaged scores
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, pinned_projects, tasks, subtasks, connections):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, pinned_projects, tasks, subtasks, connections, reputation):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -41,6 +43,7 @@ class User(object):
         self.tasks = tasks
         self.subtasks = subtasks
         self.connections = connections
+        self.reputation = reputation
         
         
     def to_dict(self):
@@ -58,7 +61,8 @@ class User(object):
             "pinned_projects": self.pinned_projects,
             "tasks": self.tasks,
             "subtasks": self.subtasks,
-            "connections": self.connections
+            "connections": self.connections,
+            "reputation": self.reputation
         }
 
 class Epic():
@@ -216,6 +220,43 @@ class Comments():
             'uid': self.uid,
             'body': self.body,
             'time': self.time
+        }
+    
+class Review():
+    """
+    A Review class that is stored in User in firestore.
+
+    Attributes:
+        reviewee_uid (str): uid of the user that is being reviewed
+        reviewer_uid (str): uid of the user that left the review
+        pid (int): pid of the project that is shared between the reviewer and the reviewee
+        date (str): date of when the review was written, in "%d/%m/%Y" format
+        communication (int): 
+        time_management (int):
+        task_quality (int):
+        comment (str): 
+    """
+
+    def __init__(self, reviewer_uid, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
+        self.reviewer_uid = reviewer_uid
+        self.reviewee_uid = reviewee_uid
+        self.pid = pid
+        self.date = date
+        self.communication = communication
+        self.time_management = time_management
+        self.task_quality = task_quality
+        self.comment = comment
+
+    def to_dict(self):
+        return {
+            "reviewer_uid": self.reviewer_uid,
+            "reviewee_uid": self.reviewee_uid,
+            "pid": self.pid,
+            "date": self.date,
+            "communication": self.communication,
+            "time_management": self.time_management,
+            "task_quality": self.task_quality,
+            "comment": self.comment
         }
 
 class Project():
