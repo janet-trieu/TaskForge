@@ -27,7 +27,7 @@ tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
 ############################################################
 #                  Test for get_achievements               #
 ############################################################
-'''
+
 def test_task_complete_3():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -99,7 +99,6 @@ def test_proj_complete_5():
     achievements = get_user_achievements(pm_uid)
 
     assert achievements[1]["aid"] == 3
-'''
 
 def test_connection_num():
     tm0_email = get_email(tm0_uid)
@@ -117,21 +116,102 @@ def test_connection_num():
 
     assert achievements[0]["aid"] == 4
 
+def test_task_assign_num():
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    add_tm_to_project(pid, tm2_uid)
+    add_tm_to_project(pid, tm3_uid)
+
+    tid1 = create_task(tm3_uid, pid, "", [tm3_uid], "Task1", "description", "", None, None, "Not Started")
+    tid2 = create_task(tm3_uid, pid, "", [tm3_uid], "Task2", "description", "", None, None, "Not Started")
+    tid3 = create_task(tm3_uid, pid, "", [tm3_uid], "Task3", "description", "", None, None, "Not Started")
+    tid4 = create_task(tm3_uid, pid, "", [tm3_uid], "Task4", "description", "", None, None, "Not Started")
+    tid5 = create_task(tm3_uid, pid, "", [tm3_uid], "Task5", "description", "", None, None, "Not Started")
+    tid6 = create_task(tm3_uid, pid, "", [tm3_uid], "Task6", "description", "", None, None, "Not Started")
+    tid7 = create_task(tm3_uid, pid, "", [tm3_uid], "Task7", "description", "", None, None, "Not Started")
+    tid8 = create_task(tm2_uid, pid, "", [tm2_uid], "Task8", "description", "", None, None, "Not Started")
+    assign_task(tm2_uid, tid8, [tm2_uid, tm3_uid])
+
+    achievements = get_user_achievements(tm3_uid)
+
+    assert achievements[0]["aid"] == 5
+
+def test_lone_wolf():
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    achievements = get_user_achievements(pm_uid)
+    print(achievements)
+
+    assert achievements[0]["aid"] == 6
+
+
+def test_reputation_num():
+    pass
+
 ############################################################
 #                 Test for view_achievements               #
 ############################################################
 
 def test_view_my_achievements():
-    pass
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    # lone wolf should be in achievements
+    achievements = get_user_achievements(pm_uid)
+
+    res = view_achievement(pm_uid)
+
+    assert achievements == res
 
 def test_view_notmy_achievements():
-    pass
 
-def test_view_no_achievements():
-    pass
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-def test_view_invalid_uid():
-    pass
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    user_ref = db.collection("users").document(pm_uid).get()
+    if tm0_uid not in user_ref.get("connections"):
+        tm0_email = get_email(tm0_uid)
+        nid = notification_connection_request(tm0_email, pm_uid)
+        connection_request_respond(tm0_uid, nid, True)
+
+    # lone wolf should be in achievements
+    achievements = get_user_achievements(pm_uid)
+
+    res = view_connected_tm_achievement(tm0_uid, pm_uid)
+
+    assert achievements == res
 
 def test_view_not_connected():
-    pass
+
+    with pytest.raises(AccessError):
+        view_connected_tm_achievement(pm_uid, tm4_uid)
+
+def test_view_no_achievements():
+    res = view_achievement(tm4_uid)
+
+    assert res == []
+
+def test_view_visibility_off():
+
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    user_ref = db.collection("users").document(pm_uid).get()
+    if tm0_uid not in user_ref.get("connections"):
+        tm0_email = get_email(tm0_uid)
+        nid = notification_connection_request(tm0_email, pm_uid)
+        connection_request_respond(tm0_uid, nid, True)
+
+    toggle_achievement_visibility(pm_uid, 0)
+
+    res = view_connected_tm_achievement(tm0_uid, pm_uid)
+
+    assert res == []

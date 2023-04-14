@@ -12,9 +12,9 @@ TODO notes:
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
+from .achievement import check_achievement
 from .error import *
 from .helper import *
-from .achievement import *
 
 db = firestore.client()
 
