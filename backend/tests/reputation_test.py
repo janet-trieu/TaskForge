@@ -135,3 +135,11 @@ def test_invalid_view_non_existent_uid():
     with pytest.raises(InputError):
         view_reviews(uid1, "bleh")
     return
+
+# Test: total number of reviews written
+def test_number_of_reviews_written():
+    change_review_visibility(uid2, True)
+    write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
+    reviews = get_number_of_reviews_written(uid1)
+    assert reviews == 1
+    delete_review(uid1, uid2, pid1)
