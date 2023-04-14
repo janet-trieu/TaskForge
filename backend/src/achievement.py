@@ -70,21 +70,6 @@ def add_achievements():
     for key, val in achievements.items():
         db.collection("achievements").document(str(key)).set(val)
 
-def get_achievement(aid):
-    '''
-    Given an aid, return the achievement
-
-    Arguments:
-     - aid (achievement id)
-
-    Returns:
-     - achievement
-    '''
-
-    achievement = db.collection("achievements").document(str(aid)).get().to_dict()
-
-    return achievement
-
 def reset_time_acquired(aid):
     '''
     Given an aid, reset the time acquired to ""

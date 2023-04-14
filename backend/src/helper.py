@@ -152,6 +152,20 @@ def get_pid(project_str):
             return doc.id
     raise AccessError
 
+def get_achievement(aid):
+    '''
+    Given an aid, return the achievement
+
+    Arguments:
+     - aid (achievement id)
+
+    Returns:
+     - achievement
+    '''
+
+    achievement = db.collection("achievements").document(str(aid)).get().to_dict()
+
+    return achievement
 ############################################################
 #                       Create Users                       #
 ############################################################

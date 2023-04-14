@@ -12,8 +12,8 @@ TODO notes:
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
-from .achievement import *
 from .error import *
+from .helper import *
 
 db = firestore.client()
 
