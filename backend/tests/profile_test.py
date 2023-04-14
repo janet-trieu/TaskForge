@@ -25,7 +25,6 @@ display_name1 = "john doe"
 
 def test_create_user():
     uid = create_user_email(email1, password1, display_name1)
-    print(uid)
     assert uid == auth.get_user_by_email(email1).uid
     assert auth.get_user_by_email(email1).display_name == display_name1
     assert db.collection('users').document(uid).get().get("projects") == []
@@ -36,8 +35,6 @@ def test_create_user():
     assert db.collection('users').document(uid).get().get('is_banned') == False
     assert db.collection('users').document(uid).get().get('is_admin') == False
     assert db.collection('users').document(uid).get().get('is_removed') == False
-
-    print(uid)
     delete_user(uid)
 
 def test_create_duplicate_email():

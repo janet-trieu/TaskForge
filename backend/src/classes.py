@@ -5,7 +5,6 @@ File to store the all the classes
 from firebase_admin import firestore
 db = firestore.client()
 
-
 class User(object):
     """
     User Class that will be stored in the firestore database
@@ -26,7 +25,7 @@ class User(object):
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload, num_projs_completed, num_tasks_completed, hide_achievements):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -41,7 +40,9 @@ class User(object):
         self.subtasks = subtasks
         self.connections = connections
         self.workload = workload
-        
+        self.num_projs_completed = num_projs_completed
+        self.num_tasks_completed = num_tasks_completed
+        self.hide_achievements = hide_achievements
         
     def to_dict(self):
         return {
@@ -58,7 +59,10 @@ class User(object):
             "tasks": self.tasks,
             "subtasks": self.subtasks,
             "connections": self.connections,
-            "workload": self.workload
+            "workload": self.workload,
+            "num_projs_completed": self.num_projs_completed,
+            "num_tasks_completed": self.num_tasks_completed,
+            "hide_achievements": self.hide_achievements
         }
 
 class Epic():
@@ -275,3 +279,33 @@ def get_project(pid):
     )
 
     return project.to_dict()
+
+# class Achievements(object):
+#     '''
+#     Class for achievements that will be stored in the firestore database
+
+#     Attributes:
+#      - uid (user id)
+#      - aid (achievement id)
+#      - title (achievement title)
+#      - description (achievement description)
+#      - icon
+#      - time acquired
+#     '''
+#     def __init__(self, uid, aid, title, description, icon, time_acquired):
+#         self.uid = uid
+#         self.aid = aid
+#         self.title = title
+#         self.description = description
+#         self.icon = icon
+#         self.time_acquired = time_acquired
+
+#     def to_dict(self):
+#         return {
+#             "uid": self.uid,
+#             "aid": self.aid,
+#             "title": self.title,
+#             "description": self.description,
+#             "icon": self.icon,
+#             "time_acquired": self.time_acquired
+#         }

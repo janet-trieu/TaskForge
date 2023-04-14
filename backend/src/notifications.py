@@ -12,6 +12,7 @@ TODO notes:
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
+from .achievement import check_achievement
 from .error import *
 from .helper import *
 
@@ -361,6 +362,8 @@ def notification_accepted_request(uid, uid_sender):
             "nid": nid
         }
     }
+
+    check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)
     return nid
