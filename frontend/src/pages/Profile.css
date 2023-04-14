@@ -1,0 +1,11 @@
+.profile-box-header {
+    display: flex;
+    padding: 2.5%;
+    align-items: center;
+    gap: 2%;
+}
+
+.profile-box-header-title {
+    font-weight: bold;
+    font-size: x-large;
+}
