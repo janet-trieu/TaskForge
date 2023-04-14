@@ -6,8 +6,11 @@
     padding: 2vh 0;
     border-radius: 10px;
     width: 15vw;
-    height: 24vh;
     text-align: center;
+}
+
+.connection-card:hover {
+    cursor: pointer;
 }
 
 .connection-card img {
