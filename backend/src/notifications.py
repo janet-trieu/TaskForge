@@ -14,6 +14,7 @@ from firebase_admin import firestore, auth
 from datetime import datetime
 from .error import *
 from .helper import *
+from .achievement import *
 
 db = firestore.client()
 
@@ -361,6 +362,8 @@ def notification_accepted_request(uid, uid_sender):
             "nid": nid
         }
     }
+
+    check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)
     return nid

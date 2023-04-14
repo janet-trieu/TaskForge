@@ -31,7 +31,7 @@ class User(object):
         connections (list): list of uids of users that the User has connected to
         reputation (dict): a dict of reviews and averaged scores
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, reputation, workload):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -47,7 +47,8 @@ class User(object):
         self.connections = connections
         self.reputation = reputation
         self.workload = workload
-        
+        self.num_projs_completed = num_projs_completed
+        self.num_tasks_completed = num_tasks_completed
         
     def to_dict(self):
         return {
@@ -65,7 +66,9 @@ class User(object):
             "subtasks": self.subtasks,
             "connections": self.connections,
             "reputation": self.reputation,
-            "workload": self.workload
+            "workload": self.workload,
+            "num_projs_completed": self.num_projs_completed,
+            "num_tasks_completed": self.num_tasks_completed
         }
 
 class Epic():
@@ -320,66 +323,6 @@ def get_project(pid):
     )
 
     return project.to_dict()
-class Project():
-    """
-    A Project class that will be stored in firestore.
-
-    Attributes:
-     - 
-     - 
-    """
-    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks,is_pinned):
-        self.pid = pid
-        self.uid = uid
-        self.name = name
-        self.description = description
-        self.status = status
-        self.due_date = due_date
-        self.team_strength = team_strength
-        self.picture = picture
-        self.project_members = project_members
-        self.epics = epics
-        self.tasks = tasks
-        self.subtasks = subtasks
-        self.is_pinned = is_pinned
-    
-    def to_dict(self):
-        return {
-            "pid": self.pid,
-            "uid": self.uid,
-            "name": self.name,
-            "description": self.description,
-            "status": self.status,
-            "due_date": self.due_date,
-            "team_strength": self.team_strength,
-            "picture": self.picture,
-            "project_members": self.project_members,
-            "epics": self.epics,
-            "tasks": self.tasks,
-            "subtasks": self.subtasks,
-            "is_pinned": self.is_pinned
-        }
-
-def get_project(pid):
-    doc = db.collection("projects").document(str(pid)).get()
-
-    project = Project(
-        doc.get("pid"),
-        doc.get("uid"),
-        doc.get("name"),
-        doc.get("description"),
-        doc.get("status"),
-        doc.get("due_date"),
-        doc.get("team_strength"),
-        doc.get("picture"),
-        doc.get("project_members"),
-        doc.get("epics"),
-        doc.get("tasks"),
-        doc.get("subtasks"),
-        doc.get("is_pinned")
-    )
-
-    return project.to_dict()
 
 class Achievements(object):
     '''
@@ -395,33 +338,12 @@ class Achievements(object):
      - 
     '''
 
-    def __init__(self, uid, aid, title, description, icon, time_acquired):
-        self.uid = uid
-        self.aid = aid
-        self.title = title
-        self.description = description
-        self.icon = icon
-        self.time_acquired = time_acquired
-
-    def to_dict(self):
-        return {
-            "uid": self.uid,
-            "aid": self.aid,
-            "title": self.title,
-            "description": self.description,
-            "icon": self.icon,
-            "time_acquired": self.time_acquired
-        }
-
-def get_user_achievements(uid):
-    """
-    Gets the current achievements list of specified user
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        A list of achievements the user has
-    """
-    # print(db.collection("users").document(str(uid)).get().get("achievements"))
-    return db.collection("users").document(str(uid)).get().get("achievements")
+#     def to_dict(self):
+#         return {
+#             "uid": self.uid,
+#             "aid": self.aid,
+#             "title": self.title,
+#             "description": self.description,
+#             "icon": self.icon,
+#             "time_acquired": self.time_acquired
+#         }

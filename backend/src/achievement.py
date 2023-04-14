@@ -16,118 +16,55 @@ def add_achievements():
     achievements = {
         0: {
             "aid": 0,
-            "title": "Almost Admin",
-            "description": "The very first user",
+            "title": "Intermediate Task Master",
+            "description": "Complete at least 3 assigned tasks",
             "icon": "abc",
             "time_acquired": ""
         },
         1: {
             "aid": 1,
-            "title": "TBA",
-            "description": "First Task Master to complete a task",
+            "title": "Advanced Task Master",
+            "description": "Complete at least 5 assigned tasks",
             "icon": "abc",
             "time_acquired": ""
         },
         2: {
             "aid": 2,
-            "title": "TBA",
-            "description": "First Project Master to complete a project",
+            "title": "Intermediate Project Master",
+            "description": "Complete at least 3 projects",
             "icon": "abc",
             "time_acquired": ""
         },
         3: {
             "aid": 3,
-            "title": "Intermediate Task Master",
-            "description": "Complete at least 10 assigned tasks",
+            "title": "Advanced Project Master",
+            "description": "Complete at least 5 projects",
             "icon": "abc",
             "time_acquired": ""
         },
         4: {
             "aid": 4,
-            "title": "Advanced Task Master",
-            "description": "Complete at least 20 assigned tasks",
+            "title": "I am bnoc",
+            "description": "Have at least 3 connections",
             "icon": "abc",
             "time_acquired": ""
         },
         5: {
             "aid": 5,
-            "title": "Intermediate Project Master",
-            "description": "Complete at least 5 projects",
+            "title": "I also leave google restaurant reviews",
+            "description": "Leave at least 3 unique reputation reviews",
             "icon": "abc",
             "time_acquired": ""
         },
         6: {
             "aid": 6,
-            "title": "Advanced Project Master",
-            "description": "Complete at least 10 projects",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        7: {
-            "aid": 7,
-            "title": "I am bnoc",
-            "description": "Have at least 5 connections",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        8: {
-            "aid": 8,
-            "title": "I also leave google restaurant reviews",
-            "description": "Leave at least 10 unique reputation reviews",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        9: {
-            "aid": 9,
-            "title": "Problem Solver",
-            "description": "Reputation of teamwork and communication over 4/5",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        10: {
-            "aid": 10,
-            "title": "Fast as Lightning",
-            "description": "Complete a task within the first half of deadline",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        11: {
-            "aid": 11,
-            "title": "There is no 'I' in team",
-            "description": "Reputation of teamwork over 4.5/5",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        12: {
-            "aid": 12,
-            "title": "Megaphone",
-            "description": "Reputation of communication over 4.5/5",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        13: {
-            "aid": 13,
-            "title": "Michelangelo.. is that mE?",
-            "description": "Reputation of quality over 4.5/5",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        14: {
-            "aid": 14,
             "title": "I am Octopus",
             "description": "Have more than 8 tasks assigned at one time",
             "icon": "abc",
             "time_acquired": ""
         },
-        15: {
-            "aid": 15,
-            "title": "Look at me, I'm StackOverflow Now",
-            "description": "Overall Reputation over 4.5/5",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        16: {
-            "aid": 16,
+        7: {
+            "aid": 7,
             "title": "Woof Woof Lone Wolf",
             "description": "Complete a project with only yourself",
             "icon": "abc",
@@ -135,8 +72,8 @@ def add_achievements():
         }
     }
 
-    for key,val in achievements.items():
-        db.collection("achievements").document(str(key)).set(str(val))
+    for key, val in achievements.items():
+        db.collection("achievements").document(str(key)).set(val)
 
 def get_achievement(aid):
 
@@ -146,7 +83,15 @@ def get_achievement(aid):
 
     return achievement
 
-def update_achievements(uid, aid):
+def reset_time_acquired(aid):
+
+    achievement = db.collection("achievements").document(str(aid)).get().to_dict()
+
+    achievement.update({"time_acquired": ""})
+
+    return achievement
+
+def give_achievement(uid, aid):
     """
     Updates the achievements list of the user identified by Uid in firestore database
 
@@ -160,17 +105,20 @@ def update_achievements(uid, aid):
     user_ref = db.collection("users").document(uid)
 
     new_achievement = get_achievement(aid)
-    ####################
-
-    print(f"this is new achievement: {new_achievement}")
 
     user_achievements = user_ref.get().get("achievements")
     user_achievements.append(new_achievement)
 
     user_ref.update({"achievements": user_achievements})
 
-    # reset time acquired
-    new_achievement.update({"time_acquired": ""})
+    reset_time_acquired(aid)
+
+def check_user_has_achievement(uid, aid):
+    curr_achievements = get_user_achievements(uid)
+    for ach in curr_achievements:
+        if aid == ach["aid"]:
+            return True
+    return False
 
 def check_achievement(a_type, uid):
     '''
@@ -183,29 +131,38 @@ def check_achievement(a_type, uid):
      - uid (user id)
 
     Returns:
-     - True, if achievement is granted
-     - False, if not
+     - 0, if achievement is granted
+     - 1 or err if not
 
     Raises:
      - InputError for any incorrect values
     '''
-    
-    check_valid_uid(uid)
 
-    user_db = db.collection("users").get()
+    user_ref = get_user_ref(uid)
 
-    if a_type == "user_creation":
-        if len(user_db) > 1:
-            return False
+    if a_type == "task_completion":
+        n_tasks = user_ref.get("num_tasks_completed")
+        if n_tasks >= 3 and check_user_has_achievement(uid, 0) == False:
+            give_achievement(uid, 0)
+        elif n_tasks >= 5 and check_user_has_achievement(uid, 1) == False:
+            give_achievement(uid, 1)
         else:
-            update_achievements(uid, 0)
-
-    elif a_type == "task_completion":
-        pass
+            return 1
     elif a_type == "project_completion":
-        pass
+        n_projs = user_ref.get("num_projs_completed")
+        if n_projs >= 3 and check_user_has_achievement(uid, 2) == False:
+            give_achievement(uid, 2)
+        elif n_projs >= 5 and check_user_has_achievement(uid, 3) == False:
+            give_achievement(uid, 3)
+        else:
+            return 1
     elif a_type == "connection":
-        pass
+        n_conns = len(get_connection_list(uid))
+        print(n_conns)
+        if n_conns >= 3 and check_user_has_achievement(uid, 4) == False:
+            give_achievement(uid, 4)
+        else:
+            return 1
     elif a_type == "task_assigned":
         pass
     elif a_type == "reputation":
@@ -213,4 +170,4 @@ def check_achievement(a_type, uid):
     else:
         raise InputError(f"ERROR: Invalid achievement type specified {a_type}")
 
-    return True
+    return 0
