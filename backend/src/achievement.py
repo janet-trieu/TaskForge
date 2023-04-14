@@ -8,12 +8,13 @@ Functionalities:
 '''
 from .helper import *
 from .classes import *
-from .profile_page import *
 
 import time
 
 def add_achievements():
-
+    '''
+    Function to add the achievements to firestore db
+    '''
     achievements = {
         0: {
             "aid": 0,
@@ -52,22 +53,22 @@ def add_achievements():
         },
         5: {
             "aid": 5,
-            "title": "I also leave google restaurant reviews",
-            "description": "Leave at least 3 unique reputation reviews",
-            "icon": "abc",
-            "time_acquired": ""
-        },
-        6: {
-            "aid": 6,
             "title": "I am Octopus",
             "description": "Have more than 8 tasks assigned at one time",
             "icon": "abc",
             "time_acquired": ""
         },
-        7: {
-            "aid": 7,
+        6: {
+            "aid": 6,
             "title": "Woof Woof Lone Wolf",
             "description": "Complete a project with only yourself",
+            "icon": "abc",
+            "time_acquired": ""
+        },
+        7: {
+            "aid": 7,
+            "title": "I also leave google restaurant reviews",
+            "description": "Leave at least 3 unique reputation reviews",
             "icon": "abc",
             "time_acquired": ""
         }
@@ -77,6 +78,15 @@ def add_achievements():
         db.collection("achievements").document(str(key)).set(val)
 
 def get_achievement(aid):
+    '''
+    Given an aid, return the achievement and update the time acquired to now
+
+    Arguments:
+     - aid (achievement id)
+
+    Returns:
+     - achievement
+    '''
 
     achievement = db.collection("achievements").document(str(aid)).get().to_dict()
 
@@ -85,15 +95,22 @@ def get_achievement(aid):
     return achievement
 
 def reset_time_acquired(aid):
+    '''
+    Given an aid, reset the time acquired to ""
+
+    Arguments:
+     - aid (achievement id)
+
+    Returns:
+     - None
+    '''
 
     achievement = db.collection("achievements").document(str(aid)).get().to_dict()
 
     achievement.update({"time_acquired": ""})
 
-    return achievement
-
 def give_achievement(uid, aid):
-    """
+    '''
     Updates the achievements list of the user identified by Uid in firestore database
 
     Args:
@@ -102,7 +119,7 @@ def give_achievement(uid, aid):
 
     Returns:
         None
-    """
+    '''
     user_ref = db.collection("users").document(uid)
 
     new_achievement = get_achievement(aid)
@@ -115,11 +132,63 @@ def give_achievement(uid, aid):
     reset_time_acquired(aid)
 
 def check_user_has_achievement(uid, aid):
-    curr_achievements = get_user_achievements(uid)
+    '''
+    Check if the user has already gotten a specific achievement
+
+    Args:
+     - uid (str): uid of the user that can be found in auth database
+     - aid (int): aid of the achievement to be checked
+
+    Returns:
+     - True, if the achievement has already been achieved
+     - False, if otherwise
+    '''
+
+    curr_achievements = db.collection("users").document(uid).get().get("achievements")
     for ach in curr_achievements:
         if aid == ach["aid"]:
             return True
     return False
+
+def check_lone_wolf(uid):
+    '''
+    Specific helper to check if a user can get the lone wolf achievement
+    - checks if the user has completed a project by themself
+
+    Args:
+     - uid (str): uid of the user that can be found in auth database
+
+    Returns:
+     - True, if the achievement can be given
+     - False, if otherwise
+    '''
+    user_ref = db.collection("users").document(uid).get()
+
+    for pid in user_ref.get("projects"):
+        proj_ref = get_project(pid)
+        if len(proj_ref.get("project_members")) == 1 and proj_ref.get("status") == "Completed":
+            return True
+
+    return False
+
+def list_unachieved(uid):
+    '''
+    Specific helper to return a list of achievement ids the user has not achieved
+
+    Args:
+     - uid (str): uid of the user that can be found in auth database
+
+    Returns:
+     - list of aids that hasnt been achieved
+    '''
+    has_got = db.collection("users").document(uid).get().get("achievements")
+    
+    not_got = []
+    for i in range(0, 7):
+        if i not in has_got:
+            not_got.append(i)
+
+    return not_got
 
 def check_achievement(a_type, uid):
     '''
@@ -156,20 +225,105 @@ def check_achievement(a_type, uid):
             give_achievement(uid, 2)
         elif n_projs >= 5 and check_user_has_achievement(uid, 3) == False:
             give_achievement(uid, 3)
+        elif check_lone_wolf(uid) == True and check_user_has_achievement(uid, 6) == False:
+            give_achievement(uid, 6)
         else:
             return 1
     elif a_type == "connection":
-        n_conns = len(get_connection_list(uid))
-        print(n_conns)
+        n_conns = len(db.collection("users").document(uid).get().get("connections"))
         if n_conns >= 3 and check_user_has_achievement(uid, 4) == False:
             give_achievement(uid, 4)
         else:
             return 1
     elif a_type == "task_assigned":
-        pass
+        n_assigned = len(db.collection("users").document(uid).get().get("tasks"))
+        if n_assigned >= 8 and check_user_has_achievement(uid, 5) == False:
+            give_achievement(uid, 5)
+        else:
+            return 1
     elif a_type == "reputation":
         pass
     else:
         raise InputError(f"ERROR: Invalid achievement type specified {a_type}")
 
     return 0
+
+def view_achievement(uid):
+    '''
+    View the list of achievements
+
+    Arguments:
+     - uid (user id)
+
+    Returns:
+     - list of achievements
+
+    Raises:
+     - None
+    '''
+
+    check_valid_uid(uid)
+
+    curr_achievements = db.collection("users").document(uid).get().get("achievements")
+
+    return curr_achievements
+
+def view_connected_tm_achievement(uid, conn_uid):
+    '''
+    View a connected Task Master's achievements
+    If the two users are connected and their visibility setting doesn't forbid, view achievements
+
+    Arguments:
+     - uid (user id)
+     - conn_uid (uid to view their achievements)
+
+    Returns:
+     - list of achievements
+     - err
+
+    Raises:
+     - AccessError if uid is not connected  
+    '''
+    user_ref = db.collection("users").document(uid).get()
+
+    if conn_uid not in user_ref.get("connections"):
+        raise AccessError("ERROR: uid is not connected")
+
+    conn_user_ref = db.collection("users").document(conn_uid).get()
+    hidden = conn_user_ref.get("hide_achievements")
+    if hidden == True:
+        return []
+
+    curr_achievements = db.collection("users").document(conn_uid).get().get("achievements")
+
+    return curr_achievements
+
+def toggle_achievement_visibility(uid, action):
+    '''
+    Toggle on, or off the visibility of the user's achievements
+     - if on, the achievements are only visible to the user
+
+    Arguments:
+     - uid (user id)
+     - action (int, 0 to toggle on, 1 to toggle off)
+
+    Returns:
+     - None
+
+    Raises:
+     - InputError if attempt to toggle on when visibility if already on (True), or otherwise same for off
+    '''
+    user_ref = db.collection("users").document(uid)
+
+    hidden = user_ref.get().get("hide_achievements")
+
+    if action == 0 and hidden == True:
+        raise InputError("ERROR: Visibility is already toggled ON")
+    elif action == 1 and hidden == False:
+        raise InputError("ERROR: Visibility is already toggled OFF")
+    
+    if action == 0:
+        user_ref.update({"hide_achievements": True})
+    elif action == 1:
+        user_ref.update({"hide_achievements": False})
+    

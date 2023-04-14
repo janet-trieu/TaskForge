@@ -253,7 +253,6 @@ def assign_task(uid, tid, new_assignees):
     removed_assignees = list(set(old_assignees) - set(new_assignees_uids))
     added_assignees = list(set(new_assignees_uids) - set(old_assignees))
 
-    
     # remove task from assignees that are no longer assigned
     for new_uid in removed_assignees:
         user = get_user_ref(new_uid)
@@ -272,7 +271,10 @@ def assign_task(uid, tid, new_assignees):
             tasks.append(tid)
             db.collection('users').document(new_uid).update({"tasks": tasks})
             notification_assigned_task(uid, pid, tid)
-    # 
+    #
+    
+    check_achievement("task_assigned", uid)
+
     db.collection('tasks').document(str(tid)).update({"assignees": new_assignees_uids})
     return
 
