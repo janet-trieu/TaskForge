@@ -71,10 +71,15 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
     now = now.strftime("%d/%m/%Y")
     
     review = Review(reviewer_uid, reviewee_uid, pid, now, communication, time_management, task_quality, comment)
-
+    # Add review to reviewee
     reputation_docs = db.collection("users").document(str(reviewee_uid)).get().get("reputation")
     reputation_docs["reviews"].append(review.to_dict())
     db.collection("users").document(str(reviewee_uid)).update({"reputation": reputation_docs})
+    # Increment number of reviews written by 1
+    reviewer_doc = db.collection("users").document(str(reviewer_uid)).get().get("reputation")
+    reviewer_doc["total_reviews_written"] += 1
+    db.collection("users").document(str(reviewer_uid)).update({"reputation": reviewer_doc})
+    # update average
     update_average(reviewee_uid)
 
 ### ========= Write Review ========= ###
@@ -102,6 +107,9 @@ def delete_review(reviewer_uid, reviewee_uid, pid):
             reviews.remove(review)
             reputation["reviews"] = reviews
             db.collection("users").document(str(reviewee_uid)).update({"reputation": reputation})
+            reviewer_doc = db.collection("users").document(str(reviewer_uid)).get().get("reputation")
+            reviewer_doc["total_reviews_written"] -= 1
+            db.collection("users").document(str(reviewer_uid)).update({"reputation": reviewer_doc})
             update_average(reviewee_uid)
             print("Successfully deleted review")
             return
