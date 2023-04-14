@@ -229,3 +229,18 @@ def change_review_visibility(uid, visibility):
     reputation_doc = db.collection("users").document(str(uid)).get().get("reputation")
     reputation_doc["visibility"] = visibility
     db.collection("users").document(str(uid)).update({"reputation": reputation_doc})
+
+### ========= get total number of reviews written ========= ###
+def get_number_of_reviews_written(uid):
+    """
+    Gets the total nubmer of reviews written
+    
+    Args:  
+        uid (str): uid of the user
+
+    Returns:
+        an int correlating to the nubmer of reviews written
+    """
+    check_valid_uid(uid)
+
+    return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
