@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
 from waitress import serve
 
+from.achievement import *
 from .authentication import *
 from .admin import *
 from .proj_master import *
@@ -533,6 +534,26 @@ def flask_tasklist_search():
     query_description = request.args.get("query_description")
     query_deadline = request.args.get("query_deadline")
     return dumps(search_tasklist(uid, query_tid, query_title, query_description, query_deadline))
+
+# Achievements
+@app.route("/achievements/view/my", methods=["GET"])
+def flask_view_achievements():
+    uid = request.headers.get("Authorization")
+
+    return dumps(view_achievement(uid))
+
+@app.route("/achievements/view/notmy", methods=["GET"])
+def flask_view_connected_tm_achievement():
+    uid = request.headers.get("Authorization")
+
+    conn_uid = request.args.get("conn_uid")
+    return dumps(view_connected_tm_achievement(uid, conn_uid))
+
+@app.route("/achievements/toggle_visibility", methods=["POST"])
+def flask_toggle_achievement_visibility():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(toggle_achievement_visibility(uid, data["action"]))
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)
