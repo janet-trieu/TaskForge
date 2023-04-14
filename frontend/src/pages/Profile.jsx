@@ -7,6 +7,7 @@ import taskIcon from '../assets/tasks.png';
 import achievementIcon from '../assets/profile achievement.png'
 import { Modal } from "@mui/material";
 import ProfileModalContent from "../components/ProfileModalContent";
+import './Profile.css'
 
 const Profile = ({ firebaseApp }) => {
   const location = useLocation();
@@ -93,13 +94,12 @@ const Profile = ({ firebaseApp }) => {
 
             </div>
           </div>
-          <div className='profile-box'>
+          <div className='profile-box' onClick={() => navigate(`/achievements`)}>
             <div className='profile-box-header'>
               <div className='profile-box-header-icon'><img src={achievementIcon}/></div>
-              <div className='profile-box-header-title'> Achievements</div>
+              <div className='profile-box-header-title'>Achievements</div>
             </div>
             <div>
-
             </div>
           </div>
         </div>
