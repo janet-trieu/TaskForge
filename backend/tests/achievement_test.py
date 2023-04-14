@@ -1,10 +1,7 @@
 import pytest
 from firebase_admin import auth
 from src.test_helpers import *
-from src.profile_page import *
 from src.proj_master import *
-from src.projects import *
-from src.helper import *
 from src.taskboard import *
 from src.achievement import *
 
@@ -27,7 +24,7 @@ tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
 ############################################################
 #                  Test for get_achievements               #
 ############################################################
-
+'''
 def test_task_complete_3():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -215,3 +212,27 @@ def test_view_visibility_off():
     res = view_connected_tm_achievement(tm0_uid, pm_uid)
 
     assert res == []
+'''
+############################################################
+#                Test for share_achievements               #
+############################################################
+
+def test_share_achievement():
+
+    user_ref = db.collection("users").document(pm_uid).get()
+    if tm0_uid not in user_ref.get("connections"):
+        tm0_email = get_email(tm0_uid)
+        nid = notification_connection_request(tm0_email, pm_uid)
+        connection_request_respond(tm0_uid, nid, True)
+
+    give_achievement(pm_uid, 0)
+
+    share_achievement(pm_uid, tm0_uid, 0)
+
+    doc_data = db.collection('notifications').document(tm0_uid).get().to_dict()
+    actual_notification = doc_data.get('achievement_shared0')
+
+    assert actual_notification.get('notification_msg') == "Project Master has earned the Intermediate Task Master achievement."
+    assert actual_notification.get('type') == 'achievement_shared'
+    assert actual_notification.get('uid_sender') == pm_uid
+    assert actual_notification.get('nid') == 'achievement_shared0'

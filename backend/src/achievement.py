@@ -8,6 +8,7 @@ Functionalities:
 '''
 from .helper import *
 from .classes import *
+from .notifications import *
 
 import time
 
@@ -20,56 +21,48 @@ def add_achievements():
             "aid": 0,
             "title": "Intermediate Task Master",
             "description": "Complete at least 3 assigned tasks",
-            "icon": "abc",
             "time_acquired": ""
         },
         1: {
             "aid": 1,
             "title": "Advanced Task Master",
             "description": "Complete at least 5 assigned tasks",
-            "icon": "abc",
             "time_acquired": ""
         },
         2: {
             "aid": 2,
             "title": "Intermediate Project Master",
             "description": "Complete at least 3 projects",
-            "icon": "abc",
             "time_acquired": ""
         },
         3: {
             "aid": 3,
             "title": "Advanced Project Master",
             "description": "Complete at least 5 projects",
-            "icon": "abc",
             "time_acquired": ""
         },
         4: {
             "aid": 4,
             "title": "I am bnoc",
             "description": "Have at least 3 connections",
-            "icon": "abc",
             "time_acquired": ""
         },
         5: {
             "aid": 5,
             "title": "I am Octopus",
             "description": "Have more than 8 tasks assigned at one time",
-            "icon": "abc",
             "time_acquired": ""
         },
         6: {
             "aid": 6,
             "title": "Woof Woof Lone Wolf",
             "description": "Complete a project with only yourself",
-            "icon": "abc",
             "time_acquired": ""
         },
         7: {
             "aid": 7,
             "title": "I also leave google restaurant reviews",
             "description": "Leave at least 3 unique reputation reviews",
-            "icon": "abc",
             "time_acquired": ""
         }
     }
@@ -79,7 +72,7 @@ def add_achievements():
 
 def get_achievement(aid):
     '''
-    Given an aid, return the achievement and update the time acquired to now
+    Given an aid, return the achievement
 
     Arguments:
      - aid (achievement id)
@@ -89,8 +82,6 @@ def get_achievement(aid):
     '''
 
     achievement = db.collection("achievements").document(str(aid)).get().to_dict()
-
-    achievement.update({"time_acquired": time.time()})
 
     return achievement
 
@@ -123,11 +114,14 @@ def give_achievement(uid, aid):
     user_ref = db.collection("users").document(uid)
 
     new_achievement = get_achievement(aid)
+    new_achievement.update({"time_acquired": time.time()})
 
     user_achievements = user_ref.get().get("achievements")
     user_achievements.append(new_achievement)
 
     user_ref.update({"achievements": user_achievements})
+
+    notification_achievement(uid, aid)
 
     reset_time_acquired(aid)
 
@@ -326,4 +320,32 @@ def toggle_achievement_visibility(uid, action):
         user_ref.update({"hide_achievements": True})
     elif action == 1:
         user_ref.update({"hide_achievements": False})
+
+def share_achievement(uid, receiver_uids, aid):
+    '''
+    Share an achievements a user has gotten, to other connected TMs
+     - this is done through sending a notification to them
+
+    Arguments:
+     - uid (user id)
+     - receiver_uids (uids to send)
+     - aid (aid to be shared)
+
+    Returns:
+     - 0 for success
+     - err
+
+    Raises:
+     - 
+    '''
+    user_ref = db.collection("users").document(uid)
+
+    if aid in list_unachieved(uid):
+        raise InputError("ERROR: Cannot share an achievement you have not gotten")
+         
+    for id in receiver_uids:
+        if id not in user_ref.get().get("connections"):
+            raise InputError("ERROR: Cannot share to a TM you are not connected with")
+
+        notification_achievement_share(uid, id, aid)
     
