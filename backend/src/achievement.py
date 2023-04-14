@@ -7,8 +7,9 @@ Functionalities:
  - tba
 '''
 from .helper import *
-from .profile_page import *
 from .classes import *
+from .profile_page import *
+
 import time
 
 def add_achievements():
@@ -138,7 +139,8 @@ def check_achievement(a_type, uid):
      - InputError for any incorrect values
     '''
 
-    user_ref = get_user_ref(uid)
+    # user_ref = get_user_ref(uid)
+    user_ref = db.collection("users").document(uid).get()
 
     if a_type == "task_completion":
         n_tasks = user_ref.get("num_tasks_completed")
