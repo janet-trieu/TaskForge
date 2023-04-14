@@ -25,7 +25,7 @@ class User(object):
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, workload, num_projs_completed, num_tasks_completed):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -40,7 +40,8 @@ class User(object):
         self.subtasks = subtasks
         self.connections = connections
         self.workload = workload
-        
+        self.num_projs_completed = num_projs_completed
+        self.num_tasks_completed = num_tasks_completed
         
     def to_dict(self):
         return {
@@ -57,7 +58,9 @@ class User(object):
             "tasks": self.tasks,
             "subtasks": self.subtasks,
             "connections": self.connections,
-            "workload": self.workload
+            "workload": self.workload,
+            "num_projs_completed": self.num_projs_completed,
+            "num_tasks_completed": self.num_tasks_completed
         }
 
 class Epic():
@@ -275,51 +278,32 @@ def get_project(pid):
 
     return project.to_dict()
 
-class Achievements(object):
-    '''
-    Class for achievements that will be stored in the firestore database
+# class Achievements(object):
+#     '''
+#     Class for achievements that will be stored in the firestore database
 
-    Attributes:
-     - uid (user id)
-     - aid (achievement id)
-     - title (achievement title)
-     - description (achievement description)
-     - icon
-     - time acquired
-     - 
-    '''
+#     Attributes:
+#      - uid (user id)
+#      - aid (achievement id)
+#      - title (achievement title)
+#      - description (achievement description)
+#      - icon
+#      - time acquired
+#     '''
+#     def __init__(self, uid, aid, title, description, icon, time_acquired):
+#         self.uid = uid
+#         self.aid = aid
+#         self.title = title
+#         self.description = description
+#         self.icon = icon
+#         self.time_acquired = time_acquired
 
-    def __init__(self, uid, aid, title, description, icon, time_acquired):
-        self.uid = uid
-        self.aid = aid
-        self.title = title
-        self.description = description
-        self.icon = icon
-        self.time_acquired = time_acquired
-
-    def to_dict(self):
-        return {
-            "uid": self.uid,
-            "aid": self.aid,
-            "title": self.title,
-            "description": self.description,
-            "icon": self.icon,
-            "time_acquired": self.time_acquired
-        }
-
-def get_user_achievements(uid):
-    """
-    Gets the current achievements list of specified user
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        A list of achievements the user has
-    """
-    # print(db.collection("users").document(str(uid)).get().get("achievements"))
-    return db.collection("users").document(str(uid)).get().get("achievements")
-    #     doc.get("subtasks")
-    # )
-
-    # return project.to_dict()
+#     def to_dict(self):
+#         return {
+#             "uid": self.uid,
+#             "aid": self.aid,
+#             "title": self.title,
+#             "description": self.description,
+#             "icon": self.icon,
+#             "time_acquired": self.time_acquired
+#         }
