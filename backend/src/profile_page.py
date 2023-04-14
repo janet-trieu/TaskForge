@@ -456,7 +456,8 @@ def create_user_firestore(uid):
         'avg_time_management': [],
         'avg_task_quality': [],
         'avg': [],
-        'visibility': True
+        'visibility': True,
+        'total_reviews_written': 0
     }
     user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False)
     
