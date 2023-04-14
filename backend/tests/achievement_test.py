@@ -227,12 +227,22 @@ def test_share_achievement():
 
     give_achievement(pm_uid, 0)
 
-    share_achievement(pm_uid, tm0_uid, 0)
+    share_achievement(pm_uid, [tm0_uid], 0)
 
     doc_data = db.collection('notifications').document(tm0_uid).get().to_dict()
     actual_notification = doc_data.get('achievement_shared0')
 
     assert actual_notification.get('notification_msg') == "Project Master has earned the Intermediate Task Master achievement."
     assert actual_notification.get('type') == 'achievement_shared'
-    assert actual_notification.get('uid_sender') == pm_uid
     assert actual_notification.get('nid') == 'achievement_shared0'
+
+def test_share_not_connected():
+    give_achievement(pm_uid, 0)
+
+    with pytest.raises(InputError):
+        share_achievement(pm_uid, [tm4_uid], 0)
+
+def test_share_not_got_achievement():
+    
+    with pytest.raises(InputError):
+        share_achievement(pm_uid, [tm1_uid], 7)

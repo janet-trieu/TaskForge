@@ -28,7 +28,7 @@ tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
 
 port = 8000
 url = f"http://localhost:{port}/"
-'''
+
 def test_view_achievements():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -107,4 +107,46 @@ def test_view_hidden():
     view_json = view_resp.json()
 
     assert view_json == []
-'''
+
+
+def test_share_achievement():
+
+    user_ref = db.collection("users").document(pm_uid).get()
+    if tm0_uid not in user_ref.get("connections"):
+        tm0_email = get_email(tm0_uid)
+        nid = notification_connection_request(tm0_email, pm_uid)
+        connection_request_respond(tm0_uid, nid, True)
+
+    give_achievement(pm_uid, 0)
+
+    header = {'Authorization': pm_uid}
+    share_resp = requests.post(url + "achievements/share", headers=header, json={
+        "receiver_uids": [tm0_uid],
+        "aid": 0
+    })
+
+    assert share_resp.status_code == 200
+
+def test_share_achievement_not_connected():
+
+    give_achievement(pm_uid, 0)
+
+    header = {'Authorization': pm_uid}
+    share_resp = requests.post(url + "achievements/share", headers=header, json={
+        "receiver_uids": [tm4_uid],
+        "aid": 0
+    })
+
+    assert share_resp.status_code == 400
+
+def test_share_achievement_not_got_achievement():
+
+    give_achievement(pm_uid, 0)
+
+    header = {'Authorization': pm_uid}
+    share_resp = requests.post(url + "achievements/share", headers=header, json={
+        "receiver_uids": [tm0_uid],
+        "aid": 7
+    })
+
+    assert share_resp.status_code == 400
