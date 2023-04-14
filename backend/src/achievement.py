@@ -160,10 +160,13 @@ def list_unachieved(uid):
     Returns:
      - list of aids that hasnt been achieved
     '''
-    has_got = db.collection("users").document(uid).get().get("achievements")
-    
+    achievements = db.collection("users").document(uid).get().get("achievements")
+    has_got = []
+    for ach in achievements:
+        has_got.append(ach["aid"])
+
     not_got = []
-    for i in range(0, 7):
+    for i in range(0, 8):
         if i not in has_got:
             not_got.append(i)
 

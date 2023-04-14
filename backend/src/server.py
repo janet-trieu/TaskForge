@@ -555,6 +555,12 @@ def flask_toggle_achievement_visibility():
     data = request.get_json()
     return dumps(toggle_achievement_visibility(uid, data["action"]))
 
+@app.route("/achievements/share", methods=["POST"])
+def flask_share_achievement():
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)
 #     serve(app, host="0.0.0.1", port=8000, debug=True)
