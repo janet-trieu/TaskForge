@@ -12,7 +12,6 @@ TODO notes:
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
-from .achievement import check_achievement
 from .error import *
 from .helper import *
 
@@ -275,7 +274,7 @@ def notification_review(uid, uid_sender, rid):
     db.collection("notifications").document(uid).update(notification)
     return nid
 
-def notification_achievement(uid, achievement_str):
+def notification_achievement(uid, aid):
     '''
     Creates and adds notification when an achievement has been completed.
     Args:
@@ -288,13 +287,14 @@ def notification_achievement(uid, achievement_str):
 
     notification_type = 'achievement'
     nid = create_nid(uid, notification_type) # create notification ID
-    achievement_name = get_achievement_name(achievement_str)
+    achievement = get_achievement(aid)
+    title = achievement.get("title")
 
     notification = {
         nid : {
-            "achievement": achievement_str,
+            "achievement": title,
             "has_read": False,
-            "notification_msg": f"You have earned the {achievement_name} achievement.",
+            "notification_msg": f"You have earned the {title} achievement.",
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "nid": nid
@@ -302,6 +302,37 @@ def notification_achievement(uid, achievement_str):
     }
 
     db.collection("notifications").document(uid).update(notification)
+    return nid
+
+def notification_achievement_share(uid, receiver_uid, aid):
+    '''
+    Shares the achievement that has been achieved
+    Args:
+        uid (string): User being notified
+        aid (int): Achievement that has been completed
+    Returns:
+        nid (string): Notification ID of newly created notification
+    ASSUMPTION that the achievement has been fulfilled
+    '''
+
+    notification_type = 'achievement_shared'
+    nid = create_nid(uid, notification_type) # create notification ID
+    achievement = get_achievement(aid)
+    title = achievement.get("title")
+    achiever_name = auth.get_user(uid).display_name
+
+    notification = {
+        nid : {
+            "achievement": title,
+            "has_read": False,
+            "notification_msg": f"{achiever_name} has earned the {title} achievement.",
+            "time_sent": str(datetime.now()),
+            "type": notification_type,
+            "nid": nid
+        }
+    }
+
+    db.collection("notifications").document(receiver_uid).update(notification)
     return nid
 
 def notification_leave_request(uid, uid_sender, pid):
