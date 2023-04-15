@@ -1,10 +1,9 @@
 # Imports
 from firebase_admin import firestore
 from firebase_admin import auth
-from .classes import User
 
 from .global_counters import *
-from .classes import *
+from .classes import User
 from .error import *
 from .notifications import *
 
@@ -183,42 +182,6 @@ def update_DOB(uid, new_DOB):
     user_ref = db.collection("users").document(uid)
     user_ref.update({"DOB": new_DOB})
 
-### ========= Update User's number of tasks completed ========= ###
-def update_user_num_tasks_completed(uid):
-    """
-    Updates the number of tasks completed
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        None
-    """
-    user_ref = db.collection("users").document(uid)
-    curr = user_ref.get().get("num_tasks_completed")
-
-    # increment
-    curr += 1
-    user_ref.update({"num_tasks_completed": curr})
-
-### ========= Update User's number of projs completed ========= ###
-def update_user_num_projs_completed(uid):
-    """
-    Updates the number of projs completed
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        None
-    """
-    user_ref = db.collection("users").document(uid)
-    curr = user_ref.get().get("num_projs_completed")
-
-    # increment
-    curr += 1
-    user_ref.update({"num_projs_completed": curr})
-
 ### ========= Getters ========= ###
 ### ========= get tuid ========= ###
 def get_tuid(uid):
@@ -341,45 +304,6 @@ def get_connection_list(uid):
     """
     return get_user_ref(uid).get("connections")
 
-### ========= Get User's Achievements ========= ###
-def get_user_achievements(uid):
-    """
-    Gets the current achievements list of specified user
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        A list of achievements the user has
-    """
-    return get_user_ref(uid).get("achievements")
-
-### ========= Get User's number of tasks completed ========= ###
-def get_user_num_tasks_completed(uid):
-    """
-    Gets the number of tasks completed
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        A int number of tasks completed
-    """
-    return get_user_ref(uid).get("num_tasks_completed")
-
-### ========= Get User's number of projs completed ========= ###
-def get_user_num_projs_completed(uid):
-    """
-    Gets the number of projs completed
-
-    Args:
-        uid (str): uid of the user that can be found in auth database
-
-    Returns:
-        A int number of projs completed
-    """
-    return get_user_ref(uid).get("num_projs_completed")
-
 ### ========= is admin ========= ###
 def is_admin(uid):
     """
@@ -450,16 +374,7 @@ def create_user_firestore(uid):
     
     users_ref = db.collection("users")
     value = get_curr_tuid()
-    reputation = {
-        'reviews': [],
-        'avg_communication': [],
-        'avg_time_management': [],
-        'avg_task_quality': [],
-        'avg': [],
-        'visibility': True,
-        'total_reviews_written': 0
-    }
-    user = User(uid, value, "", "", "", False, False, False, [], [], [], [], [], [], reputation)
+    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], 0)
     
     print(users_ref.document(uid).set(user.to_dict()))
 

@@ -86,22 +86,15 @@ def test_get_connected_taskmasters():
     assert(len(result) == 2)
     assert(uid1 in result[0].get("uid"))
     assert(uid2 in result[1].get("uid"))
-    
+
+
 def test_remove_connected_taskmaster():
     assert(is_connected(uid1, uid2))
     assert(is_connected(uid2, uid1))
     remove_connected_taskmaster(uid1, uid2)
     assert(not is_connected(uid1, uid2))
     assert(not is_connected(uid2, uid1))
-    
-#uid1 is connected to uid3 but not uid2
-def test_search_taskmaster():
-    assert(is_connected(uid1, uid3))
-    assert(not is_connected(uid1, uid2))
-    result = search_taskmasters(uid1, "conn")
-    assert(len(result) == 2)
-    assert(result[0]["uid"] == uid3)
-    assert(result[1]["uid"] == uid2)
+
 
 def test_clean_up():
     try:

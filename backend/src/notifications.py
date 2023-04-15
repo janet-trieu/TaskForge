@@ -136,6 +136,8 @@ def notification_connection_request(user_email, uid_sender):
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
+            "accept_msg": f"You accepted {sender_name}'s connection request.",
+            "decline_msg": f"You declined {sender_name}'s connection request.",
             "nid": nid
         }
     }
@@ -274,7 +276,7 @@ def notification_review(uid, uid_sender, rid):
     db.collection("notifications").document(uid).update(notification)
     return nid
 
-def notification_achievement(uid, aid):
+def notification_achievement(uid, achievement_str):
     '''
     Creates and adds notification when an achievement has been completed.
     Args:
@@ -287,14 +289,13 @@ def notification_achievement(uid, aid):
 
     notification_type = 'achievement'
     nid = create_nid(uid, notification_type) # create notification ID
-    achievement = get_achievement(aid)
-    title = achievement.get("title")
+    achievement_name = get_achievement_name(achievement_str)
 
     notification = {
         nid : {
-            "achievement": title,
+            "achievement": achievement_str,
             "has_read": False,
-            "notification_msg": f"You have earned the {title} achievement.",
+            "notification_msg": f"You have earned the {achievement_name} achievement.",
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "nid": nid
@@ -302,37 +303,6 @@ def notification_achievement(uid, aid):
     }
 
     db.collection("notifications").document(uid).update(notification)
-    return nid
-
-def notification_achievement_share(uid, receiver_uid, aid):
-    '''
-    Shares the achievement that has been achieved
-    Args:
-        uid (string): User being notified
-        aid (int): Achievement that has been completed
-    Returns:
-        nid (string): Notification ID of newly created notification
-    ASSUMPTION that the achievement has been fulfilled
-    '''
-
-    notification_type = 'achievement_shared'
-    nid = create_nid(uid, notification_type) # create notification ID
-    achievement = get_achievement(aid)
-    title = achievement.get("title")
-    achiever_name = auth.get_user(uid).display_name
-
-    notification = {
-        nid : {
-            "achievement": title,
-            "has_read": False,
-            "notification_msg": f"{achiever_name} has earned the {title} achievement.",
-            "time_sent": str(datetime.now()),
-            "type": notification_type,
-            "nid": nid
-        }
-    }
-
-    db.collection("notifications").document(receiver_uid).update(notification)
     return nid
 
 def notification_leave_request(uid, uid_sender, pid):
@@ -360,6 +330,8 @@ def notification_leave_request(uid, uid_sender, pid):
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
+            "accept_msg": f"You accepted {sender_name}'s project leave.",
+            "decline_msg": f"You declined {sender_name}'s project leave.",
             "nid": nid
         }
     }
@@ -393,8 +365,6 @@ def notification_accepted_request(uid, uid_sender):
             "nid": nid
         }
     }
-
-    check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)
     return nid

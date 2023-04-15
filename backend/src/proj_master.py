@@ -16,7 +16,6 @@ from .helper import *
 from .connections import *
 from .classes import *
 from .profile_page import *
-from .achievement import *
 
 db = firestore.client()
 
@@ -337,9 +336,6 @@ def update_project(pid, uid, updates):
                 proj_ref.update({
                     "status": val
                 })
-                if val == "Completed":
-                    update_user_num_projs_completed(uid)
-                    check_achievement("project_completion", uid)
         elif key == "due_date":
             if not type(val) == str:
                 raise InputError("Project due date has to be type of string")

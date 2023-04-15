@@ -146,41 +146,6 @@ def get_achievement_name(achievement_str):
     name = db.collection('achievements').document(achievement_str).get().get('name')
     return name
 
-def get_pid(project_str):
-    for doc in db.collection('projects').stream():
-        if doc.to_dict().get('name') == project_str:
-            return doc.id
-    raise AccessError
-
-def get_achievement(aid):
-    '''
-    Given an aid, return the achievement
-
-    Arguments:
-     - aid (achievement id)
-
-    Returns:
-     - achievement
-    '''
-
-    achievement = db.collection("achievements").document(str(aid)).get().to_dict()
-
-    return achievement
-
-### ========= get total number of reviews written ========= ###
-def get_number_of_reviews_written(uid):
-    """
-    Gets the total nubmer of reviews written
-    
-    Args:  
-        uid (str): uid of the user
-
-    Returns:
-        an int correlating to the nubmer of reviews written
-    """
-    check_valid_uid(uid)
-
-    return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
 ############################################################
 #                       Create Users                       #
 ############################################################
