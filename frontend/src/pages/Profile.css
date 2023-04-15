@@ -1,6 +1,9 @@
+.profile-box-content {
+    padding: 2.5%;
+}
+
 .profile-box-header {
     display: flex;
-    padding: 2.5%;
     align-items: center;
     gap: 2%;
 }
@@ -8,4 +11,15 @@
 .profile-box-header-title {
     font-weight: bold;
     font-size: x-large;
+}
+
+.badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 1.5%;
+    padding-top: 1.5%;
+    padding-right: 3%;
+    padding-left: 3%;
+    gap: 5vw;
 }

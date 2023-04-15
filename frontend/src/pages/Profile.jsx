@@ -9,6 +9,8 @@ import { Modal } from "@mui/material";
 import ProfileModalContent from "../components/ProfileModalContent";
 import './Profile.css'
 
+import AchievementCard from '../components/Achievement/ProfileAchievementCard'
+
 const Profile = ({ firebaseApp }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,8 +18,8 @@ const Profile = ({ firebaseApp }) => {
   const [details, setDetails] = useState();
   const [isUser, setIsUser] = useState();
   const [open, setOpen] = useState(false);
-  const handleOpen = () => {setOpen(true)};
-  const handleClose = () => {setOpen(false)};
+  const handleOpen = () => { setOpen(true) };
+  const handleClose = () => { setOpen(false) };
 
   const getInformation = async () => {
     if (location.pathname === '/profile') {
@@ -47,59 +49,67 @@ const Profile = ({ firebaseApp }) => {
     isLoading || (
       <div id='profile-page'>
         <div id='profile-header'>
-          <div id='profile-pic-container'><img id='profile-pic' src={defaultProfilePic}/></div>
+          <div id='profile-pic-container'><img id='profile-pic' src={defaultProfilePic} /></div>
           <div id='profile-info'>
-            <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>{details.display_name}</div>
+            <div style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{details.display_name}</div>
             <div>{details.role}</div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>{details.rating}</div>
               &nbsp;
-              <img src={starIcon} style={{height: '1em'}}/>
+              <img src={starIcon} style={{ height: '1em' }} />
             </div>
             <div>{details.num_connections} connection(s)</div>
           </div>
-          <button className={isUser ? "" : "hide"} style={{marginLeft: '45vw'}} onClick={handleOpen}>Edit</button>
+          <button className={isUser ? "" : "hide"} style={{ marginLeft: '45vw' }} onClick={handleOpen}>Edit</button>
         </div>
         <Modal open={open} onClose={handleClose}>
           <ProfileModalContent details={details} setDetails={setDetails} handleClose={handleClose} firebaseApp={firebaseApp} />
         </Modal>
         <div className="profile-row">
           <div className='profile-box'>
-            <div className='profile-box-header'>
-              <div className='profile-box-header-icon'><img src={taskIcon}/></div>
-              <div className='profile-box-header-title'></div>
-              <button onClick={() => {navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}}>Assigned Task List</button>
-            </div>
-            <div>
-
+            <div className="profile-box-content">
+              <div className='profile-box-header'>
+                <div className='profile-box-header-icon'><img src={taskIcon} /></div>
+                <div className='profile-box-header-title'></div>
+                <button onClick={() => { navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`) }}>Assigned Task List</button>
+              </div>
+              <div>
+              </div>
             </div>
           </div>
           <div className='profile-box'>
-            <div className='profile-box-header'>
-              <div className='profile-box-header-icon'><img /></div>
-              <div className='profile-box-header-title'></div>
-            </div>
-            <div>
-
+            <div className="profile-box-content">
+              <div className='profile-box-header'>
+                <div className='profile-box-header-icon'><img /></div>
+                <div className='profile-box-header-title'></div>
+              </div>
+              <div>
+              </div>
             </div>
           </div>
         </div>
         <div className="profile-row">
           <div className='profile-box'>
-            <div className='profile-box-header'>
-              <div className='profile-box-header-icon'><img src={starIcon}/></div>
-              <div className='profile-box-header-title'></div>
-            </div>
-            <div>
-
+            <div className="profile-box-content">
+              <div className='profile-box-header'>
+                <div className='profile-box-header-icon'><img src={starIcon} /></div>
+                <div className='profile-box-header-title'></div>
+              </div>
+              <div>
+              </div>
             </div>
           </div>
           <div className='profile-box' onClick={() => navigate(`/achievements`)}>
-            <div className='profile-box-header'>
-              <div className='profile-box-header-icon'><img src={achievementIcon}/></div>
-              <div className='profile-box-header-title'>Achievements</div>
-            </div>
-            <div>
+            <div className="profile-box-content">
+              <div className='profile-box-header'>
+                <div className='profile-box-header-icon'><img src={achievementIcon} /></div>
+                <div className='profile-box-header-title'>Achievements</div>
+              </div>
+              <div className="badges">
+                <AchievementCard />
+                <AchievementCard />
+                <AchievementCard />
+              </div>
             </div>
           </div>
         </div>

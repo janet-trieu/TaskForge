@@ -1,0 +1,12 @@
+.achievement-content {
+    text-align: center;
+    width: 5vw;
+    height: 16vh;
+    font-size: 0.7em;
+    font-weight: bolder;
+}
+
+.achievement-card img {
+    width: 5vw;
+    height: auto;
+}
