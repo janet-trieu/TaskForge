@@ -2,15 +2,21 @@ import React from "react";
 import './Searchbar.css';
 import { makeRequest } from "../helpers";
 
-const ProjectSearchbar = ({ setProjects, setIsLoading, uid, showCompleted, setShowCompleted }) => {
+const TasksSearchbar = ({ setTasks, setIsLoading, uid, showCompleted, setShowCompleted }) => {
   const handleSearch = async (event) => {
     event.preventDefault();
-    console.log(event)
     setIsLoading('Loading...');
-    const data = await makeRequest('/projects/search', 'GET', {query: event.target.searchbar.value}, uid);
+
+    const body = {
+      query_tid: event.target.id.value,
+      query_title: event.target.title.value,
+      query_description: event.target.description.value,
+      query_deadline: event.target.deadline.value
+    }
+    const data = await makeRequest('/tasklist/search', 'GET', body, uid);
     if (data.error) alert(data.error);
     else {
-      setProjects(data);
+      setTasks(data);
       setIsLoading(false);
     }
   }
@@ -23,11 +29,14 @@ const ProjectSearchbar = ({ setProjects, setIsLoading, uid, showCompleted, setSh
   return (
     <div id='searchbar-container'>
       <form onSubmit={handleSearch}>
-        <input id='searchbar' placeholder="Search projects" />
+        <input type="text" id='id' placeholder="Task ID" />
+        <input type="text" id='title' placeholder="Task title" />
+        <input type="text" id='description' placeholder="Task description" />
+        <input type="text" id='deadline' placeholder="Deadline as DD/MM/YYYY" />
         <button type='submit'>Search</button>
       </form>
       <div id="toggle-container">
-        Show completed projects
+        Show completed tasks
         <label className="switch">
           <input onChange={handleToggle} type="checkbox" id="completed-projects" />
           <span className="slider round"></span>
@@ -37,4 +46,4 @@ const ProjectSearchbar = ({ setProjects, setIsLoading, uid, showCompleted, setSh
   )
 }
 
-export default ProjectSearchbar;
+export default TasksSearchbar;
