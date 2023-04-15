@@ -17,6 +17,7 @@ from .connections import *
 from .taskboard import *
 from .tasklist import *
 from .helper import *
+from .reputation import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -560,6 +561,35 @@ def flask_share_achievement():
     uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+
+@app.route("/reputation/add_review", methods=["POST"])
+def flask_add_review():
+    reviewer_uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    
+    return dumps(write_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                              data["communication"], data["time_management"], 
+                              data["task_quality"], data["comment"]))
+
+@app.route("/reputation/view_reputation", methods=["GET"])
+def flask_view_reputation():
+    viewer_uid = request.headers.get("Authorisation")
+    viewee_uid = request.args.get("viewee_uid")
+    return dumps(view_reviews(viewer_uid, viewee_uid))
+
+@app.route("/reputation/toggle_visibility", methods=["POST"])
+def flask_toggle_reputation_visibility():
+    uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    return dumps(change_review_visibility(uid, data["visibility"]))
+
+@app.route("/reputation/update_review", methods=["POST"])
+def flask_update_review():
+    reviewer_uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                               data["communication"], data["time_management"], 
+                               data["task_quality"], data["comment"]))
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)
