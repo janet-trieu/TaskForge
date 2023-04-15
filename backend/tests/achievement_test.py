@@ -4,6 +4,7 @@ from src.test_helpers import *
 from src.proj_master import *
 from src.taskboard import *
 from src.achievement import *
+from src.reputation import *
 
 try:
     pm_uid = create_user_email("achievements.pm@gmail.com", "admin123", "Project Master")
@@ -144,11 +145,26 @@ def test_lone_wolf():
     print(achievements)
 
     assert achievements[0]["aid"] == 6
-
+'''
 
 def test_reputation_num():
-    pass
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
+    add_tm_to_project(pid, tm0_uid)
+    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm2_uid)
+
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    write_review(pm_uid, tm0_uid, pid, "5", "5", "5", "Very Good")
+    write_review(pm_uid, tm1_uid, pid, "5", "5", "5", "Very Good")
+    write_review(pm_uid, tm2_uid, pid, "5", "5", "5", "Very Good")
+
+    achievements = get_user_achievements(pm_uid)
+
+    assert achievements[0]["aid"] == 7
+
+'''
 ############################################################
 #                 Test for view_achievements               #
 ############################################################
@@ -212,7 +228,7 @@ def test_view_visibility_off():
     res = view_connected_tm_achievement(tm0_uid, pm_uid)
 
     assert res == []
-'''
+
 ############################################################
 #                Test for share_achievements               #
 ############################################################
@@ -246,3 +262,4 @@ def test_share_not_got_achievement():
     
     with pytest.raises(InputError):
         share_achievement(pm_uid, [tm1_uid], 7)
+'''
