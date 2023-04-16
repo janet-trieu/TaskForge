@@ -17,6 +17,7 @@ from .connections import *
 from .taskboard import *
 from .tasklist import *
 from .helper import *
+from .reputation import *
 
 def defaultHandler(err):
     response = err.get_response()
@@ -350,6 +351,9 @@ def flask_search_taskmasters():
 # TASK MANAGEMENT #	
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
+    """
+    Flask upload file to storage
+    """
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(f"src/{filename}")
@@ -357,21 +361,23 @@ def flask_upload_file():
     
 @app.route('/upload_file2', methods = ['POST'])
 def flask_upload_file2():
+    """
+    Flask upload file details to firestore
+    """
     uid = request.headers.get('Authorization')
     data = request.get_json()
     upload_file(uid, data['file'], data["destination_name"], data["tid"])
     return dumps('File Saved')
 
-@app.route('/download_file', methods = ['GET'])
-def flask_download_file():
+@app.route('/get_file_link', methods = ['GET'])
+def flask_get_file_link():
+    """
+    Flask get link to file on storage
+    """
     uid = request.headers.get('Authorization')
+    tid = request.args.get("tid")
     fileName = request.args.get("fileName")
-    # fileName = request.get_json()['fileName']
-    download_file(uid, fileName)
-    newName = re.sub('.*' + '/', '', fileName) #test.jpg
-    send_from_directory(app.root_path, newName)
-    os.remove(f"{app.root_path}/{newName}")
-    return dumps('File Sent')
+    return dumps(get_file_link(uid, tid, fileName))
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])
@@ -560,6 +566,88 @@ def flask_share_achievement():
     uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+
+@app.route("/reputation/add_review", methods=["POST"])
+def flask_add_review():
+    reviewer_uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    
+    return dumps(write_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                              data["communication"], data["time_management"], 
+                              data["task_quality"], data["comment"]))
+
+@app.route("/reputation/view_reputation", methods=["GET"])
+def flask_view_reputation():
+    viewer_uid = request.headers.get("Authorisation")
+    viewee_uid = request.args.get("viewee_uid")
+    return dumps(view_reviews(viewer_uid, viewee_uid))
+
+@app.route("/reputation/toggle_visibility", methods=["POST"])
+def flask_toggle_reputation_visibility():
+    uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    return dumps(change_review_visibility(uid, data["visibility"]))
+
+@app.route("/reputation/update_review", methods=["POST"])
+def flask_update_review():
+    reviewer_uid = request.headers.get("Authorisation")
+    data = request.get_json()
+    return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                               data["communication"], data["time_management"], 
+                               data["task_quality"], data["comment"]))
+#Workload
+@app.route("/workload/get_user_workload", methods=["GET"])
+def flask_get_user_workload():
+    """
+    Returns workload of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_user_workload(uid, pid))
+
+@app.route("/workload/update_user_availability", methods=["POST"])
+def flask_update_user_availability():
+    """
+    Updates availability of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(update_user_availability(uid, data["pid"], data["availability"]))
+
+@app.route("/workload/get_availability", methods=["GET"])
+def flask_get_availability():
+    """
+    Returns users availability for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_availability(uid, pid))
+
+@app.route("/workload/get_availability_ratio", methods=["GET"])
+def flask_get_availability_ratio():
+    """
+    Returns availability ratio of a user in a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_availability_ratio(uid, pid))
+
+@app.route("/workload/calculate_supply_demand", methods=["GET"])
+def flask_calculate_supply_demand():
+    """
+    Calculates and adds snd into a project
+    """
+    pid = int(request.args.get('pid'))
+    return dumps(calculate_supply_demand(pid), indent=4, sort_keys=True, default=str)
+
+@app.route("/workload/get_supply_demand", methods=["GET"])
+def flask_get_supply_and_demand():
+    """
+    Returns snd list for a project
+    """
+    pid = int(request.args.get('pid'))
+    return dumps(get_supply_and_demand(pid), indent=4, sort_keys=True, default=str)
+    
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)

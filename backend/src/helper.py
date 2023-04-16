@@ -181,6 +181,7 @@ def get_number_of_reviews_written(uid):
     check_valid_uid(uid)
 
     return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
+
 ############################################################
 #                       Create Users                       #
 ############################################################
@@ -201,6 +202,7 @@ def storage_upload_file(fileName, destination_name):
     blob = bucket.blob(destination_name)
     blob.upload_from_filename(fileName)
     blob.make_public()
+    return blob.public_url
 
 def storage_download_file(fileName, destination_name): 
     bucket = storage.bucket()

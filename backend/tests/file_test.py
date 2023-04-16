@@ -13,18 +13,17 @@ from src.taskboard import *
 
 try:
     uid = create_user_email("file1@gmail.com", "FILENIAWFNOI", "filedude")
-except:
+except auth.EmailAlreadyExistsError:
     pass
-else:
-    uid = auth.get_user_by_email("file1@gmail.com").uid
+uid = auth.get_user_by_email("file1@gmail.com").uid
 
 
+pid = create_project(uid, "Project 123", "description", None, None, None)
+eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
+tid = create_task(uid, pid, eid, [uid], 'FILE', 'FILE', 0, 0, "", "Not Started")
 
-
-def test_file_upload():
-    
-    pid = create_project(uid, "Project 123", "description", None, None, None)
-    eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
-    tid = create_task(uid, pid, eid, [], 'title', 'descr', 0, 0, "", "Not Started")
-    
+def test_file_upload(): 
     upload_file(uid, 'tests/test.jpg', 'test.jpg', tid)
+    
+def test_get_file_link():
+    get_file_link(uid, tid, 'test.jpg')
