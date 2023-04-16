@@ -143,3 +143,12 @@ def test_number_of_reviews_written():
     reviews = get_number_of_reviews_written(uid1)
     assert reviews == 1
     delete_review(uid1, uid2, pid1)
+
+# Test: Update
+def test_update_review():
+    change_review_visibility(uid2, True)
+    write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
+    update_review(uid1, uid2, pid1, "5", "4", "5", "Very good")
+    reviews = view_reviews(uid2, uid2)
+    print(reviews)
+    delete_review(uid1, uid2, pid1)    
