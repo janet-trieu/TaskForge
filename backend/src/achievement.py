@@ -7,8 +7,9 @@ Functionalities:
  - tba
 '''
 from .helper import *
-from .classes import *
-from .notifications import *
+# from .notifications import notification_achievement, notification_achievement_share
+from firebase_admin import firestore
+db = firestore.client()
 
 import time
 
@@ -106,6 +107,7 @@ def give_achievement(uid, aid):
 
     user_ref.update({"achievements": user_achievements})
 
+    from .notifications import notification_achievement
     notification_achievement(uid, aid)
 
     reset_time_acquired(aid)
@@ -144,7 +146,7 @@ def check_lone_wolf(uid):
     user_ref = db.collection("users").document(uid).get()
 
     for pid in user_ref.get("projects"):
-        proj_ref = get_project(pid)
+        proj_ref = db.collection("projects").document(str(pid)).get()
         if len(proj_ref.get("project_members")) == 1 and proj_ref.get("status") == "Completed":
             return True
 
@@ -242,7 +244,7 @@ def view_achievement(uid):
      - uid (user id)
 
     Returns:
-     - list of achievements
+     - list of achievements, order by latest achieved achievement
 
     Raises:
      - None
@@ -252,7 +254,7 @@ def view_achievement(uid):
 
     curr_achievements = db.collection("users").document(uid).get().get("achievements")
 
-    return curr_achievements
+    return curr_achievements[::-1]
 
 def view_connected_tm_achievement(uid, conn_uid):
     '''
@@ -282,7 +284,7 @@ def view_connected_tm_achievement(uid, conn_uid):
 
     curr_achievements = db.collection("users").document(conn_uid).get().get("achievements")
 
-    return curr_achievements
+    return curr_achievements[::-1]
 
 def toggle_achievement_visibility(uid, action):
     '''
@@ -330,6 +332,8 @@ def share_achievement(uid, receiver_uids, aid):
     Raises:
      - 
     '''
+    from .notifications import notification_achievement_share
+
     user_ref = db.collection("users").document(uid)
 
     if aid in list_unachieved(uid):

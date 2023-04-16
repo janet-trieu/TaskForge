@@ -394,6 +394,7 @@ def notification_accepted_request(uid, uid_sender):
         }
     }
 
+    from .achievement import check_achievement
     check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)
