@@ -166,6 +166,21 @@ def get_achievement(aid):
     achievement = db.collection("achievements").document(str(aid)).get().to_dict()
 
     return achievement
+
+### ========= get total number of reviews written ========= ###
+def get_number_of_reviews_written(uid):
+    """
+    Gets the total nubmer of reviews written
+    
+    Args:  
+        uid (str): uid of the user
+
+    Returns:
+        an int correlating to the nubmer of reviews written
+    """
+    check_valid_uid(uid)
+
+    return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
 ############################################################
 #                       Create Users                       #
 ############################################################

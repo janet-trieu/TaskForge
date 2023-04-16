@@ -224,7 +224,11 @@ def check_achievement(a_type, uid):
         else:
             return 1
     elif a_type == "reputation":
-        pass
+        n_reviews = get_number_of_reviews_written(uid)
+        if n_reviews >= 3 and check_user_has_achievement(uid, 7) == False:
+            give_achievement(uid, 7)
+        else:
+            return 1
     else:
         raise InputError(f"ERROR: Invalid achievement type specified {a_type}")
 

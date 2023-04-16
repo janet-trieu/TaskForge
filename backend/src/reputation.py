@@ -7,6 +7,7 @@ from .error import *
 from .notifications import *
 from .helper import *
 from .profile_page import *
+from .achievement import *
 from .classes import Review
 import re
 import time
@@ -79,6 +80,9 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
     reviewer_doc = db.collection("users").document(str(reviewer_uid)).get().get("reputation")
     reviewer_doc["total_reviews_written"] += 1
     db.collection("users").document(str(reviewer_uid)).update({"reputation": reviewer_doc})
+
+    check_achievement("reputation", reviewer_uid)
+
     # update average
     update_average(reviewee_uid)
 
@@ -303,17 +307,17 @@ def change_review_visibility(uid, visibility):
     reputation_doc["visibility"] = visibility
     db.collection("users").document(str(uid)).update({"reputation": reputation_doc})
 
-### ========= get total number of reviews written ========= ###
-def get_number_of_reviews_written(uid):
-    """
-    Gets the total nubmer of reviews written
+# ### ========= get total number of reviews written ========= ###
+# def get_number_of_reviews_written(uid):
+#     """
+#     Gets the total nubmer of reviews written
     
-    Args:  
-        uid (str): uid of the user
+#     Args:  
+#         uid (str): uid of the user
 
-    Returns:
-        an int correlating to the nubmer of reviews written
-    """
-    check_valid_uid(uid)
+#     Returns:
+#         an int correlating to the nubmer of reviews written
+#     """
+#     check_valid_uid(uid)
 
-    return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
+#     return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
