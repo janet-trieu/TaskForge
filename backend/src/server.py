@@ -590,6 +590,59 @@ def flask_update_review():
     return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
                                data["communication"], data["time_management"], 
                                data["task_quality"], data["comment"]))
+#Workload
+@app.route("/workload/get_user_workload", methods=["GET"])
+def flask_get_user_workload():
+    """
+    Returns workload of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_user_workload(uid, pid))
+
+@app.route("/workload/update_user_availability", methods=["POST"])
+def flask_update_user_availability():
+    """
+    Updates availability of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(update_user_availability(uid, data["pid"], data["availability"]))
+
+@app.route("/workload/get_availability", methods=["GET"])
+def flask_get_availability():
+    """
+    Returns users availability for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_availability(uid, pid))
+
+@app.route("/workload/get_availability_ratio", methods=["GET"])
+def flask_get_availability_ratio():
+    """
+    Returns availability ratio of a user in a certain project
+    """
+    uid = request.headers.get("Authorization")
+    pid = int(request.args.get('pid'))
+    return dumps(get_availability_ratio(uid, pid))
+
+@app.route("/workload/calculate_supply_demand", methods=["GET"])
+def flask_calculate_supply_demand():
+    """
+    Calculates and adds snd into a project
+    """
+    pid = int(request.args.get('pid'))
+    return dumps(calculate_supply_demand(pid), indent=4, sort_keys=True, default=str)
+
+@app.route("/workload/get_supply_demand", methods=["GET"])
+def flask_get_supply_and_demand():
+    """
+    Returns snd list for a project
+    """
+    pid = int(request.args.get('pid'))
+    return dumps(get_supply_and_demand(pid), indent=4, sort_keys=True, default=str)
+    
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)
