@@ -13,13 +13,13 @@ port = 8000
 url = f"http://localhost:{port}/"
 
 try:
-    uid = create_user_email("file1@gmail.com", "123124515151", "FILEMAN123321")
+    uid = create_user_email("file1@gmail.com", "file123541521541", "file12325452151")
 except auth.EmailAlreadyExistsError:
     pass
+
 uid = auth.get_user_by_email("file1@gmail.com").uid
-pid = create_project(uid, "Project 123", "description", None, None, None)
-eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
-tid = create_task(uid, pid, eid, [], 'title', 'descr', 0, 0, "", "Not Started")
+pid = create_project(uid, "file1proj 123", "file1", None, None, None)
+tid = create_task(uid, pid, None, [uid], 'file1', 'file1', 0, 0, "", "Not Started")
 
 def test_file_upload():
     header = {'Authorization': uid}
@@ -34,7 +34,7 @@ def test_file_upload():
 def test_get_file_link():
     header = {'Authorization': uid}
     
-    json_dict = {'fileName': '20/test.jpg'}
-    resp = requests.get(url + "get_file_link", headers=header, json=json_dict)
+    params = {'tid': tid, 'fileName': 'test.jpg'}
+    resp = requests.get(url + "/get_file_link", headers=header, params=params)
     
     assert(resp.status_code == 200)

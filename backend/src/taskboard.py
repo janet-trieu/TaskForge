@@ -548,6 +548,16 @@ def comment_task(uid, tid, comment):
 ### ========= Files ========= ###
 #prefix is basically the t_id
 def upload_file(uid, fileName, destination_name, tid):
+    """
+    Uploads a file from a user onto storage. Info is stored in firestore
+    Args:
+        - uid (string): User uploading file
+        - fileName (string): File being uploaded
+        - destination_name (string): Option of renaming file when it is uploaded
+        - tid (int): Task in which file is being uploaded
+    Returns:
+        - link (string): URL where file can be accessed from storage
+    """
     if (not get_user_ref(uid)): raise InputError('uid invalid')
     path = f"{tid}/{destination_name}"
     link = storage_upload_file(fileName, path)
@@ -557,7 +567,7 @@ def upload_file(uid, fileName, destination_name, tid):
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": "",
-        "file": path,
+        "file": destination_name,
         "link" : link
     }
     files = db.collection("tasks").document(str(tid)).get().get("files")
@@ -566,6 +576,15 @@ def upload_file(uid, fileName, destination_name, tid):
     return link
     
 def get_file_link(uid, tid, fileName):
+    """
+    Retrieves link to file from storage
+    Args:
+        - uid (string): User requesting file
+        - fileName (string): File being requested
+        - tid (int): Task in which file belongs
+    Returns:
+        - link (string): URL where file can be accessed from storage
+    """
     tidfile = f"{tid}/{fileName}"
     if (not get_user_ref(uid)): raise InputError('uid invalid')
     files = db.collection("tasks").document(str(tid)).get().get("files")

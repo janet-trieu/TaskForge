@@ -351,6 +351,9 @@ def flask_search_taskmasters():
 # TASK MANAGEMENT #	
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
+    """
+    Flask upload file to storage
+    """
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(f"src/{filename}")
@@ -358,6 +361,9 @@ def flask_upload_file():
     
 @app.route('/upload_file2', methods = ['POST'])
 def flask_upload_file2():
+    """
+    Flask upload file details to firestore
+    """
     uid = request.headers.get('Authorization')
     data = request.get_json()
     upload_file(uid, data['file'], data["destination_name"], data["tid"])
@@ -365,6 +371,9 @@ def flask_upload_file2():
 
 @app.route('/get_file_link', methods = ['GET'])
 def flask_get_file_link():
+    """
+    Flask get link to file on storage
+    """
     uid = request.headers.get('Authorization')
     tid = request.args.get("tid")
     fileName = request.args.get("fileName")
