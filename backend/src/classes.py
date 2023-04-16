@@ -320,37 +320,8 @@ def get_project(pid):
         doc.get("project_members"),
         doc.get("epics"),
         doc.get("tasks"),
-        doc.get("subtasks")
+        doc.get("subtasks"),
+        doc.get("snd")
     )
 
     return project.to_dict()
-
-# class Achievements(object):
-#     '''
-#     Class for achievements that will be stored in the firestore database
-
-#     Attributes:
-#      - uid (user id)
-#      - aid (achievement id)
-#      - title (achievement title)
-#      - description (achievement description)
-#      - icon
-#      - time acquired
-#     '''
-#     def __init__(self, uid, aid, title, description, icon, time_acquired):
-#         self.uid = uid
-#         self.aid = aid
-#         self.title = title
-#         self.description = description
-#         self.icon = icon
-#         self.time_acquired = time_acquired
-
-#     def to_dict(self):
-#         return {
-#             "uid": self.uid,
-#             "aid": self.aid,
-#             "title": self.title,
-#             "description": self.description,
-#             "icon": self.icon,
-#             "time_acquired": self.time_acquired
-#         }
