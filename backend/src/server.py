@@ -363,16 +363,12 @@ def flask_upload_file2():
     upload_file(uid, data['file'], data["destination_name"], data["tid"])
     return dumps('File Saved')
 
-@app.route('/download_file', methods = ['GET'])
-def flask_download_file():
+@app.route('/get_file_link', methods = ['GET'])
+def flask_get_file_link():
     uid = request.headers.get('Authorization')
+    tid = request.args.get("tid")
     fileName = request.args.get("fileName")
-    # fileName = request.get_json()['fileName']
-    download_file(uid, fileName)
-    newName = re.sub('.*' + '/', '', fileName) #test.jpg
-    send_from_directory(app.root_path, newName)
-    os.remove(f"{app.root_path}/{newName}")
-    return dumps('File Sent')
+    return dumps(get_file_link(uid, tid, fileName))
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])

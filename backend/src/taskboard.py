@@ -550,24 +550,28 @@ def comment_task(uid, tid, comment):
 def upload_file(uid, fileName, destination_name, tid):
     if (not get_user_ref(uid)): raise InputError('uid invalid')
     path = f"{tid}/{destination_name}"
-    storage_upload_file(fileName, path)
+    link = storage_upload_file(fileName, path)
     
     data = {
-        "time": time.time(),
+        "time": datetime.now(),
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": "",
-        "file": path
+        "file": path,
+        "link" : link
     }
     files = db.collection("tasks").document(str(tid)).get().get("files")
     files.append(data)
     db.collection("tasks").document(str(tid)).update({"files": files})
+    return link
     
-def download_file(uid, fileName):
+def get_file_link(uid, tid, fileName):
+    tidfile = f"{tid}/{fileName}"
     if (not get_user_ref(uid)): raise InputError('uid invalid')
-    print(f"filename is {fileName}")
-    new = re.sub('.*' + '/', '', fileName)# src/
-    storage_download_file(fileName, f"src/{new}")
+    files = db.collection("tasks").document(str(tid)).get().get("files")
+    for file in files:
+        if (file["file"] == tidfile):
+            return file["link"]
 
 ### ========= Flag Task ========= ###
 def flag_task(uid, tid, boolean):

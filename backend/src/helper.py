@@ -201,6 +201,7 @@ def storage_upload_file(fileName, destination_name):
     blob = bucket.blob(destination_name)
     blob.upload_from_filename(fileName)
     blob.make_public()
+    return blob.public_url
 
 def storage_download_file(fileName, destination_name): 
     bucket = storage.bucket()
