@@ -567,6 +567,19 @@ def flask_share_achievement():
     data = request.get_json()
     return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
 
+@app.route("/achievements/locked", methods=["GET"])
+def flask_locked_achievement():
+    uid = request.headers.get("Authorization")
+
+    return dumps(list_unachieved(uid))
+
+@app.route('/achievements/name', methods=['GET'])
+def flask_get_name_achievement():
+    uid = request.args.get("uid")
+    display_name = str(get_display_name(uid))
+    return dumps({"display_name": display_name})
+
+# Reputation
 @app.route("/reputation/add_review", methods=["POST"])
 def flask_add_review():
     reviewer_uid = request.headers.get("Authorisation")
