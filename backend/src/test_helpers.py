@@ -39,6 +39,10 @@ def add_tm_to_project(pid, new_uid):
         user_projects.append(pid)
 
     user_ref.update({"projects": user_projects})
+    
+    user_ref = db.collection('users').document(new_uid)
+    avail_ref = user_ref.collection("availability").document(str(pid))
+    avail_ref.set({"availability": 5})
 
 ############################################################
 #                    Helpers for Projects                  #

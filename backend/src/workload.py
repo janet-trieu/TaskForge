@@ -97,10 +97,15 @@ def calculate_supply_demand(pid):
         
     data = {
         "time": datetime.now(),
-        "supply": availability,
-        "demand": workload
+        "supply": total_avail,
+        "demand": total_workload
     }
     
     snd.append(data)
     proj_ref.update({"snd":snd})
     return snd
+    
+def get_supply_and_demand(pid):
+    check_valid_pid(pid)
+    proj_ref = db.collection('projects').document(str(pid))
+    return proj_ref.get().get("snd")

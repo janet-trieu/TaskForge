@@ -214,7 +214,10 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     proj_ref.update({
         "project_members": project_members
     })
-
+    
+    user_ref = db.collection("users").document(str(uid_to_be_removed))
+    user_ref.collection("availability").document(str(pid)).delete()
+    
     return 0
 
 def invite_to_project(pid, sender_uid, receiver_uids):
