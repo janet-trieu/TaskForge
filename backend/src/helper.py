@@ -181,6 +181,7 @@ def get_number_of_reviews_written(uid):
     check_valid_uid(uid)
 
     return int(db.collection("users").document(str(uid)).get().get("reputation").get("total_reviews_written"))
+
 ############################################################
 #                       Create Users                       #
 ############################################################

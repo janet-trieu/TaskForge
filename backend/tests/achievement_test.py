@@ -145,7 +145,6 @@ def test_lone_wolf():
     print(achievements)
 
     assert achievements[0]["aid"] == 6
-'''
 
 def test_reputation_num():
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
@@ -164,7 +163,6 @@ def test_reputation_num():
 
     assert achievements[0]["aid"] == 7
 
-'''
 ############################################################
 #                 Test for view_achievements               #
 ############################################################
@@ -181,7 +179,34 @@ def test_view_my_achievements():
     res = view_achievement(pm_uid)
 
     assert achievements == res
+'''
 
+def test_view_multiple_achievements():
+
+    pid = create_project(pm_uid, "Project Achievements", "Creating Project0 for testing", None, None, None)
+
+    tid1 = create_task(pm_uid, pid, "", [pm_uid], "Task1", "description", "", None, None, "Not Started")
+    tid2 = create_task(pm_uid, pid, "", [pm_uid], "Task2", "description", "", None, None, "Not Started")
+    tid3 = create_task(pm_uid, pid, "", [pm_uid], "Task3", "description", "", None, None, "Not Started")
+    tid4 = create_task(pm_uid, pid, "", [pm_uid], "Task4", "description", "", None, None, "Not Started")
+    tid5 = create_task(pm_uid, pid, "", [pm_uid], "Task5", "description", "", None, None, "Not Started")
+    tid6 = create_task(pm_uid, pid, "", [pm_uid], "Task6", "description", "", None, None, "Not Started")
+    tid7 = create_task(pm_uid, pid, "", [pm_uid], "Task7", "description", "", None, None, "Not Started")
+    tid8 = create_task(pm_uid, pid, "", [pm_uid], "Task8", "description", "", None, None, "Not Started")
+
+    # octopus should be achieved now
+    achievements = get_user_achievements(pm_uid)
+    assert achievements[0]["aid"] == 5
+
+    update_project(pid, pm_uid, {"status": "Completed"})
+
+    # lone wolf should be achieved now, and should be ordered first
+    res = view_achievement(pm_uid)
+    print(res)
+    assert res[0]["aid"] == 6
+    assert res[1]["aid"] == 5
+
+'''
 def test_view_notmy_achievements():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
