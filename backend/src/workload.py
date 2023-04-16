@@ -2,8 +2,6 @@ from .helper import *
 from datetime import datetime, timedelta
 import pytz
 
-
-
 def get_user_workload(uid, pid):
     """
     Get the workload of a certain user.
