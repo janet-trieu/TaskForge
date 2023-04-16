@@ -52,6 +52,15 @@ const Profile = ({ firebaseApp }) => {
         setDetails(data);
         setIsLoading(false);
       }
+
+      {/* Achievement */ }
+      const achievementsData = await makeRequest('/achievements/view/notmy', 'GET', {conn_uid: requested_uid}, uid);
+      if (achievementsData.error) alert(achievementsData.error);
+      else {
+        const recentAchievements = achievementsData.slice(0, 3);
+        setAchievements(recentAchievements);
+        setIsLoadingAchievements(false);
+      }
     }
   }
   useEffect(getInformation, []);
