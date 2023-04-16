@@ -112,4 +112,6 @@ Have done most of supply and demand + workload, although there were some changes
 we wanted to have a system were users could change a specific day to be a half day, or take that day off in order to change
 availablility, although I changed it to 'days available over the next week' instead, since we didnt have a way of updating availablility
 on demand, say, after that day was finished. Similar issue with supply and demand, so we changed it to run every time the server starts up,
-or whenever it gets called by the frontend. It is not yet clear when it would be called from frontend, but its an option
+or whenever it gets called by the frontend. It is not yet clear when it would be called from frontend, but its an option.
+We had our meeting to wrap up the last things we need to do before the presentation. I need to finish off flask tests for workload + snd,
+and also go back to upload/download, also added in listing outgoing connection requests that have not been responded to yet
