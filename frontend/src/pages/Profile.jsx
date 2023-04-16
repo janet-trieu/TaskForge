@@ -15,7 +15,9 @@ const Profile = ({ firebaseApp }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState("Loading...");
+  const [isLoadingAchievements, setIsLoadingAchievements] = useState("Loading...");
   const [details, setDetails] = useState();
+  const [achievements, setAchievements] = useState([]);
   const [isUser, setIsUser] = useState();
   const [open, setOpen] = useState(false);
   const handleOpen = () => { setOpen(true) };
@@ -30,6 +32,15 @@ const Profile = ({ firebaseApp }) => {
       else {
         setDetails(data);
         setIsLoading(false);
+      }
+
+      {/* Achievement */ }
+      const achievementsData = await makeRequest('/achievements/view/my', 'GET', null, uid);
+      if (achievementsData.error) alert(achievementsData.error);
+      else {
+        const recentAchievements = achievementsData.slice(0, 3);
+        setAchievements(recentAchievements);
+        setIsLoadingAchievements(false);
       }
     } else {
       setIsUser(false);
@@ -105,11 +116,13 @@ const Profile = ({ firebaseApp }) => {
                 <div className='profile-box-header-icon'><img src={achievementIcon} /></div>
                 <div className='profile-box-header-title'>Achievements</div>
               </div>
-              <div className="badges">
-                <AchievementCard />
-                <AchievementCard />
-                <AchievementCard />
-              </div>
+              {isLoadingAchievements || (
+                <div className="badges">
+                  {achievements.map((achievement, idx) => {
+                    return <AchievementCard key={idx} aid={achievement.aid} title={achievement.title}/>
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

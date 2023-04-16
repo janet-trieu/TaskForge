@@ -12,7 +12,6 @@ import review from '../../assets/achievement-icons/review.png'
 
 const ProfileAchievementCard = ({ aid, title }) => {
   const renderIcon = () => {
-    aid = 1;
     switch (aid) {
       case 0:
         return taskSilver;
@@ -39,7 +38,7 @@ const ProfileAchievementCard = ({ aid, title }) => {
     <div className="achievement-card">
       <div className="achievement-content">
         <img src={renderIcon()}></img>
-        <div className="achievement-title">I also leave google restaurant reviews{title}</div>
+        <div className="achievement-title">{title}</div>
       </div>
     </div>
   )
