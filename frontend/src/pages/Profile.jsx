@@ -65,6 +65,15 @@ const Profile = ({ firebaseApp }) => {
   }
   useEffect(getInformation, []);
 
+  const handleAchievementClick = () => {
+    if (isUser) {
+      navigate('/achievements')
+    } else {
+      const requested_uid = location.pathname.split('/')[2];
+      navigate(`/achievements/${requested_uid}`)
+    }
+  }
+
   return (
     isLoading || (
       <div id='profile-page'>
@@ -119,7 +128,7 @@ const Profile = ({ firebaseApp }) => {
               </div>
             </div>
           </div>
-          <div className='profile-box' onClick={() => navigate(`/achievements`)}>
+          <div className='profile-box' onClick={handleAchievementClick}>
             <div className="profile-box-content">
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={achievementIcon} /></div>

@@ -1,4 +1,4 @@
-.achievement-content {
+.achievement-card-content {
     text-align: center;
     width: 5vw;
     height: 16vh;
@@ -9,4 +9,5 @@
 .achievement-card img {
     width: 5vw;
     height: auto;
+    margin-bottom: 5px;
 }

@@ -44,7 +44,7 @@ def add_achievements():
         },
         4: {
             "aid": 4,
-            "title": "I am bnoc",
+            "title": "I am BNOC",
             "description": "Have at least 3 connections",
             "time_acquired": ""
         },
@@ -62,7 +62,7 @@ def add_achievements():
         },
         7: {
             "aid": 7,
-            "title": "I also leave google restaurant reviews",
+            "title": "I Also Leave Google Restaurant Reviews",
             "description": "Leave at least 3 unique reputation reviews",
             "time_acquired": ""
         }
@@ -168,9 +168,10 @@ def list_unachieved(uid):
         has_got.append(ach["aid"])
 
     not_got = []
-    for i in range(0, 8):
-        if i not in has_got:
-            not_got.append(i)
+    for doc in db.collection('achievements').stream():
+        data = doc.to_dict()
+        if data['aid'] not in has_got:
+            not_got.append(data)
 
     return not_got
 
