@@ -84,6 +84,23 @@ def get_availability_ratio(uid, pid):
 def calculate_supply_demand(pid):
     check_valid_pid(pid)
     proj_ref = db.collection('projects').document(str(pid))
+    snd = proj_ref.get().get("snd")
+    total_workload = 0
     total_avail = 0
     users = proj_ref.get().get('project_members')
     
+    for user in users:
+        workload = get_user_workload(user, pid)
+        availability = get_availability(user, pid)
+        total_workload += workload
+        total_avail += availability
+        
+    data = {
+        "time": datetime.now(),
+        "supply": availability,
+        "demand": workload
+    }
+    
+    snd.append(data)
+    proj_ref.update({"snd":snd})
+    return snd
