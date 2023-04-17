@@ -154,16 +154,6 @@ def admin_remove_user():
     uid_user = request.headers.get('Authorization')
     return dumps(remove_user(data["uid_admin"], uid_user))
 
-@app.route("/admin/readd_user", methods=["POST"])
-def admin_readd_user():
-    """
-    readd_user flask
-    """
-    data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(readd_user(data["uid_admin"], uid_user))
-
-
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
@@ -233,6 +223,7 @@ def flask_delete_project():
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
+
 @app.route('/notifications/get', methods=['GET'])
 def flask_get_notifications():
     uid = request.headers.get('Authorization')
@@ -255,6 +246,11 @@ def flask_notification_connection_request():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     return dumps(notification_connection_request(data["user_email"], uid))
+
+@app.route('/notifications/get_outgoing_requests', methods=['GET'])
+def flask_get_outgoing_requests():
+    uid = request.headers.get('Authorization')
+    return dumps(get_outgoing_requests(uid))
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
@@ -563,9 +559,21 @@ def flask_toggle_achievement_visibility():
 
 @app.route("/achievements/share", methods=["POST"])
 def flask_share_achievement():
-    uid = request.headers.get("Authorization")
+    sender_uid = request.headers.get('Authorization')
     data = request.get_json()
-    return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+    uid_list = []
+    for email in data["receiver_emails"]:
+        print(email)
+        try:
+            uid = auth.get_user_by_email(email).uid
+        except auth.UserNotFoundError:
+            return Response(
+                f"Specified email {email} does not exist",
+                status=400
+            )
+        else:
+            uid_list.append(uid)
+    return dumps(share_achievement(sender_uid, uid_list, data["aid"]))
 
 @app.route("/achievements/locked", methods=["GET"])
 def flask_locked_achievement():

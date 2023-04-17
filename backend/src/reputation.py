@@ -70,8 +70,9 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
 
     now = datetime.now()
     now = now.strftime("%d/%m/%Y")
+    reviewer_name = get_display_name(reviewer_uid)
     
-    review = Review(reviewer_uid, reviewee_uid, pid, now, communication, time_management, task_quality, comment)
+    review = Review(reviewer_uid, reviewer_name, reviewee_uid, pid, now, communication, time_management, task_quality, comment)
     # Add review to reviewee
     reputation_docs = db.collection("users").document(str(reviewee_uid)).get().get("reputation")
     reputation_docs["reviews"].append(review.to_dict())

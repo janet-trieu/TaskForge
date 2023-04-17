@@ -37,6 +37,15 @@ def test_connection_request_respond_decline_success():
 
     assert resp.status_code == 200
 
+def test_get_outgoing_requests():
+    headers_dict = {'Authorization': uid2}
+    json_dict = {'user_email': get_email(uid1)}
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
+    assert resp.status_code == 200
+    
+    resp = requests.get(url + '/notifications/get_outgoing_requests', headers=headers_dict)
+    assert resp.status_code == 200
+    
 def test_connection_request_respond_accept_success():
     """
     Successfully accepting a connection request

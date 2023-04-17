@@ -11,10 +11,12 @@ const Achievements = ({ firebaseApp }) => {
   const [achievements, setAchievements] = useState([]);
   const [locked, setLocked] = useState([]);
   const [name, setName] = useState([]);
+  const [isUser, setIsUser] = useState()
   const uid = firebaseApp.auth().currentUser.uid;
 
   useEffect(async () => {
     if (location.pathname === '/achievements') {
+      setIsUser(true);
       const data = await makeRequest('/achievements/view/my', 'GET', null, uid);
       const lockedData = await makeRequest('/achievements/locked', 'GET', null, uid);
       const nameData = await makeRequest(`/achievements/name?uid=${uid}`, 'GET', null, uid);
@@ -26,6 +28,7 @@ const Achievements = ({ firebaseApp }) => {
         setName(nameData);
       }
     } else {
+      setIsUser(false);
       const requested_uid = location.pathname.split('/')[2];
       const data = await makeRequest('/achievements/view/notmy', 'GET', {conn_uid: requested_uid}, uid);
       const lockedData = await makeRequest('/achievements/locked', 'GET', null, uid);
@@ -48,7 +51,7 @@ const Achievements = ({ firebaseApp }) => {
         </div>
         <div className="achievement-body">
           {achievements.map((achievement, idx) => {
-            return <AchievementBlock key={idx} aid={achievement.aid} title={achievement.title} description={achievement.description} />
+            return <AchievementBlock key={idx} uid={uid} aid={achievement.aid} title={achievement.title} description={achievement.description} isUser={isUser} />
           })}
           {locked.map((lock, idx) => {
             return <AchievementLockedBlock key={idx} title={lock.title} description={lock.description} />
