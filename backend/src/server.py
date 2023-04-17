@@ -559,9 +559,21 @@ def flask_toggle_achievement_visibility():
 
 @app.route("/achievements/share", methods=["POST"])
 def flask_share_achievement():
-    uid = request.headers.get("Authorization")
+    sender_uid = request.headers.get('Authorization')
     data = request.get_json()
-    return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+    uid_list = []
+    for email in data["receiver_emails"]:
+        print(email)
+        try:
+            uid = auth.get_user_by_email(email).uid
+        except auth.UserNotFoundError:
+            return Response(
+                f"Specified email {email} does not exist",
+                status=400
+            )
+        else:
+            uid_list.append(uid)
+    return dumps(share_achievement(sender_uid, uid_list, data["aid"]))
 
 @app.route("/achievements/locked", methods=["GET"])
 def flask_locked_achievement():
