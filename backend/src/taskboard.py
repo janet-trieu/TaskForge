@@ -160,6 +160,10 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     
+    # Check Priority
+    if priority and not (priority == "High" or priority == "Moderate" or priority == "Low"):
+        raise InputError('Priority is not valid')
+    
     if (not isinstance(workload, int)):
         workload = None
     
