@@ -18,6 +18,18 @@ from .helper import *
 db = firestore.client()
 
 # ============ HELPERS ============ #
+def get_uid_from_email2(email):
+    """
+    Gets uid of the User from auth database using email of the user
+
+    Args:
+        email (str): email of the user that can be found in auth database
+
+    Returns:
+        A string corresponding with the UID of the user found in the auth and firestore database
+    """
+    return auth.get_user_by_email(email).uid
+
 def create_nid(uid, type):
 
     # print(f"this is uid: {uid}")
@@ -56,7 +68,7 @@ def get_notifications(uid):
     '''
     check_valid_uid(uid)
 
-    notf_data = db.collection('notifications').document(uid).get().to_dict()
+    notf_data = db.collection('notifications').document(str(uid)).get().to_dict()
 
     # Sort notification dictionaries by time_sent in descending order
     sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
@@ -141,6 +153,17 @@ def notification_connection_request(user_email, uid_sender):
     }
 
     db.collection("notifications").document(str(uid)).update(notification)
+
+    user_ref = db.collection('users').document(str(uid_sender))
+    outgoing = user_ref.get().get("outgoing_requests")
+    data = {
+        "time_sent": str(datetime.now()),
+        "nid": nid,
+        "uid_requesting": get_uid_from_email2(user_email),
+        "display_name": get_display_name(get_uid_from_email2(user_email))
+    }
+    outgoing.append(data)
+    user_ref.update({"outgoing_requests":outgoing})
     return nid
 
 def notification_project_invite(uid, uid_sender, pid):

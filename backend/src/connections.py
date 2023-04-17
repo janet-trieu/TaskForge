@@ -31,7 +31,14 @@ def connection_request_respond(uid, nid, response):
         notification_accepted_request(uid_sender, uid)
     else:
         notification_denied_request(uid_sender, uid)
-
+    
+    user_ref = db.collection('users').document(str(uid_sender))
+    outgoing = user_ref.get().get("outgoing_requests")
+    for req in outgoing:
+        if (req["uid_requesting"] == uid):
+            outgoing.remove(req)
+            break
+    
     return {}
     
 def get_connection_requests(uid):
@@ -96,7 +103,7 @@ def remove_connected_taskmaster(uid, uid_remove):
     connections2 = db.collection('users').document(str(uid_remove)).get().get('connections')
     connections2.remove(uid)
     db.collection("users").document(str(uid_remove)).update({"connections": connections2})
-    
+
 def search_taskmasters(uid, search_string):
     """
     Searches all taskmasters by display name and email
@@ -129,3 +136,9 @@ def search_taskmasters(uid, search_string):
         else:
             sorted2.append(user)
     return sorted1 + sorted2 #connected tms first
+    
+def get_outgoing_requests(uid):
+    check_valid_uid(uid)
+    user_ref = db.collection('users').document(str(uid))
+    outgoing = user_ref.get().get("outgoing_requests")
+    return outgoing
