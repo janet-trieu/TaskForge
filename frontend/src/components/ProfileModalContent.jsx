@@ -1,9 +1,15 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useEffect } from "react";
 import { makeRequest, fileToDataUrl } from "../helpers";
 import defaultProfilePic from '../assets/default project icon.png'
 
 const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, firebaseApp }, ref) => {
   const [icon, setIcon] = useState(details.photo_url || defaultProfilePic);
+  const [achievementVisible, setAchievementVisible] = useState(false);
+
+  useEffect(async () => {
+    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, details.uid);
+    setAchievementVisible(data);
+  }, []);
 
   const handleSave = async (event) => {
     event.preventDefault();
@@ -36,6 +42,12 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
     }
   }
 
+  const handleToggle = async (event) => {
+    console.log(event.target.checked)
+    const data = await makeRequest('/achievements/toggle_visibility', 'POST', { action: event.target.checked }, details.uid);
+    setAchievementVisible(data);
+  }
+
   return (
     <div id="profile-modal">
       <form id="profile-modal-form" onSubmit={handleSave}>
@@ -54,6 +66,12 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
         <br />
         <label htmlFor="email" style={{fontWeight: 'bold'}}>Email</label><br />
         <input type="text" id="email" defaultValue={details.email} /><br />
+        <br />
+        <label htmlFor="achievement-visbility" style={{fontWeight: 'bold'}}>Hide Achievements</label><br />
+        <label className="switch">
+          <input onChange={handleToggle} type="checkbox" id="toggle-achievement-visibility" defaultChecked={achievementVisible} />
+          <span className="slider round"></span>
+        </label><br />
         <br />
         <button type="submit">Save Changes</button>
       </form>

@@ -20,6 +20,7 @@ const Profile = ({ firebaseApp }) => {
   const [achievements, setAchievements] = useState([]);
   const [isUser, setIsUser] = useState();
   const [open, setOpen] = useState(false);
+  const [hideAchievements, setHideAchievements] = useState();
   const handleOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
 
@@ -54,7 +55,7 @@ const Profile = ({ firebaseApp }) => {
       }
 
       {/* Achievement */ }
-      const achievementsData = await makeRequest('/achievements/view/notmy', 'GET', {conn_uid: requested_uid}, uid);
+      const achievementsData = await makeRequest('/achievements/view/notmy', 'GET', { conn_uid: requested_uid }, uid);
       if (achievementsData.error) alert(achievementsData.error);
       else {
         const recentAchievements = achievementsData.slice(0, 3);
@@ -63,7 +64,6 @@ const Profile = ({ firebaseApp }) => {
       }
     }
   }
-  useEffect(getInformation, []);
 
   const handleAchievementClick = () => {
     if (isUser) {
@@ -73,6 +73,18 @@ const Profile = ({ firebaseApp }) => {
       navigate(`/achievements/${requested_uid}`)
     }
   }
+
+  const checkHideVisibility = async () => {
+    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    if (data.error) alert(data.error);
+    if (data === true && !isUser) setHideAchievements(true);
+    else setHideAchievements(false);
+  };
+
+  useEffect(() => {
+    getInformation();
+    checkHideVisibility();
+  }, []);
 
   return (
     isLoading || (
@@ -138,23 +150,25 @@ const Profile = ({ firebaseApp }) => {
               </div>
             </div>
           </div>
-          <div className='profile-box' onClick={handleAchievementClick}>
-            <div className="profile-box-content">
-              <div className='profile-box-header'>
-                <div className='profile-box-header-icon'><img src={achievementIcon} /></div>
-                <div className='profile-box-header-title'>Achievements</div>
-              </div>
-              {isLoadingAchievements || (
-                <div className="badges">
-                  {achievements.map((achievement, idx) => {
-                    return <AchievementCard key={idx} aid={achievement.aid} title={achievement.title}/>
-                  })}
+          <div className={!hideAchievements ? "" : "hide"}>
+            <div className='profile-box' onClick={handleAchievementClick}>
+              <div className="profile-box-content">
+                <div className='profile-box-header'>
+                  <div className='profile-box-header-icon'><img src={achievementIcon} /></div>
+                  <div className='profile-box-header-title'>Achievements</div>
                 </div>
-              )}
+                {isLoadingAchievements || (
+                  <div className="badges">
+                    {achievements.map((achievement, idx) => {
+                      return <AchievementCard key={idx} aid={achievement.aid} title={achievement.title} />
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   )
 }

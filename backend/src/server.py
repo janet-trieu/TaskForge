@@ -74,7 +74,7 @@ def user_details():
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
         connections = len(get_connection_list(uid))
-        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
+        return dumps({"uid": uid, "display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
@@ -556,6 +556,12 @@ def flask_toggle_achievement_visibility():
     uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(toggle_achievement_visibility(uid, data["action"]))
+
+@app.route("/achievements/get_hide_visibility", methods=["GET"])
+def flask_check_achievement_visibility():
+    uid = request.args.get("uid")
+
+    return dumps(check_achievement_visibility(uid))
 
 @app.route("/achievements/share", methods=["POST"])
 def flask_share_achievement():
