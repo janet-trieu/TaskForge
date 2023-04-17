@@ -78,7 +78,7 @@ const Profile = ({ firebaseApp }) => {
     isLoading || (
       <div id='profile-page'>
         <div id='profile-header'>
-          <div id='profile-pic-container'><img id='profile-pic' src={defaultProfilePic} /></div>
+          <div id='profile-pic-container'><img id='profile-pic' src={details.photo_url || defaultProfilePic} /></div>
           <div id='profile-info'>
             <div style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{details.display_name}</div>
             <div>{details.role}</div>
