@@ -34,7 +34,7 @@ def check_valid_eid(eid):
         raise InputError(f'eid {eid} does not exist in database')
     
 def check_epic_in_project(eid, pid):
-    if eid == "None":
+    if str(eid) == "None":
         return
     check_valid_eid(eid)
     check_valid_pid(pid)

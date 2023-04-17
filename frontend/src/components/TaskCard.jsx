@@ -21,7 +21,7 @@ const TaskCard = (props) => {
         {props.task.title}
       </Container>
       <Modal open={open} onClose={handleClose}>
-        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} setTasks={props.setTasks}/>
+        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} tasks={props.tasks} setTasks={props.setTasks}/>
       </Modal>
     </>
   );

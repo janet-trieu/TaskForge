@@ -5,7 +5,7 @@ import TaskAssignModalContent from "./TaskAssignModalContent";
 import TaskCommentsModalContent from "./TaskCommentsModalContent";
 import TaskSubtasksModalContent from "./TaskSubtasksModalContent";
 
-const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
+const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks }, ref) => {
 
   const [openAssign, setOpenAssign] = useState(false);
   const handleOpenAssign = () => { setOpenAssign(true) };
@@ -19,7 +19,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
 
   const epicList = []
   for (const epic of epics) {
-    epicList.push(<option value={epic.title} selected={epic.title === details.epic}>{epic.title}</option>);
+    epicList.push(<option value={epic.title}>{epic.title}</option>);
   }
 
   // const [isLoading, setIsLoading] = useState(<div className="task-modal"><CircularProgress /></div>);
@@ -42,10 +42,10 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
     for (const epic of epics) {
       if (epic.title === event.target.epic.value) {eid = epic.eid}
     }
-    console.log(eid, "eid")
+
     const body = {
       tid: details.tid,
-      eid: eid === "None" ? "None" : Number(eid),
+      eid,
       assignees: details.assignees,
       title: event.target.title.value,
       description: event.target.description.value,
@@ -57,7 +57,16 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
     }
     const data = await makeRequest('/task/update', 'POST', body, uid);
     if (data.error) alert(data.error);
-    else {}
+    else {
+      alert("Task successfully updated!");
+      if (body.status !== details.status) {
+        const newTasks = tasks;
+        const idx = newTasks[details.status].find((task) => {return task.tid === details.tid});
+        newTasks[details.status].splice(idx, idx);
+        newTasks[body.status].unshift(data);
+        setTasks(newTasks);
+      }
+    }
   }
 
   return ( /*isLoading ||*/
@@ -105,14 +114,14 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
           <br />
           <input type="text" id="workload" name="workload" defaultValue={details.workload} />
           <br />
-          <select id="epic" name="epic" style={{marginTop: '1.5em'}}>
-            <option value="None" selected={details.epic === "None"}>None</option>
+          <select id="epic" name="epic" style={{marginTop: '1.5em'}} defaultValue={details.epic}>
+            <option value="None">None</option>
             {epicList.map((epic) => {return epic})}
           </select>
           <br />
-          <select id="flagged" name="flagged" style={{marginTop: '2em'}}>
-            <option value={true} selected={details.flagged === true}>Yes</option>
-            <option value={false} selected={details.flagged === false}>No</option>
+          <select id="flagged" name="flagged" style={{marginTop: '2em'}} defaultValue={details.flagged}>
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
           </select>
           <br />
           <br />

@@ -74,7 +74,7 @@ def get_epic_ref(eid):
         An Epic document from firestore that corresponds to the EID given. 
     """
     # Check if user is in project
-    check_valid_eid(eid)
+    check_valid_eid(int(eid))
 
     return db.collection('epics').document(str(eid)).get()
 
@@ -829,13 +829,15 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
             db.collection("subtasks").document(str(subtask)).update({'eid': eid})
         # Update task epic
         db.collection("tasks").document(str(tid)).update({'eid': eid})
-        # Update new epic to include tid
-        new_epic_tasks = get_epic_ref(eid).get("tasks")
-        db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks.append(tid)})
-        # Remove tid from old epic
-        old_epic_tasks = get_epic_ref(old_epic).get("tasks")
-        old_epic_tasks.remove(tid)
-        db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
+        # Update new epic to include tid if it is not none
+        if eid != "None":
+            new_epic_tasks = get_epic_ref(eid).get("tasks")
+            db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks.append(tid)})
+        # Remove tid from old epic if it is not none
+        if old_epic is not None:
+            old_epic_tasks = get_epic_ref(old_epic).get("tasks")
+            old_epic_tasks.remove(tid)
+            db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
 
     if type(title) != str:
         raise InputError(f'title is not a string')
@@ -859,7 +861,27 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         db.collection("tasks").document(str(tid)).update({'priority': priority})
     change_task_status(uid, tid, status)
     flag_task(uid, tid, flagged)
-    return
+
+    assignees = db.collection("tasks").document(str(tid)).get().get("assignees");
+    assignee_emails = []
+    for assignee in assignees:
+        assignee_emails.append(get_email(assignee));
+
+    return {
+        "tid": tid,
+        "title": title,
+        "deadline": deadline,
+        "priority": priority,
+        "status": status,
+        "assignees": assignees,
+        "assignee_emails": assignee_emails,
+        "flagged": False,
+        "description": description,
+        "workload": workload,
+        "eid": eid,
+        "comments": [],
+        "subtasks": []
+    }
 
 def update_subtask(uid, stid, eid, title, description, deadline, workload, priority, status):
     """

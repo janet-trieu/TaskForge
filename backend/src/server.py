@@ -472,7 +472,7 @@ def flask_task_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_task(uid, data["tid"], int(data["eid"]), 
+    return dumps(update_task(uid, data["tid"], data["eid"], 
                              data["title"], data["description"], data["deadline"], 
                              data["workload"], data["priority"], data["status"], data["flagged"]))
 

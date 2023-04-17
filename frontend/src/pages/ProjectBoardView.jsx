@@ -119,11 +119,11 @@ const ProjectBoardView = ({ firebaseApp }) => {
           </Modal>
           {tasksIsLoading || (
             <div id="task-list-container">
-              <Column title={"NOT STARTED"} tasks={tasks["Not Started"]} uid={uid} epics={details.epics} setTasks={setTasks} />
-              <Column title={"IN PROGRESS"} tasks={tasks["In Progress"]} uid={uid} epics={details.epics} setTasks={setTasks} />
-              <Column title={"IN REVIEW/TESTING"} tasks={tasks["In Review/Testing"]} uid={uid} epics={details.epics} setTasks={setTasks} />
-              <Column title={"BLOCKED"} tasks={tasks["Blocked"]} uid={uid} epics={details.epics} setTasks={setTasks} />
-              <Column title={"COMPLETED"} tasks={tasks["Completed"]} uid={uid} epics={details.epics} setTasks={setTasks} />
+              <Column title={"NOT STARTED"} tasks={tasks["Not Started"]} uid={uid} epics={details.epics} taskState={tasks} setTasks={setTasks} />
+              <Column title={"IN PROGRESS"} tasks={tasks["In Progress"]} uid={uid} epics={details.epics} taskState={tasks} setTasks={setTasks} />
+              <Column title={"IN REVIEW/TESTING"} tasks={tasks["In Review/Testing"]} uid={uid} epics={details.epics} taskState={tasks} setTasks={setTasks} />
+              <Column title={"BLOCKED"} tasks={tasks["Blocked"]} uid={uid} epics={details.epics} taskState={tasks} setTasks={setTasks} />
+              <Column title={"COMPLETED"} tasks={tasks["Completed"]} uid={uid} epics={details.epics} taskState={tasks} setTasks={setTasks} />
             </div>
           )}
         </div>
