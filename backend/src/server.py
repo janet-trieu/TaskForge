@@ -154,16 +154,6 @@ def admin_remove_user():
     uid_user = request.headers.get('Authorization')
     return dumps(remove_user(data["uid_admin"], uid_user))
 
-@app.route("/admin/readd_user", methods=["POST"])
-def admin_readd_user():
-    """
-    readd_user flask
-    """
-    data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(readd_user(data["uid_admin"], uid_user))
-
-
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
@@ -233,6 +223,7 @@ def flask_delete_project():
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
+
 @app.route('/notifications/get', methods=['GET'])
 def flask_get_notifications():
     uid = request.headers.get('Authorization')
@@ -255,6 +246,11 @@ def flask_notification_connection_request():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     return dumps(notification_connection_request(data["user_email"], uid))
+
+@app.route('/notifications/get_outgoing_requests', methods=['GET'])
+def flask_get_outgoing_requests():
+    uid = request.headers.get('Authorization')
+    return dumps(get_outgoing_requests(uid))
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
