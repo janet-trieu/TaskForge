@@ -1,3 +1,8 @@
 .achievement-container {
     padding: 2% 3.5%;
 }
+
+.achievement-body {
+    max-height: 75vh;
+    overflow: scroll;
+}
