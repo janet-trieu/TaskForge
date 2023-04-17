@@ -1,11 +1,11 @@
-import React, { forwardRef, useState, useEffect } from "react";
+import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
 import { Modal } from "@mui/material";
 import TaskAssignModalContent from "./TaskAssignModalContent";
 import TaskCommentsModalContent from "./TaskCommentsModalContent";
 import TaskSubtasksModalContent from "./TaskSubtasksModalContent";
 
-const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks }, ref) => {
+const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, setOpen, forceUpdate }, ref) => {
 
   const [openAssign, setOpenAssign] = useState(false);
   const handleOpenAssign = () => { setOpenAssign(true) };
@@ -33,7 +33,6 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks }, r
   //     setIsLoading(false);
   //   }
   // }, []);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(event);
@@ -58,13 +57,20 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks }, r
     const data = await makeRequest('/task/update', 'POST', body, uid);
     if (data.error) alert(data.error);
     else {
-      alert("Task successfully updated!");
+      setOpen(false)
       if (body.status !== details.status) {
         const newTasks = tasks;
-        const idx = newTasks[details.status].find((task) => {return task.tid === details.tid});
-        newTasks[details.status].splice(idx, idx);
+        const idx = newTasks[details.status].findIndex((task) => {return task.tid === details.tid});
+        newTasks[details.status].splice(idx, 1);
         newTasks[body.status].unshift(data);
         setTasks(newTasks);
+        forceUpdate();
+      } else {
+        const newTasks = tasks;
+        const idx = newTasks[details.status].findIndex((task) => {return task.tid === details.tid});
+        newTasks[details.status].splice(idx, 1, data);
+        setTasks(newTasks);
+        forceUpdate();
       }
     }
   }

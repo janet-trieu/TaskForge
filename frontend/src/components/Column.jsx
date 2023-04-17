@@ -25,7 +25,7 @@ const Column = (props) => {
       <Title>{props.title} - {props.tasks.length} TASKS</Title>
       <TaskList>
         {props.tasks.map((task, idx) => (
-          <TaskCard key={idx} task={task} uid={props.uid} epics={props.epics} tasks={props.taskState} setTasks={props.setTasks}/>
+          <TaskCard key={idx} task={task} uid={props.uid} epics={props.epics} tasks={props.taskState} setTasks={props.setTasks} forceUpdate={props.forceUpdate}/>
         ))}
       </TaskList>
     </Container>
