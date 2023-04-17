@@ -316,6 +316,7 @@ def notification_achievement(uid, aid):
     notification = {
         nid : {
             "achievement": title,
+            "aid": aid,
             "has_read": False,
             "notification_msg": f"You have earned the {title} achievement.",
             "time_sent": str(datetime.now()),
@@ -347,6 +348,7 @@ def notification_achievement_share(uid, receiver_uid, aid):
     notification = {
         nid : {
             "achievement": title,
+            "aid": aid,
             "has_read": False,
             "notification_msg": f"{achiever_name} has earned the {title} achievement.",
             "time_sent": str(datetime.now()),
