@@ -1,9 +1,26 @@
+#reputation-container {
+    margin-left: 2.5vw;
+    margin-right: 2.5vw;
+    margin-top: 4vh;
+}
+
+#reputation-container h3 {
+    margin-top: 0;
+    font-size: x-large;
+}
+
+#review-card-container {
+    height: 80vh;
+    overflow: scroll;
+}
+
 .review-card {
     background-color: #F2F2F2;
     padding: 1em;
     border-radius: 10px;
     width: 75vw;
     font-size: 2em;
+    margin-top: 0.75em;
 }
 
 .review-card-header {

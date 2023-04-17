@@ -22,20 +22,8 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
     epicList.push(<option value={epic.title}>{epic.title}</option>);
   }
 
-  // const [isLoading, setIsLoading] = useState(<div className="task-modal"><CircularProgress /></div>);
-  // const [data, setData] = useState();
-
-  // useEffect(async () => {
-  //   const data = await makeRequest(`/task/details?tid=${props.tid}`, 'GET', null, props.uid);
-  //   if (data.error) alert(data.error);
-  //   else {
-  //     setData(data);
-  //     setIsLoading(false);
-  //   }
-  // }, []);
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(event);
 
     let eid = "None";
     for (const epic of epics) {
@@ -54,6 +42,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
       status: event.target.status.value,
       flagged: event.target.flagged.value
     }
+
     const data = await makeRequest('/task/update', 'POST', body, uid);
     if (data.error) alert(data.error);
     else {
@@ -75,7 +64,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
     }
   }
 
-  return ( /*isLoading ||*/
+  return (
     <form className="task-modal" onSubmit={handleSubmit}>
       <div id="task-left-section">
         <label htmlFor="title"><h3>Title</h3></label>
