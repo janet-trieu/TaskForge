@@ -200,6 +200,10 @@ input[type='text'] {
   border-radius: 10px;
 }
 
+.profile-box-content {
+  height: 70%;
+}
+
 #projects-container {
   display: flex;
   flex-wrap: wrap;

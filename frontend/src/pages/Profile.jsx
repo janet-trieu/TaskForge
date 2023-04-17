@@ -71,7 +71,7 @@ const Profile = ({ firebaseApp }) => {
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={taskIcon} /></div>
                 <div className='profile-box-header-title'></div>
-                <button onClick={() => { navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`) }}>Assigned Task List</button>
+                <button onClick={() => navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}>Assigned Task List</button>
               </div>
               <div>
               </div>
@@ -89,17 +89,27 @@ const Profile = ({ firebaseApp }) => {
           </div>
         </div>
         <div className="profile-row">
-          <div className='profile-box'>
+          <div className='profile-box' onClick={() => navigate(location.pathname === "/profile" ? "/reputation" : `/reputation/${location.pathname.split('/')[2]}`)}>
             <div className="profile-box-content">
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={starIcon} /></div>
-                <div className='profile-box-header-title'></div>
+                <div className='profile-box-header-title'>Reputation</div>
               </div>
-              <div>
+              <div id="profile-reputation-box">
+                <div>
+                  <div>Communication</div>
+                  <div>Time Management</div>
+                  <div>Task Quality</div>
+                </div>
+                <div>
+                  <div>##.#</div>
+                  <div>##.#</div>
+                  <div>##.#</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className='profile-box' onClick={() => navigate(`/achievements`)}>
+          <div className='profile-box' onClick={() => navigate(location.pathname === "/profile" ? "/achievements" : `/achievements/${location.pathname.split('/')[2]}`)}>
             <div className="profile-box-content">
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={achievementIcon} /></div>

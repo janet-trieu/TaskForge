@@ -1,0 +1,30 @@
+.review-card {
+    background-color: #F2F2F2;
+    padding: 1em;
+    border-radius: 10px;
+    width: 75vw;
+    font-size: 2em;
+}
+
+.review-card-header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.review-card-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+.review-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.review-card-reputation {
+    display: flex;
+    gap: 1em;
+}

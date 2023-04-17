@@ -14,7 +14,6 @@ const Projects = ({ firebaseApp }) => {
     else {
       setProjects(data);
       setIsLoading(false);
-      console.log(data)
     }
   }, [showCompleted])
 

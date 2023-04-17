@@ -569,7 +569,7 @@ def flask_share_achievement():
 
 @app.route("/reputation/add_review", methods=["POST"])
 def flask_add_review():
-    reviewer_uid = request.headers.get("Authorisation")
+    reviewer_uid = request.headers.get("Authorization")
     data = request.get_json()
     
     return dumps(write_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
@@ -578,19 +578,19 @@ def flask_add_review():
 
 @app.route("/reputation/view_reputation", methods=["GET"])
 def flask_view_reputation():
-    viewer_uid = request.headers.get("Authorisation")
+    viewer_uid = request.headers.get("Authorization")
     viewee_uid = request.args.get("viewee_uid")
     return dumps(view_reviews(viewer_uid, viewee_uid))
 
 @app.route("/reputation/toggle_visibility", methods=["POST"])
 def flask_toggle_reputation_visibility():
-    uid = request.headers.get("Authorisation")
+    uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(change_review_visibility(uid, data["visibility"]))
 
 @app.route("/reputation/update_review", methods=["POST"])
 def flask_update_review():
-    reviewer_uid = request.headers.get("Authorisation")
+    reviewer_uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
                                data["communication"], data["time_management"], 
