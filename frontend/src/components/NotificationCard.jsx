@@ -7,7 +7,6 @@ const actionTypes = ["connection_request", "project_invite", "leave_request"];
 const NotificationCard = ({ content, uid }) => {
   const [show, setShow] = useState(actionTypes.includes(content.type));
   const [hasResponded, setHasResponded] = useState(false);
-  const [showShareForm, setShowShareForm] = useState(false);
 
   const handleResponse = async (response) => {
     let data = null;
@@ -37,12 +36,8 @@ const NotificationCard = ({ content, uid }) => {
   const handleShare = async () => {
     const emails = prompt("Enter email addresses separated by commas:");
     const emailArray = emails.split(",");
-    console.log(content.aid) //this is why lmfao kms
     const data = await makeRequest("/achievements/share", "POST", { receiver_emails: emailArray, aid: content.aid }, uid);
-    if (data.error) alert(data.error);
-    else {
-      alert("Shared");
-    }
+    alert("Shared");
   };
 
   const handleDeleteNotification = async () => {
