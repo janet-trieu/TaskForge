@@ -133,6 +133,7 @@ def notification_connection_request(user_email, uid_sender):
         nid (string): Notification ID of newly created notification
     '''
     uid = auth.get_user_by_email(user_email).uid # get uid of requestee by email
+    if (uid == uid_sender): raise AccessError('Cant connect to yourself')
     check_valid_uid(uid_sender)
 
     if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
