@@ -267,13 +267,12 @@ def notification_comment(uid, uid_sender, pid, tid):
     db.collection("notifications").document(uid).update(notification)
     return nid
 
-def notification_review(uid, uid_sender, rid):
+def notification_review(uid, uid_sender):
     '''
     Creates and adds notification when a review is added to a user's profile.
     Args:
         uid (string): User being notified
         uid_sender (string): User who made review
-        rid (int): Review created
     Returns:
         nid (string): Notification ID of newly created notification
     ASSUMPTION that the users are connected(?)
@@ -287,7 +286,6 @@ def notification_review(uid, uid_sender, rid):
         nid : {
             "has_read": False,
             "notification_msg": f"{sender_name} has reviewed you.",
-            "rid": rid,
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,

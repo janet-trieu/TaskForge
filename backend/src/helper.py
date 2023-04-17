@@ -66,14 +66,6 @@ def check_valid_stid(stid):
     if not doc.exists:
         raise InputError(f'stid {stid} does not exist in database')
 
-def check_valid_rid(rid):
-    if not isinstance(rid, int):
-        raise InputError('rid needs to be an int')
-    
-    doc = db.collection('reviews').document(str(rid)).get()
-    if not doc.exists:
-        raise InputError(f'rid {rid} does not exist in database')
-
 def check_connected(uid1, uid2):
     user_ref = db.collection('users').document(str(uid1))
     connected = user_ref.get().get("connections")

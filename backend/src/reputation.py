@@ -86,6 +86,7 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
 
     # update average
     update_average(reviewee_uid)
+    notification_review(reviewee_uid, reviewer_uid)
 
 ### ========= Update Review ========= ###
 def update_review(reviewer_uid, reviewee_uid, pid, communication, time_management, task_quality, comment):
