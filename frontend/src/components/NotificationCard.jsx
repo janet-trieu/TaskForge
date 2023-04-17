@@ -7,6 +7,7 @@ const actionTypes = ["connection_request", "project_invite", "leave_request"];
 const NotificationCard = ({ content, uid }) => {
   const [show, setShow] = useState(actionTypes.includes(content.type));
   const [hasResponded, setHasResponded] = useState(false);
+  const [showShareForm, setShowShareForm] = useState(false);
 
   const handleResponse = async (response) => {
     let data = null;
@@ -31,13 +32,21 @@ const NotificationCard = ({ content, uid }) => {
       setShow(false);
       setHasResponded(response);
     }
-
   }
 
-  const handleDeleteNotification  = async () => {
-    const response = await makeRequest('/notifications/clear', 'DELETE', { nid: content.nid }, uid)
-    // if (response.error) alert(response.error);
-    // setShow(false);
+  const handleShare = async () => {
+    const emails = prompt("Enter email addresses separated by commas:");
+    const emailArray = emails.split(",");
+    console.log(content.aid) //this is why lmfao kms
+    const data = await makeRequest("/achievements/share", "POST", { receiver_emails: emailArray, aid: content.aid }, uid);
+    if (data.error) alert(data.error);
+    else {
+      alert("Shared");
+    }
+  };
+
+  const handleDeleteNotification = async () => {
+    await makeRequest('/notifications/clear', 'DELETE', { nid: content.nid }, uid)
   }
   return (
     <div className="notification-card">
@@ -50,6 +59,9 @@ const NotificationCard = ({ content, uid }) => {
         <p>You chose to {hasResponded}.</p>
       </div>
       <button onClick={handleDeleteNotification}>Delete</button>
+      {content.type === "achievement" && (
+        <button onClick={handleShare}>Share</button>
+      )}
     </div>
   )
 }
