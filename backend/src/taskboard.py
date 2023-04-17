@@ -186,7 +186,22 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     
     # update tid
     update_tid()
-    return value
+    return {
+        "tid": value,
+        "title": title,
+        "deadline": deadline,
+        "priority": priority,
+        "status": status,
+        "assignees": db.collection("tasks").document(str(value)).get().get("assignees"),
+        "assignee_emails": assignees,
+        "flagged": False,
+        "description": description,
+        "workload": workload,
+        "eid": eid,
+        "comments": [],
+        "subtasks": []
+    }
+
 ### ========= Get Task Ref ========= ###
 def get_task_ref(tid):
     """
@@ -243,7 +258,7 @@ def assign_task(uid, tid, new_assignees):
     # Check if all UIDs in new_assignee are valid and in the project
     new_assignees_uids = []
     for assignee in new_assignees:
-        new_assignees_uids.append(assignee)
+        new_assignees_uids.append(get_uid_from_email(assignee))
     pid = get_task_ref(tid).get("pid")
     old_assignees = get_task_ref(tid).get("assignees")
     for uid in new_assignees_uids:

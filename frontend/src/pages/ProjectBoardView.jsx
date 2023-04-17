@@ -42,8 +42,8 @@ const ProjectBoardView = ({ firebaseApp }) => {
     else {
       setDetails(data);
       setDetailsIsLoading(false);
-      setIsCompleted(data.status === 'Completed' ? true : false);
-      setIsPM(data.uid === uid ? true : false);
+      setIsCompleted(data.status === 'Completed');
+      setIsPM(data.uid === uid);
     }
     
     const data1 = await makeRequest(`/taskboard/show?pid=${pid}&hidden=true`, 'GET', null, uid);
@@ -93,14 +93,14 @@ const ProjectBoardView = ({ firebaseApp }) => {
             <div id='project-member-block'></div>
           </div>
           <div id='project-buttons'>
-            <button className={isCompleted ? "" : "hide"} onClick={handleRevive}>Revive Project</button>&nbsp;&nbsp;
+            <button className={isCompleted && isPM ? "" : "hide"} onClick={handleRevive}>Revive Project</button>&nbsp;&nbsp;
             <button className={!isCompleted ? "" : "hide"} onClick={handleOpenDetails}>Details</button>&nbsp;&nbsp;
             <button className={!isCompleted ? "" : "hide"} style={{ backgroundColor: 'cornflowerblue' }} onClick={handleOpenInvite}>Invite Members</button>&nbsp;&nbsp;
             <button className={!isCompleted ? "" : "hide"} style={{ backgroundColor: 'seagreen' }} onClick={handleOpenCreateTask}>Create Task</button>&nbsp;&nbsp;
             <button className={!isCompleted ? "" : "hide"} style={{ backgroundColor: 'seagreen' }} onClick={handleOpenCreateEpic}>Create Epic</button>&nbsp;&nbsp;
-            <button className={!isCompleted ? "" : "hide"} style={{ backgroundColor: 'firebrick' }} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
-            <button className={!isCompleted ? "" : "hide"} style={{ backgroundColor: 'gray' }} onClick={handleLeave}>Request to Leave</button>&nbsp;&nbsp;
-            <button className={isPM ? "" : "hide"} onClick={handleOpenRemove}>Remove Member</button>
+            <button className={!isCompleted && isPM ? "" : "hide"} style={{ backgroundColor: 'firebrick' }} onClick={handleDelete}>Delete Project</button>&nbsp;&nbsp;
+            <button className={!isCompleted && isPM ? "" : "hide"} style={{ backgroundColor: 'firebrick' }} onClick={handleOpenRemove}>Remove Member</button>
+            <button className={!isCompleted && !isPM ? "" : "hide"} style={{ backgroundColor: 'gray' }} onClick={handleLeave}>Request to Leave</button>&nbsp;&nbsp;
           </div>
           <Modal open={openDetails} onClose={handleCloseDetails}>
             <ProjectModalContent details={details} uid={uid} handleClose={handleCloseDetails} setDetails={setDetails} />
@@ -109,7 +109,7 @@ const ProjectBoardView = ({ firebaseApp }) => {
             <ProjectInviteModalContent uid={uid} pid={pid} handleClose={handleCloseInvite} />
           </Modal>
           <Modal open={openCreateTask} onClose={handleCloseCreateTask}>
-            <TaskCreateModalContent uid={uid} pid={pid} epics={details.epics} handleClose={handleCloseCreateTask} />
+            <TaskCreateModalContent uid={uid} pid={pid} epics={details.epics} handleClose={handleCloseCreateTask} tasks={tasks} setTasks={setTasks} />
           </Modal>
           <Modal open={openCreateEpic} onClose={handleCloseCreateEpic}>
             <EpicCreateModalContent uid={uid} pid={pid} handleClose={handleCloseCreateEpic} />
@@ -119,11 +119,11 @@ const ProjectBoardView = ({ firebaseApp }) => {
           </Modal>
           {tasksIsLoading || (
             <div id="task-list-container">
-              <Column title={"NOT STARTED"} tasks={tasks["Not Started"]} uid={uid} epics={details.epics} />
-              <Column title={"IN PROGRESS"} tasks={tasks["In Progress"]} uid={uid} epics={details.epics} />
-              <Column title={"IN REVIEW/TESTING"} tasks={tasks["In Review/Testing"]} uid={uid} epics={details.epics} />
-              <Column title={"BLOCKED"} tasks={tasks["Blocked"]} uid={uid} epics={details.epics} />
-              <Column title={"COMPLETED"} tasks={tasks["Completed"]} uid={uid} epics={details.epics} />
+              <Column title={"NOT STARTED"} tasks={tasks["Not Started"]} uid={uid} epics={details.epics} setTasks={setTasks} />
+              <Column title={"IN PROGRESS"} tasks={tasks["In Progress"]} uid={uid} epics={details.epics} setTasks={setTasks} />
+              <Column title={"IN REVIEW/TESTING"} tasks={tasks["In Review/Testing"]} uid={uid} epics={details.epics} setTasks={setTasks} />
+              <Column title={"BLOCKED"} tasks={tasks["Blocked"]} uid={uid} epics={details.epics} setTasks={setTasks} />
+              <Column title={"COMPLETED"} tasks={tasks["Completed"]} uid={uid} epics={details.epics} setTasks={setTasks} />
             </div>
           )}
         </div>

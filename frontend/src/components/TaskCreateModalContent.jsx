@@ -35,6 +35,9 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       // insert task to board??
+      const newTasks = props.tasks;
+      newTasks[body.status].unshift(data);
+      props.setTasks(newTasks);
       props.handleClose();
     }
   }

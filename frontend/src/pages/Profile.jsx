@@ -85,7 +85,7 @@ const Profile = ({ firebaseApp }) => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>{details.rating}</div>
               &nbsp;
-              <img src={starIcon} style={{ height: '1em' }} />
+              <img src={starIcon} style={{ height: '1em', width: '1em' }} />
             </div>
             <div>{details.num_connections} connection(s)</div>
           </div>

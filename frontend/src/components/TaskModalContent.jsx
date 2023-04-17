@@ -89,12 +89,12 @@ const TaskModalContent = forwardRef(({ details, uid, epics }, ref) => {
           <button type="submit">Save Changes</button>
         </div>
         <div>
-          <select id="status" name="status" style={{marginTop: '1.8em', marginBottom: '0.55em'}}>
-            <option value="Not Started" selected={details.status === "Not Started"}>Not Started</option>
-            <option value="In Progress" selected={details.status === "In Progress"}>In Progress</option>
-            <option value="In Review/Testing" selected={details.status === "In Review/Testing"}>In Review/Testing</option>
-            <option value="Blocked" selected={details.status === "Blocked"}>Blocked</option>
-            <option value="Completed" selected={details.status === "Completed"}>Completed</option>
+          <select id="status" name="status" style={{marginTop: '1.8em', marginBottom: '0.55em'}} defaultValue={details.status}>
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="In Review/Testing">In Review/Testing</option>
+            <option value="Blocked">Blocked</option>
+            <option value="Completed">Completed</option>
           </select>
           <br />
           <input type="text" id="deadline" name="deadline" defaultValue={details.deadline} />
