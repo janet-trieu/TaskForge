@@ -29,7 +29,7 @@ class User(object):
     """
     def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, 
                 tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, 
-                hide_achievements):
+                hide_achievements, outgoing_requests):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -48,6 +48,7 @@ class User(object):
         self.num_projs_completed = num_projs_completed
         self.num_tasks_completed = num_tasks_completed
         self.hide_achievements = hide_achievements
+        self.outgoing_requests = outgoing_requests
         
     def to_dict(self):
         return {
@@ -68,7 +69,8 @@ class User(object):
             "workload": self.workload,
             "num_projs_completed": self.num_projs_completed,
             "num_tasks_completed": self.num_tasks_completed,
-            "hide_achievements": self.hide_achievements
+            "hide_achievements": self.hide_achievements,
+            "outgoing_requests":self.outgoing_requests
         }
 
 class Epic():
@@ -243,8 +245,9 @@ class Review():
         comment (str): 
     """
 
-    def __init__(self, reviewer_uid, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
+    def __init__(self, reviewer_uid, reviewer_name, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
         self.reviewer_uid = reviewer_uid
+        self.reviewer_name = reviewer_name
         self.reviewee_uid = reviewee_uid
         self.pid = pid
         self.date = date
@@ -256,6 +259,7 @@ class Review():
     def to_dict(self):
         return {
             "reviewer_uid": self.reviewer_uid,
+            "reviewer_name": self.reviewer_name,
             "reviewee_uid": self.reviewee_uid,
             "pid": self.pid,
             "date": self.date,

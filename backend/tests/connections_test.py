@@ -10,13 +10,16 @@ try:
     uid1 = create_user_email("conn1@gmail.com", "conn112312321", "conn1123123")
     uid2 = create_user_email("conn2@gmail.com", "conn241241241", "conn2123123132")
     uid3 = create_user_email("conn3@gmail.com", "conn241241212341", "conn2123123131232")
+    uid4 = create_user_email("conn4@gmail.com", "con42312321", "co4123123")
+    uid5 = create_user_email("conn5@gmail.com", "con52312321", "co5123123")
 except auth.EmailAlreadyExistsError:
     pass
 
 uid1 = auth.get_user_by_email("conn1@gmail.com").uid
 uid2 = auth.get_user_by_email("conn2@gmail.com").uid
 uid3 = auth.get_user_by_email("conn3@gmail.com").uid
-
+uid4 = auth.get_user_by_email("conn4@gmail.com").uid
+uid5 = auth.get_user_by_email("conn5@gmail.com").uid
 
 
 
@@ -99,14 +102,21 @@ def test_search_taskmaster():
     assert(is_connected(uid1, uid3))
     assert(not is_connected(uid1, uid2))
     result = search_taskmasters(uid1, "conn")
-    assert(len(result) == 2)
+    assert(len(result) == 4)
     assert(result[0]["uid"] == uid3)
-    assert(result[1]["uid"] == uid2)
+
+def test_get_outgoing_requests():
+    notification_connection_request(get_email(uid3), uid5)
+    notification_connection_request(get_email(uid4), uid5)
+    assert(len(get_outgoing_requests(uid5)) == 2)
+
 
 def test_clean_up():
     try:
         delete_user(uid1)
         delete_user(uid2)
         delete_user(uid3)
+        delete_user(uid4)
+        delete_user(uid5)
     except:
         pass
