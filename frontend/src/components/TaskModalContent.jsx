@@ -4,6 +4,7 @@ import { Modal } from "@mui/material";
 import TaskAssignModalContent from "./TaskAssignModalContent";
 import TaskCommentsModalContent from "./TaskCommentsModalContent";
 import TaskSubtasksModalContent from "./TaskSubtasksModalContent";
+import TaskAttachmentsModalContent from "./TaskAttachmentsModalContent";
 
 const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, setOpen, forceUpdate }, ref) => {
 
@@ -16,6 +17,9 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
   const [openSubtasks, setOpenSubtasks] = useState(false);
   const handleOpenSubtasks = () => { setOpenSubtasks(true) };
   const handleCloseSubtasks = () => { setOpenSubtasks(false) };
+  const [openAttachments, setOpenAttachments] = useState(false);
+  const handleOpenAttachments = () => { setOpenAttachments(true) };
+  const handleCloseAttachments = () => { setOpenAttachments(false) };
 
   const epicList = []
   for (const epic of epics) {
@@ -72,11 +76,20 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
         <input type="text" id="title" name="title" defaultValue={details.title}/>
         <label htmlFor="description"><h3>Description</h3></label>
         <textarea placeholder="Add a description..." id="description" name="description" defaultValue={details.description} />
-        <h3>Attachments</h3><br />
+        <br />
+        <br />
+        <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenAttachments}>Attachments</button>
+        <Modal open={openAttachments} onClose={handleCloseAttachments}>
+          <TaskAttachmentsModalContent uid={uid} tid={details.tid} handleClose={handleCloseAttachments} />
+        </Modal>
+        <br />
+        <br />
         <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenComments}>Comments</button>
         <Modal open={openComments} onClose={handleCloseComments}>
           <TaskCommentsModalContent uid={uid} tid={details.tid} comments={details.comments} handleClose={handleCloseComments} />
         </Modal>
+        <br />
+        <br />
         <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenSubtasks}>Subtasks</button>
         <Modal open={openSubtasks} onClose={handleCloseSubtasks}>
           <TaskSubtasksModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} />

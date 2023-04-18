@@ -93,6 +93,7 @@ const Profile = ({ firebaseApp }) => {
           <div id='profile-pic-container'><img id='profile-pic' src={details.photo_url || defaultProfilePic} /></div>
           <div id='profile-info'>
             <div style={{ fontWeight: 'bold', fontSize: '1.5em' }}>{details.display_name}</div>
+            <div>{details.email}</div>
             <div>{details.role}</div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>{details.rating}</div>
