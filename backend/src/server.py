@@ -584,7 +584,7 @@ def flask_share_achievement():
 
 @app.route("/achievements/locked", methods=["GET"])
 def flask_locked_achievement():
-    uid = request.headers.get("Authorization")
+    uid = request.args.get("uid")
 
     return dumps(list_unachieved(uid))
 
