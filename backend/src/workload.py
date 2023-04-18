@@ -70,9 +70,11 @@ def get_availability_ratio(uid):
     Args:
         - uid (string): UID of the user we are checking
     Returns:
-        - Availability (float): Availability of user
+        - Availability_ratio (float): Availability ratio of user
     """
-    return get_user_workload(uid) / get_availability(uid)
+    avail = get_availability(uid)
+    if (avail == 0) : return 1
+    return get_user_workload(uid) / avail
     
 def calculate_supply_demand(uid):
     check_valid_uid(uid)
@@ -80,7 +82,6 @@ def calculate_supply_demand(uid):
     snd = user_ref.get().get("snd")
     total_workload = 0
     total_avail = 0
-    #users = proj_ref.get().get('project_members')
     
     workload = get_user_workload(uid)
     availability = get_availability(uid)
