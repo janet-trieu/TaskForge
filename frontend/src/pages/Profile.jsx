@@ -5,8 +5,10 @@ import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
 import taskIcon from '../assets/tasks.png';
 import achievementIcon from '../assets/profile achievement.png'
+import workloadIcon from '../assets/profile workload.png'
 import { Modal } from "@mui/material";
 import ProfileModalContent from "../components/ProfileModalContent";
+import AvailabilityModal from "../components/AvailabilityModal";
 import './Profile.css'
 
 import AchievementCard from '../components/Achievement/ProfileAchievementCard'
@@ -16,13 +18,18 @@ const Profile = ({ firebaseApp }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState("Loading...");
   const [isLoadingAchievements, setIsLoadingAchievements] = useState("Loading...");
+  const [isLoadingWL, setisLoadingWL] = useState("Loading...");
   const [details, setDetails] = useState();
   const [achievements, setAchievements] = useState([]);
+  const [workload, setWorkload] = useState();
   const [isUser, setIsUser] = useState();
   const [open, setOpen] = useState(false);
+  const [avaOpen, setAvaOpen] = useState(false);
   const [hideAchievements, setHideAchievements] = useState();
   const handleOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
+  const handleAvaOpen = () => { setAvaOpen(true) };
+  const handleAvaClose = () => { setAvaOpen(false) };
 
   const getInformation = async () => {
     if (location.pathname === '/profile') {
@@ -43,6 +50,15 @@ const Profile = ({ firebaseApp }) => {
         setAchievements(recentAchievements);
         setIsLoadingAchievements(false);
       }
+
+      {/* Workload */ }
+      const workloadData = await makeRequest(`/workload/get_availability_ratio?uid=${uid}`, 'GET', null, uid);
+      if (workloadData.error) alert(workloadData.error);
+      else {
+        setWorkload(workloadData);
+        setisLoadingWL(false);
+      }
+
     } else {
       setIsUser(false);
       const uid = await firebaseApp.auth().currentUser.uid;
@@ -62,8 +78,26 @@ const Profile = ({ firebaseApp }) => {
         setAchievements(recentAchievements);
         setIsLoadingAchievements(false);
       }
+
+      {/* Workload */ }
+      const workloadData = await makeRequest(`/workload/get_availability_ratio?uid=${requested_uid}`, 'GET', null, uid);
+      if (workloadData.error) alert(workloadData.error);
+      else {
+        setWorkload(workloadData);
+        setisLoadingWL(false);
+      }
     }
   }
+
+  const handleWorkloadClick = () => {
+    if (isUser) {
+      navigate('/snd')
+    } else {
+      const requested_uid = location.pathname.split('/')[2];
+      navigate(`/snd/${requested_uid}`)
+    }
+  }
+
 
   const handleAchievementClick = () => {
     if (isUser) {
@@ -102,9 +136,13 @@ const Profile = ({ firebaseApp }) => {
             <div>{details.num_connections} connection(s)</div>
           </div>
           <button className={isUser ? "" : "hide"} style={{ marginLeft: '45vw' }} onClick={handleOpen}>Edit</button>
+          <button className={isUser ? "" : "hide"} onClick={handleAvaOpen}>Change Avaliability</button>
         </div>
         <Modal open={open} onClose={handleClose}>
           <ProfileModalContent details={details} setDetails={setDetails} handleClose={handleClose} firebaseApp={firebaseApp} />
+        </Modal>
+        <Modal open={avaOpen} onClose={handleAvaClose}>
+          <AvailabilityModal firebaseApp={firebaseApp} handleClose={handleAvaClose} />
         </Modal>
         <div className="profile-row">
           <div className='profile-box'>
@@ -118,13 +156,19 @@ const Profile = ({ firebaseApp }) => {
               </div>
             </div>
           </div>
-          <div className='profile-box'>
+          <div className='profile-box' onClick={handleWorkloadClick}>
             <div className="profile-box-content">
               <div className='profile-box-header'>
-                <div className='profile-box-header-icon'><img /></div>
-                <div className='profile-box-header-title'></div>
+                <div className='profile-box-header-icon'><img src={workloadIcon} /></div>
+                <div className='profile-box-header-title'>Workload</div>
               </div>
-              <div>
+              <div className="workload-content">
+                {isLoadingWL || (
+                  <div className="workload-percent">{workload}%</div>
+                )}
+                <div className="workload-subtext">workload</div>
+                <div>
+                </div>
               </div>
             </div>
           </div>
