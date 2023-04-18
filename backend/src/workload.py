@@ -2,13 +2,12 @@ from .helper import *
 from datetime import datetime, timedelta
 import pytz
 
-def get_user_workload(uid, pid):
+def get_user_workload(uid):
     """
     Get the workload of a certain user.
     Workload is the sum of the task workloads that are in progress and due within 7 days
     Args:
         - uid (string): UID of the user we are checking
-        - pid (string): Project we are checking workload in
     Returns:
         - workload (int): Workload total
     """
@@ -22,9 +21,6 @@ def get_user_workload(uid, pid):
     for tid in tids:
         task_ref = db.collection('tasks').document(str(tid))
         
-        task_pid = task_ref.get().get("pid")
-        if (task_pid != pid): continue
-        
         status = task_ref.get().get("status")
         if (status != "In Progress" and status != "Testing/Reviewing"): continue
         
@@ -36,7 +32,7 @@ def get_user_workload(uid, pid):
 
     return workload
 
-def update_user_availability(uid, pid, availability):
+def update_user_availability(uid, availability):
     """
     Updates availablility from 0 to 5 in increments of 0.5
     Default is 5
@@ -51,10 +47,9 @@ def update_user_availability(uid, pid, availability):
     if (availability not in nums): raise InputError("Availability should be from 0 to 5 in increments of 0.5")
     user_ref = db.collection("users").document(str(uid))
     
-    avail_ref = user_ref.collection("availability").document(str(pid))
-    avail_ref.set({"availability": availability})
+    user_ref.update({"availability": availability})
 
-def get_availability(uid, pid):
+def get_availability(uid):
     """
     Gets availability of a user
     Args:
@@ -65,33 +60,33 @@ def get_availability(uid, pid):
     check_valid_uid(uid)
     user_ref = db.collection("users").document(str(uid))
 
-    return user_ref.collection("availability").document(str(pid)).get().get("availability")
+    return user_ref.get().get("availability")
     
     
-def get_availability_ratio(uid, pid):
+def get_availability_ratio(uid):
     """
     Get the availability ratio of a certain user.
     Availability is workload/availability. 5 Working days
     Args:
         - uid (string): UID of the user we are checking
     Returns:
-        - Availability (float): Availability of user
+        - Availability_ratio (float): Availability ratio of user
     """
-    return get_user_workload(uid, pid) / get_availability(uid, pid)
+    avail = get_availability(uid)
+    if (avail == 0) : return 1
+    return get_user_workload(uid) / avail
     
-def calculate_supply_demand(pid):
-    check_valid_pid(pid)
-    proj_ref = db.collection('projects').document(str(pid))
-    snd = proj_ref.get().get("snd")
+def calculate_supply_demand(uid):
+    check_valid_uid(uid)
+    user_ref = db.collection("users").document(str(uid))
+    snd = user_ref.get().get("snd")
     total_workload = 0
     total_avail = 0
-    users = proj_ref.get().get('project_members')
     
-    for user in users:
-        workload = get_user_workload(user, pid)
-        availability = get_availability(user, pid)
-        total_workload += workload
-        total_avail += availability
+    workload = get_user_workload(uid)
+    availability = get_availability(uid)
+    total_workload += workload
+    total_avail += availability
         
     data = {
         "time": datetime.now(),
@@ -100,10 +95,10 @@ def calculate_supply_demand(pid):
     }
     
     snd.append(data)
-    proj_ref.update({"snd":snd})
+    user_ref.update({"snd":snd})
     return snd
     
-def get_supply_and_demand(pid):
-    check_valid_pid(pid)
-    proj_ref = db.collection('projects').document(str(pid))
-    return proj_ref.get().get("snd")
+def get_supply_and_demand(uid):
+    check_valid_uid(uid)
+    user_ref = db.collection("users").document(str(uid))
+    return user_ref.get().get("snd")

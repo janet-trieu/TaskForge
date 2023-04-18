@@ -459,7 +459,7 @@ def create_user_firestore(uid):
         'visibility': True,
         'total_reviews_written': 0
     }
-    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [])
+    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [], 5, [])
     
     print(users_ref.document(uid).set(user.to_dict()))
 
