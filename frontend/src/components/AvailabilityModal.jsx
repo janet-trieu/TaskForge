@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import './AvailabilityModal.css'
 import './Searchbar.css';
 import { makeRequest } from "../helpers";
 
-const AvailabilityModal = ({ firebaseApp, handleClose }) => {
+const AvailabilityModal = forwardRef(({ firebaseApp, handleClose }, ref) => {
   const [ava, setAva] = useState();
 
   const handleConfirm = async (event) => {
@@ -53,6 +53,6 @@ const AvailabilityModal = ({ firebaseApp, handleClose }) => {
       </div>
     </>
   )
-}
+});
 
 export default AvailabilityModal;

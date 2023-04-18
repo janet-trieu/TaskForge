@@ -114,7 +114,10 @@ const Profile = ({ firebaseApp }) => {
   }
 
   const checkHideVisibility = async () => {
-    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    let uid = firebaseApp.auth().currentUser.uid
+    if (location.pathname !== "/profile") uid = location.pathname.split('/')[2];
+
+    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
     if (data.error) alert(data.error);
     if (data === true && !isUser) setHideAchievements(true);
     else setHideAchievements(false);
