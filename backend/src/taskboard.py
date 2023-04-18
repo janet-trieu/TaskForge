@@ -368,7 +368,7 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
     """
     # Check if user is in project
     check_user_in_project(uid, pid)
-
+    
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
     eid = db.collection("tasks").document(str(tid)).get().get("eid")
