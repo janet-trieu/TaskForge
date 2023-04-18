@@ -479,7 +479,7 @@ def flask_subtask_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_subtask(uid, data["stid"], data["eid"], data["assignees"], 
+    return dumps(update_subtask(uid, data["stid"], data["assignees"], 
                                 data["title"], data["description"], data["deadline"], 
                                 data["workload"], data["priority"], data["status"]))
 
