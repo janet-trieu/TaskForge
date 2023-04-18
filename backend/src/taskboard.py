@@ -325,7 +325,7 @@ def delete_task(uid, tid):
 
 ### ========= SUBTASKS ========= ###
 ### ========= Create Subtask ========= ###
-def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, workload, priority, status):
+def create_subtask(uid, tid, pid, assignees, title, description, deadline, workload, priority, status):
     """
     Creates a subtask and initialises the subtask into firestore database
 
@@ -349,6 +349,7 @@ def create_subtask(uid, tid, pid, eid, assignees, title, description, deadline, 
 
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
+    eid = db.collections("tasks").document(str(tid)).get().get("eid")
     subtask = Subtask(value, tid, pid, eid, "", title, description, deadline, workload, priority, status)
     subtask_ref.document(str(value)).set(subtask.to_dict())
 
