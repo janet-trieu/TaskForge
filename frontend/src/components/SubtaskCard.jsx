@@ -3,7 +3,7 @@ import { makeRequest } from "../helpers";
 
 const SubtaskCard = (props) => {
 
-  const assignees = props.subtask.assignees.join("\n")
+  const assignees = props.subtask.assignees !== "" ? props.subtask.assignees.join("\n") : "";
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -13,6 +13,7 @@ const SubtaskCard = (props) => {
     if (newAssignees[0] === "") newAssignees = [];
 
     const body = {
+      pid: props.pid,
       stid: props.subtask.stid,
       title: event.target.title.value,
       description: event.target.description.value,

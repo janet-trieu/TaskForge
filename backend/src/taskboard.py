@@ -203,7 +203,8 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
         "workload": workload,
         "eid": eid,
         "comments": [],
-        "subtasks": []
+        "subtasks": [],
+        "files": []
     }
 
 ### ========= Get Task Ref ========= ###
@@ -368,15 +369,13 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
 
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
-    eid = db.collections("tasks").document(str(tid)).get().get("eid")
-    subtask = Subtask(value, tid, pid, eid, "", title, description, deadline, workload, priority, status)
+    eid = db.collection("tasks").document(str(tid)).get().get("eid")
+    subtask = Subtask(value, tid, pid, eid, assignees, title, description, deadline, workload, priority, status)
     subtask_ref.document(str(value)).set(subtask.to_dict())
 
-    assign_subtask(uid, value, assignees)
-
-    project_subtasks = db.collection("projects").document(str(pid)).get().get("subtasks")
+    project_subtasks = db.collection("tasks").document(str(tid)).get().get("subtasks")
     project_subtasks.append(value)
-    db.collection("projects").document(str(pid)).update({"subtasks": project_subtasks})
+    db.collection("tasks").document(str(tid)).update({"subtasks": project_subtasks})
     update_stid()
 
     return {
@@ -916,7 +915,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         "subtasks": []
     }
 
-def update_subtask(uid, stid, eid, title, description, deadline, workload, priority, status):
+def update_subtask(uid, stid, assignees, title, description, deadline, workload, priority, status):
     """
     updates subtask
 
@@ -935,16 +934,8 @@ def update_subtask(uid, stid, eid, title, description, deadline, workload, prior
     Return:
         None
     """
-    pid = get_task_ref(stid).get("pid")
+    pid = get_subtask_ref(stid).get("pid")
     check_user_in_project(uid, pid)
-    check_epic_in_project(eid, pid)
-    
-    # Update epics
-    old_epic = get_subtask_ref(stid).get("eid")
-    # new epic is different
-    if not old_epic == eid:
-        # Update task epic
-        db.collection("subtasks").document(str(stid)).update({'eid': eid})
 
     if type(title) != str:
         raise InputError(f'title is not a string')
@@ -954,19 +945,19 @@ def update_subtask(uid, stid, eid, title, description, deadline, workload, prior
         raise InputError(f'description is not a string')
     else:
         db.collection("subtasks").document(str(stid)).update({'description': description})
-    if datetime.datetime.strptime(deadline, "%d/%m/%Y"):
+    if deadline and not datetime.datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
-    if type(workload) != int:
+    if type(workload) != int and type(workload) != str:
         raise InputError(f'workload is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'workload': workload})
-    if priority != "High" or priority != "Moderate" or priority != "Low":
+    if priority != "High" and priority != "Moderate" and priority != "Low":
         raise InputError('priority is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'priority': priority})
-    
+    db.collection("subtasks").document(str(stid)).update({'assignees': assignees})
     if status != "Not Started" and status != "In Progress" and status != "Blocked" and status != "In Review/Testing" and status != "Completed":
         raise InputError("Not a valid status")
     else:
@@ -1013,21 +1004,45 @@ def less_than(task_one, task_two):
     #     Fa ND| F  | F  | F  | T
 
     if (task_one_flagged == True):
-        if ((task_one_deadline != None) and (task_two_flagged == True and task_two_deadline != None)):
+        if ((task_one_deadline is not None) and (task_two_flagged == True and task_two_deadline is not None)):
             if (task_one_deadline < task_two_deadline):
                 return True
             else:
                 return False
-        elif (task_one_deadline == None):
+        elif ((task_one_deadline is None) and (task_two_flagged == True and task_two_deadline is not None)):
             return False
         else:
             return True
     else:
         if (task_two_flagged == True):
             return False
-        elif (task_one_deadline != None and task_two_deadline != None):
+        elif (task_one_deadline is not None and task_two_deadline is not None):
             if (task_one_deadline < task_two_deadline):
                 return True
             else:
                 return False
-        return True
+        elif (task_one_deadline is not None and task_two_deadline is None):
+            return True
+        else:
+            return False
+
+def get_all_subtasks(uid, tid):
+    """
+    Gets all the subtasks in a task
+
+    Args:
+        uid (str):
+        tid (int):
+
+    Returns:
+        A dict
+    """
+    check_valid_uid(uid)
+    check_valid_tid(tid)
+
+    task_ref = get_task_ref(tid)
+    subtasks = task_ref.get("subtasks")
+    subtask_list = []
+    for subtask in subtasks:
+        subtask_list.append(get_subtask_details(uid, subtask))
+    return subtask_list

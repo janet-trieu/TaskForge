@@ -31,7 +31,7 @@ const TaskCard = (props) => {
         {props.task.priority !== "" ? <div className={`task-priority ${props.task.priority}`}>{props.task.priority}</div> : <></>}
       </Container>
       <Modal open={open} onClose={handleClose}>
-        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} tasks={props.tasks} setTasks={props.setTasks} setOpen={setOpen} forceUpdate={props.forceUpdate} />
+        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} tasks={props.tasks} setTasks={props.setTasks} setOpen={setOpen} forceUpdate={props.forceUpdate} pid={props.pid}/>
       </Modal>
     </>
   );

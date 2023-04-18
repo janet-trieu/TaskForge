@@ -28,7 +28,7 @@ const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
     else {
       const newSubtasks = props.subtasks;
       newSubtasks.unshift(data);
-      props.setTasks(newSubtasks);
+      props.setSubtasks(newSubtasks);
       props.handleClose();
     }
   }

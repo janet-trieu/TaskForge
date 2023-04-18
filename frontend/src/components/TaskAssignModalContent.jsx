@@ -7,6 +7,7 @@ const TaskAssignModalContent = forwardRef((props, ref) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    event.stopPropagation();
 
     const new_assignees = event.target.taskAssignees.value.split(", ");
     console.log(new_assignees);

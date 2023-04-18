@@ -6,7 +6,7 @@ import TaskCommentsModalContent from "./TaskCommentsModalContent";
 import TaskSubtasksModalContent from "./TaskSubtasksModalContent";
 import TaskAttachmentsModalContent from "./TaskAttachmentsModalContent";
 
-const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, setOpen, forceUpdate }, ref) => {
+const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, setOpen, forceUpdate, pid }, ref) => {
 
   const [openAssign, setOpenAssign] = useState(false);
   const handleOpenAssign = () => { setOpenAssign(true) };
@@ -92,7 +92,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
         <br />
         <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenSubtasks}>Subtasks</button>
         <Modal open={openSubtasks} onClose={handleCloseSubtasks}>
-          <TaskSubtasksModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} />
+          <TaskSubtasksModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} pid={pid}/>
         </Modal>
       </div>
       <div id="task-right-section">

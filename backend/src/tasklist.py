@@ -11,7 +11,7 @@ from .profile_page import *
 from .taskboard import get_task_ref, insert_tasklist
 import re
 import time
-from datetime import datetime, time
+from datetime import datetime
 
 ### ========= Get User Assigned Tasks ========= ###
 def get_user_assigned_task(uid, show_completed):
@@ -95,8 +95,7 @@ def search_tasklist(uid, query_tid, query_title, query_description, query_deadli
     """
     check_valid_uid(uid)
     tasks = db.collection("users").document(uid).get().get("tasks")
-    if (not query_deadline == "" and datetime.strptime(query_deadline, "%d/%m/%Y")):
-        pass
+
     task_list = []
     for task in tasks:
         task_ref = get_task_ref(task)
@@ -117,10 +116,9 @@ def search_tasklist(uid, query_tid, query_title, query_description, query_deadli
             task_details['epic'] = "None"
         else:
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
-        date = datetime.now()
-        date = date.strftime("%d/%m/%Y")
-        if ((query_tid == "" or query_tid == task) and (query_title == "" or (query_title.lower() in task_ref.get("title").lower()))
-                                                        and (query_description == "" or (query_description.lower() in task_ref.get("description").lower()))
-                                                        and (query_deadline == "" or query_deadline == date)):
+
+        if ((query_tid == "" or int(query_tid) == int(task)) and (query_title == "" or query_title.lower() in task_ref.get("title"))
+                                                        and (query_description == "" or query_description.lower() in task_ref.get("description"))
+                                                        and (query_deadline == "" or query_deadline == task_ref.get("deadline"))):
             task_list = insert_tasklist(task_list, task_details)
     return task_list

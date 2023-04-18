@@ -125,7 +125,7 @@ def admin_give_admin():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(give_admin(data["uid_admin"], uid_user))
+    return dumps(give_admin(uid_user, data["uid_admin"]))
 
 @app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
@@ -134,7 +134,7 @@ def admin_ban_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(ban_user(data["uid_admin"], uid_user))
+    return dumps(ban_user(uid_user, data["uid_admin"]))
     
 @app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
@@ -143,7 +143,7 @@ def admin_unban_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(unban_user(data["uid_admin"], uid_user))
+    return dumps(unban_user(uid_user, data["uid_admin"]))
     
 @app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
@@ -152,7 +152,7 @@ def admin_remove_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(remove_user(data["uid_admin"], uid_user))
+    return dumps(remove_user(uid_user, data["uid_admin"]))
 
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
@@ -402,7 +402,7 @@ def flask_create_subtask():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(create_subtask(uid, data["tid"], data["pid"], data["assignees"], data["title"], data["description"], data["deadline"],
+    return dumps(create_subtask(uid, data["tid"], int(data["pid"]), data["assignees"], data["title"], data["description"], data["deadline"],
                           data["workload"], data["priority"], data["status"]))
 
 # DETAILS #
@@ -480,7 +480,7 @@ def flask_subtask_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_subtask(uid, data["stid"], data["eid"], data["assignees"], 
+    return dumps(update_subtask(uid, data["stid"], data["assignees"], 
                                 data["title"], data["description"], data["deadline"], 
                                 data["workload"], data["priority"], data["status"]))
 
@@ -673,6 +673,11 @@ def flask_get_supply_and_demand():
     uid = request.args.get("uid")
     return dumps(get_supply_and_demand(uid))
     
+@app.route("/subtasks/get_all", methods=["GET"])
+def flask_subtask_get_all():
+    uid = request.headers.get("Authorization")
+    tid = int(request.args.get('tid'))
+    return dumps(get_all_subtasks(uid, tid))
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)

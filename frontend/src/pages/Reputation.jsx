@@ -30,7 +30,6 @@ const Reputation = ({ firebaseApp }) => {
           {reviews.reviews.map((review, idx) => {
             return <ReviewCard key={idx} review={review} />
           })}
-          <ReviewCard review={{display_name: "Test Name", date: "01/01/2001"}} />
         </div>
       )}
     </div>
