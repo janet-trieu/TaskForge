@@ -642,6 +642,11 @@ def flag_task(uid, tid, boolean):
     check_user_in_project(uid, pid)
     check_valid_tid(tid)
 
+    if (boolean.lower() == 'true'):
+        boolean = True
+    else:
+        boolean = False
+
     db.collection("tasks").document(str(tid)).update({"flagged": boolean})
 
 ### ========= Change status ========= ###
@@ -1018,12 +1023,11 @@ def less_than(task_one, task_two):
         else:
             return True
     else:
-        if ((task_two_flagged == False) and (task_two_deadline == None)):
-            return True
-        elif ((task_one_deadline != None) and (task_two_flagged == False and task_two_deadline != None)):
+        if (task_two_flagged == True):
+            return False
+        elif (task_one_deadline != None and task_two_deadline != None):
             if (task_one_deadline < task_two_deadline):
                 return True
             else:
                 return False
-        else:
-            return False
+        return True
