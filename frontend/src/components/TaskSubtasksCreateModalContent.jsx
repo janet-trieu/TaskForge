@@ -26,9 +26,9 @@ const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
     const data = await makeRequest("/subtask/create", "POST", body, props.uid);
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
-      // const newTasks = props.tasks;
-      // newTasks[body.status].unshift(data);
-      // props.setTasks(newTasks);
+      const newSubtasks = props.subtasks;
+      newSubtasks.unshift(data);
+      props.setTasks(newSubtasks);
       props.handleClose();
     }
   }

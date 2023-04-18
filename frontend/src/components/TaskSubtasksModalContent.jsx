@@ -6,7 +6,7 @@ import TaskSubtasksCreateModalContent from "./TaskSubtasksCreateModalContent";
 
 const TaskSubtasksModalContent = forwardRef((props, ref) => {
 
-  const [isLoading, setIsLoading] = useState("Loading...");
+  const [subtasks, setSubtasks] = useState(props.subtasks);
   const [openCreate, setOpenCreate] = useState(false);
   const handleOpenCreate = () => { setOpenCreate(true) };
   const handleCloseCreate = () => { setOpenCreate(false) };
@@ -27,7 +27,7 @@ const TaskSubtasksModalContent = forwardRef((props, ref) => {
       {/* Create subtask option */}
       <button type="button" style={{width: '100%', marginBottom: '2em'}} onClick={handleOpenCreate}>Create Subtask</button>
       <Modal open={openCreate} onClose={handleCloseCreate}>
-        <TaskSubtasksCreateModalContent uid={props.uid} tid={props.tid} handleClose={handleCloseCreate} />
+        <TaskSubtasksCreateModalContent uid={props.uid} tid={props.tid} handleClose={handleCloseCreate} subtasks={subtasks} setSubtasks={setSubtasks} />
       </Modal>
       {/* View subtasks */}
       <div id="subtask-card-container">
