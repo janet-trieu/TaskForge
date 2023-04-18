@@ -836,9 +836,12 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         # Update new epic to include tid if it is not none
         if eid != "None":
             new_epic_tasks = get_epic_ref(eid).get("tasks")
-            db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks.append(tid)})
+            if new_epic_tasks is None:
+                new_epic_tasks = []
+            new_epic_tasks.append(tid)
+            db.collection("epics").document(str(eid)).update({'tasks': new_epic_tasks})
         # Remove tid from old epic if it is not none
-        if old_epic is not None:
+        if old_epic is not None and not old_epic == "None":
             old_epic_tasks = get_epic_ref(old_epic).get("tasks")
             old_epic_tasks.remove(tid)
             db.collection("epics").document(str(old_epic)).update({'tasks': old_epic_tasks})
@@ -883,6 +886,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         "description": description,
         "workload": workload,
         "eid": eid,
+        "epic": db.collection("epics").document(str(eid)).get().get("title"),
         "comments": [],
         "subtasks": []
     }

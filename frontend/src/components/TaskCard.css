@@ -26,3 +26,15 @@
     display: inline-block;
     border-radius: 16px;
 }
+
+.Low {
+    background-color: lightgreen;
+}
+
+.Moderate {
+    background-color: yellow;
+}
+
+.High {
+    background-color: lightcoral;
+}

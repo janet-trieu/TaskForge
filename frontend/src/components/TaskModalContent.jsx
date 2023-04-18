@@ -19,7 +19,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
 
   const epicList = []
   for (const epic of epics) {
-    epicList.push(<option value={epic.title}>{epic.title}</option>);
+    epicList.push(<option key={epic.eid} value={epic.title}>{epic.title}</option>);
   }
 
   const handleSubmit = async (event) => {
@@ -47,6 +47,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
     if (data.error) alert(data.error);
     else {
       setOpen(false)
+      if (body.eid !== details.epic)
       if (body.status !== details.status) {
         const newTasks = tasks;
         const idx = newTasks[details.status].findIndex((task) => {return task.tid === details.tid});

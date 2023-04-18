@@ -15,35 +15,40 @@ const Container = styled.div`
 
 const TaskCard = (props) => {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState("Loading...");
-  const [epicDetails, setEpicDetails] = useState();
+  // const [isLoading, setIsLoading] = useState("Loading...");
+  // const [epicDetails, setEpicDetails] = useState();
   const handleOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
 
-  const getEpicData = async () => {
-    if (props.task.eid !== "None" && props.task.eid !== null) {
-      const data = await makeRequest(`/epic/details?eid=${props.task.eid}`, 'GET', null, props.uid);
-      if (data.error) alert(data.error);
-      else {
-        setEpicDetails(data);
-        setIsLoading(false);
-      }
-    } else {
-      setIsLoading(false);
-    }
+  // const getEpicData = async () => {
+  //   if (props.task.eid !== "None" && props.task.eid !== null) {
+  //     const data = await makeRequest(`/epic/details?eid=${props.task.eid}`, 'GET', null, props.uid);
+  //     if (data.error) alert(data.error);
+  //     else {
+  //       setEpicDetails(data);
+  //       setIsLoading(false);
+  //     }
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }
+  // useEffect(getEpicData, []);
+
+  let epic = null;
+  for (const curr of props.epics) {
+    if (curr.eid === props.task.eid) epic = curr;
   }
-  useEffect(getEpicData, []);
 
   return (
     <>
-      {isLoading || (
+      {/* {isLoading || ( */}
         <Container onClick={handleOpen}>
-          {epicDetails ? <div className="task-epic" style={{backgroundColor: epicDetails.colour}}>{epicDetails.title}</div> : <></>}
+          {epic !== null ? <div className="task-epic" style={{backgroundColor: epic.colour}}>{epic.title}</div> : <></>}
           <div className="task-title">{props.task.title}</div>
-          <div className="task-deadline">{props.task.deadline}</div>
-          <div className="task-priority">{props.task.priority}</div>
+          {props.task.deadline !== "" ? <div className="task-deadline">{props.task.deadline}</div> : <></>}
+          {props.task.priority !== "" ? <div className={`task-priority ${props.task.priority}`}>{props.task.priority}</div> : <></>}
         </Container>
-      )}
+      {/* )} */}
       <Modal open={open} onClose={handleClose}>
         <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} tasks={props.tasks} setTasks={props.setTasks} setOpen={setOpen} forceUpdate={props.forceUpdate} />
       </Modal>
