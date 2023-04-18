@@ -164,8 +164,8 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     if priority and not (priority == "High" or priority == "Moderate" or priority == "Low"):
         raise InputError('Priority is not valid')
     
-    if (not isinstance(workload, int)):
-        workload = None
+    if (not isinstance(workload, (str, int))):
+        workload = 0
     
     task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
