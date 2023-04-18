@@ -21,7 +21,7 @@ const TaskCard = (props) => {
   const handleClose = () => { setOpen(false) };
 
   const getEpicData = async () => {
-    if (props.task.eid !== null) {
+    if (props.task.eid !== "None" && props.task.eid !== null) {
       const data = await makeRequest(`/epic/details?eid=${props.task.eid}`, 'GET', null, props.uid);
       if (data.error) alert(data.error);
       else {
@@ -32,16 +32,13 @@ const TaskCard = (props) => {
       setIsLoading(false);
     }
   }
-
-  useEffect(() => {
-    getEpicData();
-  }, []);
+  useEffect(getEpicData, []);
 
   return (
     <>
       {isLoading || (
         <Container onClick={handleOpen}>
-          <div className="task-epic">{epicDetails.title}</div>
+          {epicDetails ? <div className="task-epic" style={{backgroundColor: epicDetails.colour}}>{epicDetails.title}</div> : <></>}
           <div className="task-title">{props.task.title}</div>
           <div className="task-deadline">{props.task.deadline}</div>
           <div className="task-priority">{props.task.priority}</div>
