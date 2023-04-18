@@ -286,7 +286,7 @@ class Project():
      - 
      - 
     """
-    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks):
+    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks, snd):
         self.pid = pid
         self.uid = uid
         self.name = name
@@ -299,6 +299,7 @@ class Project():
         self.epics = epics
         self.tasks = tasks
         self.subtasks = subtasks
+        self.snd = snd
     
     def to_dict(self):
         return {
@@ -313,7 +314,8 @@ class Project():
             "project_members": self.project_members,
             "epics": self.epics,
             "tasks": self.tasks,
-            "subtasks": self.subtasks
+            "subtasks": self.subtasks,
+            "snd": self.snd
         }
 
 def get_project(pid):
