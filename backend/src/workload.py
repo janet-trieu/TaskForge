@@ -25,9 +25,11 @@ def get_user_workload(uid):
         if (status != "In Progress" and status != "Testing/Reviewing"): continue
         
         due_date = task_ref.get().get("deadline")
-        if (curr_time + timedelta(days = 7) < due_date): continue
+        if (str(curr_time + timedelta(days = 7)) < due_date): continue
         
         task_wl = task_ref.get().get("workload")
+        if (task_wl is None):
+            task_wl = 0
         workload += task_wl
 
     return workload
@@ -62,7 +64,6 @@ def get_availability(uid):
 
     return user_ref.get().get("availability")
     
-    
 def get_availability_ratio(uid):
     """
     Get the availability percentage of a certain user.
@@ -70,12 +71,11 @@ def get_availability_ratio(uid):
     Args:
         - uid (string): UID of the user we are checking
     Returns:
-        - percentage (string): Availability ratio of user
+        - percentage (number): Availability ratio of user
     """
     avail = get_availability(uid)
     if (avail == 0) : return 1
-    percentage = str((get_user_workload(uid) / avail) * 100) + "%"
-    if (percentage > 100) : percentage = "100+%"
+    percentage = (get_user_workload(uid) / avail) * 100
     return percentage
     
 def calculate_supply_demand(uid):

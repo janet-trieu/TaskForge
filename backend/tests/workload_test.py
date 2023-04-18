@@ -30,7 +30,7 @@ def test_update_availability():
     assert(get_availability(uid) == 4.5)
     
 def test_availability_ratio():
-    assert(get_availability_ratio(uid) == str((5/4.5)*100)+"%")
+    assert(get_availability_ratio(uid) == (5/4.5)*100)
 
 def test_supply_and_demand():
     calculate_supply_demand(uid)
