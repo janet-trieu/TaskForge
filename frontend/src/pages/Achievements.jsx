@@ -18,7 +18,7 @@ const Achievements = ({ firebaseApp }) => {
     if (location.pathname === '/achievements') {
       setIsUser(true);
       const data = await makeRequest('/achievements/view/my', 'GET', null, uid);
-      const lockedData = await makeRequest('/achievements/locked', 'GET', null, uid);
+      const lockedData = await makeRequest(`/achievements/locked?uid=${uid}`, 'GET', null, uid);
       const nameData = await makeRequest(`/achievements/name?uid=${uid}`, 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
@@ -31,7 +31,7 @@ const Achievements = ({ firebaseApp }) => {
       setIsUser(false);
       const requested_uid = location.pathname.split('/')[2];
       const data = await makeRequest('/achievements/view/notmy', 'GET', {conn_uid: requested_uid}, uid);
-      const lockedData = await makeRequest('/achievements/locked', 'GET', null, uid);
+      const lockedData = await makeRequest(`/achievements/locked?uid=${requested_uid}`, 'GET', null, uid);
       const nameData = await makeRequest(`/achievements/name?uid=${requested_uid}`, 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
