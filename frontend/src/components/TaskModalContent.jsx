@@ -73,11 +73,11 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
         <label htmlFor="description"><h3>Description</h3></label>
         <textarea placeholder="Add a description..." id="description" name="description" defaultValue={details.description} />
         <h3>Attachments</h3><br />
-        <button type="button" onClick={handleOpenComments}>Comments</button>
+        <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenComments}>Comments</button>
         <Modal open={openComments} onClose={handleCloseComments}>
           <TaskCommentsModalContent uid={uid} tid={details.tid} comments={details.comments} handleClose={handleCloseComments} />
         </Modal>
-        <button type="button" onClick={handleOpenSubtasks}>Subtasks</button>
+        <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenSubtasks}>Subtasks</button>
         <Modal open={openSubtasks} onClose={handleCloseSubtasks}>
           <TaskSubtasksModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} />
         </Modal>
@@ -91,7 +91,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
           <label htmlFor="workload"><h3>Workload</h3></label>
           <h3>Epic</h3>
           <h3>Flagged</h3>
-          <button type="submit">Save Changes</button>
+          <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenAssign}>Reassign Task</button>
         </div>
         <div>
           <select id="status" name="status" style={{marginTop: '1.8em', marginBottom: '0.55em'}} defaultValue={details.status}>
@@ -106,7 +106,13 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
           <div style={{minHeight: '2em', maxHeight: '2em', marginTop: '1em', overflow: 'scroll', overflowX: 'hidden'}}>
             {details.assignee_emails.map((assignee, idx) => {return <h3 key={idx} style={{fontWeight: "normal", margin: '0'}}>{assignee}</h3>})}
           </div>
-          <input type="text" id="priority" name="priority" defaultValue={details.priority} />
+          {/* <input type="text" id="priority" name="priority" defaultValue={details.priority} /> */}
+          <select id="priority" name="priority" style={{marginTop: '1.8em', marginBottom: '0.4em'}} defaultValue={details.priority}>
+            <option value="">Choose a priority...</option>
+            <option value="Low">Low</option>
+            <option value="Moderate">Moderate</option>
+            <option value="High">High</option>
+          </select>
           <br />
           <input type="text" id="workload" name="workload" defaultValue={details.workload} />
           <br />
@@ -121,7 +127,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
           </select>
           <br />
           <br />
-          <button type="button" onClick={handleOpenAssign}>Reassign Task</button>
+          <button type="submit">Save Changes</button>
           <Modal open={openAssign} onClose={handleCloseAssign}>
             <TaskAssignModalContent uid={uid} tid={details.tid} emails={details.assignee_emails} handleClose={handleCloseAssign} />
           </Modal>

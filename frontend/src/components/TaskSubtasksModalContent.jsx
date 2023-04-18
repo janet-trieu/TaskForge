@@ -1,28 +1,21 @@
 import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
-import styled from "styled-components";
 import { Modal } from "@mui/material";
 import TaskSubtasksCreateModalContent from "./TaskSubtasksCreateModalContent";
 
 const TaskSubtasksModalContent = forwardRef((props, ref) => {
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    // const data = await makeRequest('/task/comment', 'POST', {tid: props.tid, comment}, props.uid);
-    if (data.error) alert(data.error);
-    else {
-
-    };
-  }
+  const [isLoading, setIsLoading] = useState("Loading...");
+  const [openCreate, setOpenCreate] = useState(false);
+  const handleOpenCreate = () => { setOpenCreate(true) };
+  const handleCloseCreate = () => { setOpenCreate(false) };
 
   return (
     <div id="task-subtasks-modal">
       {/* Create subtask option */}
-      <button>Create Subtask</button>
-      <Modal open={openSubtasks} onClose={handleCloseSubtasks}>
-        <TaskSubtasksCreateModalContent uid={uid} tid={details.tid} subtasks={details.subtasks} handleClose={handleCloseSubtasks} />
+      <button type="button" onClick={handleOpenCreate}>Create Subtask</button>
+      <Modal open={openCreate} onClose={handleCloseCreate}>
+        <TaskSubtasksCreateModalContent uid={props.uid} tid={props.tid} handleClose={handleCloseCreate} />
       </Modal>
       {/* View subtasks */}
     </div>
