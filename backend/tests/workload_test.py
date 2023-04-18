@@ -10,11 +10,11 @@ from src.proj_master import *
 import datetime
 
 try:
-    uid = create_user_email("workload1@gmail.com", "wl112312321", "wl1123123")
+    uid = create_user_email("work1@gmail.com", "wl112312321", "wl1123123")
 except auth.EmailAlreadyExistsError:
     pass
 
-uid = auth.get_user_by_email("workload1@gmail.com").uid
+uid = auth.get_user_by_email("work1@gmail.com").uid
 pid = create_project(uid, "Project 123", "description", None, None, None)
  
 def test_get_user_workload():

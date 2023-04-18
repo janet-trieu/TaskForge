@@ -20,14 +20,11 @@ def get_user_workload(uid):
 
     for tid in tids:
         task_ref = db.collection('tasks').document(str(tid))
-        
         status = task_ref.get().get("status")
         if (status != "In Progress" and status != "Testing/Reviewing"): continue
-        
         due_date = task_ref.get().get("deadline")
-        if (str(curr_time + timedelta(days = 7)) < due_date): continue
-        
-        task_wl = task_ref.get().get("workload")
+        if (str(curr_time + timedelta(days = 7)) < str(due_date)): continue
+        task_wl = int(task_ref.get().get("workload"))
         if (task_wl is None):
             task_wl = 0
         workload += task_wl
@@ -76,7 +73,7 @@ def get_availability_ratio(uid):
     avail = get_availability(uid)
     if (avail == 0) : return 1
     percentage = (get_user_workload(uid) / avail) * 100
-    return percentage
+    return int(percentage)
     
 def calculate_supply_demand(uid):
     check_valid_uid(uid)
@@ -91,16 +88,17 @@ def calculate_supply_demand(uid):
     total_avail += availability
         
     data = {
-        "time": datetime.now(),
         "supply": total_avail,
         "demand": total_workload
     }
     
     snd.append(data)
-    user_ref.update({"snd":snd})
+    user_ref.update({"snd":[data]})
     return snd
     
 def get_supply_and_demand(uid):
     check_valid_uid(uid)
+    calculate_supply_demand(uid)
     user_ref = db.collection("users").document(str(uid))
+    print(user_ref.get().get("snd"))
     return user_ref.get().get("snd")

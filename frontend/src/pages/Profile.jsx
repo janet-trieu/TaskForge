@@ -98,7 +98,6 @@ const Profile = ({ firebaseApp }) => {
     }
   }
 
-
   const handleAchievementClick = () => {
     if (isUser) {
       navigate('/achievements')
@@ -165,7 +164,9 @@ const Profile = ({ firebaseApp }) => {
               </div>
               <div className="workload-content">
                 {isLoadingWL || (
-                  <div className="workload-percent">{workload}%</div>
+                  <div className="workload-percent">
+                    {workload > 100 ? `100%+` : `${workload}%`}
+                  </div>
                 )}
                 <div className="workload-subtext">workload</div>
                 <div>
