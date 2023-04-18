@@ -118,7 +118,7 @@ def delete_epic(uid, eid):
     # Remove eid in every child task and subtask
     for task in tasks:
         task_doc = db.collection('tasks').document(str(task))
-        subtasks = task_doc.get('subtasks')
+        subtasks = task_doc.get().get('subtasks')
         for subtask in subtasks:
             db.collection('subtasks').document(str(subtask)).update({'eid': ""})
         task_doc.update({'eid': ""})
@@ -321,11 +321,13 @@ def delete_task(uid, tid):
         delete_subtask(subtask)
     
     # Remove task from epic
-    epic = get_epic_ref(task_ref.get("eid"))
-    if epic != "":
-        tasks = epic.get("tasks")
-        tasks.remove(tid)
-        db.collection("epics").document(str(task_ref.get("eid"))).update({"tasks": tasks})
+    eid= task_ref.get("eid")
+    if eid != "" and eid is not None and eid != "None":
+        epic = get_epic_ref(eid)
+        if epic != "":
+            tasks = epic.get("tasks")
+            tasks.remove(tid)
+            db.collection("epics").document(str(eid)).update({"tasks": tasks})
 
     # Remove task from assigned users
     assignees = db.collection('tasks').document(str(tid)).get().get("assignees")
@@ -953,7 +955,7 @@ def update_subtask(uid, stid, assignees, title, description, deadline, workload,
         raise InputError(f'workload is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'workload': workload})
-    if priority != "High" and priority != "Moderate" and priority != "Low":
+    if priority != "High" and priority != "Moderate" and     priority != "Low":
         raise InputError('priority is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'priority': priority})

@@ -24,7 +24,7 @@ const Projects = ({ firebaseApp }) => {
         {isLoading || (
           projects.map((details, idx) => {
             if (showCompleted || details.status !== "Completed") {
-              return <ProjectCard name={details.name} description={details.description} status={details.status} picture={details.picture} pid={details.pid} key={idx} isPinned={details.is_pinned} uid={firebaseApp.auth().currentUser.uid}/>
+              return <ProjectCard name={details.name} description={details.description} status={details.status} picture={details.picture} pid={details.pid} key={idx} isPinned={details.pinned} uid={firebaseApp.auth().currentUser.uid}/>
             }
           })
         )}

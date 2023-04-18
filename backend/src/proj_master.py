@@ -8,6 +8,7 @@ Functionalities:
  - update_project()
 '''
 from firebase_admin import firestore
+import datetime
 
 from .global_counters import *
 from .error import *
@@ -17,8 +18,7 @@ from .connections import *
 from .classes import *
 from .profile_page import *
 from .achievement import *
-
-import datetime
+from .taskboard import *
 
 db = firestore.client()
 
@@ -221,6 +221,9 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     })
     
     user_ref = db.collection("users").document(str(uid_to_be_removed))
+    user_projs = get_projects(uid_to_be_removed)
+    user_projs.remove(pid)
+    user_ref.update({"projects": user_projs})
     user_ref.collection("availability").document(str(pid)).delete()
     
     return 0
@@ -354,7 +357,7 @@ def update_project(pid, uid, updates):
             if not val == "" and not datetime.datetime.strptime(val, "%d/%m/%Y"):
                 raise InputError("Project due date has to be date formatted!!!")
             proj_ref.update({
-                    "due_date": val
+                "due_date": val
             })
         elif key == "team_strength":
             if not type(val) == str:
@@ -378,18 +381,19 @@ def update_project(pid, uid, updates):
 
 def delete_project(pid, uid):
     '''
-    Delete a specified project
-    - Can only be done by a project master
+    Delete a project
+    - also deletes all associated epics, tasks and subtasks
+    - also deletes all the pid reference in the project's members
 
     Arguments:
     - pid (project id)
-    - uid (project master id)
+    - uid (project or task master id)
 
     Returns:
-    - 0 for successful update
+    - 0 for successful response
 
     Raises:
-    - AccessError for incorrect uid
+    - AccessError for uid not project master
     - InputError for invalid pid
     '''
 
@@ -401,10 +405,31 @@ def delete_project(pid, uid):
     if not is_valid_uid == 0:
         raise AccessError(f"ERROR: Supplied uid is not the project master of project:{pid}")
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
+    proj = get_project(pid)
+    if proj == None:
         raise InputError(f"ERROR: Failed to get reference for project {pid}")
 
+    # delete all epics
+    epics = proj["epics"]
+    for eid in epics:
+        delete_epic(uid, eid)
+
+    # delete all tasks (this also deletes subtasks)
+    tasks = proj["tasks"]
+    for stat, tids in tasks.items():
+        for tid in tids:
+            delete_task(uid, tid)  
+
+    # update the proj member's project references
+    members = proj["project_members"]
+
+    for _id in members:
+        user_ref = db.collection("users").document(str(_id))
+        user_projs = get_projects(_id)
+        user_projs.remove(pid)
+        user_ref.update({"projects": user_projs})
+
+    # finally, delete the project itself
     db.collection("projects").document(str(pid)).delete()
 
     return 0
