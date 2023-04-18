@@ -85,7 +85,7 @@ def create_project(uid, name, description, due_date, team_strength, picture):
             "In Review/Testing": [],
             "Completed": []
     }
-    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], tasks, [], [])
+    project = Project(value, uid, name, description, "Not Started", due_date, team_strength, picture, [uid], [], tasks, [])
     proj_ref.document(str(value)).set(project.to_dict())
 
     # add the newly generated pid into the project master's project list
