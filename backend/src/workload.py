@@ -73,8 +73,8 @@ def get_availability_ratio(uid):
         - Availability_ratio (float): Availability ratio of user
     """
     avail = get_availability(uid)
-    if (avail == 0) : return 1
-    return get_user_workload(uid) / avail
+    if (avail == 0) : return 100
+    return (get_user_workload(uid) / avail) * 100
     
 def calculate_supply_demand(uid):
     check_valid_uid(uid)
