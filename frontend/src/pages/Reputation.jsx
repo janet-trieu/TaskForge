@@ -3,7 +3,6 @@ import ReviewCard from '../components/ReviewCard';
 import { makeRequest } from "../helpers";
 import './Reputation.css';
 import { useLocation } from 'react-router-dom';
-import ReviewWriteCard from "../components/ReviewWriteCard";
 
 const Reputation = ({ firebaseApp }) => {
   const [isLoading, setIsLoading] = useState('Loading...');
@@ -28,7 +27,6 @@ const Reputation = ({ firebaseApp }) => {
       </div>
       {isLoading || (
         <div id="review-card-container">
-          <ReviewWriteCard />
           {reviews.reviews.map((review, idx) => {
             return <ReviewCard key={idx} review={review} />
           })}
