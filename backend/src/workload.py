@@ -65,16 +65,18 @@ def get_availability(uid):
     
 def get_availability_ratio(uid):
     """
-    Get the availability ratio of a certain user.
+    Get the availability percentage of a certain user.
     Availability is workload/availability. 5 Working days
     Args:
         - uid (string): UID of the user we are checking
     Returns:
-        - Availability_ratio (float): Availability ratio of user
+        - percentage (string): Availability ratio of user
     """
     avail = get_availability(uid)
-    if (avail == 0) : return 100
-    return (get_user_workload(uid) / avail) * 100
+    if (avail == 0) : return 1
+    percentage = str((get_user_workload(uid) / avail) * 100) + "%"
+    if (percentage > 100) : percentage = "100+%"
+    return percentage
     
 def calculate_supply_demand(uid):
     check_valid_uid(uid)
