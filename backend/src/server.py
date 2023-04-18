@@ -402,7 +402,7 @@ def flask_create_subtask():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(create_subtask(uid, data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+    return dumps(create_subtask(uid, data["tid"], data["pid"], data["assignees"], data["title"], data["description"], data["deadline"],
                           data["workload"], data["priority"], data["status"]))
 
 # DETAILS #
