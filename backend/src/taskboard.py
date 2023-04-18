@@ -346,7 +346,7 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
     """
     # Check if user is in project
     check_user_in_project(uid, pid)
-
+    
     subtask_ref = db.collection("subtasks")
     value = get_curr_stid()
     eid = db.collections("tasks").document(str(tid)).get().get("eid")
@@ -847,7 +847,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
     flag_task(uid, tid, flagged)
     return
 
-def update_subtask(uid, stid, eid, title, description, deadline, workload, priority, status):
+def update_subtask(uid, stid, title, description, deadline, workload, priority, status):
     """
     updates subtask
 
@@ -869,13 +869,6 @@ def update_subtask(uid, stid, eid, title, description, deadline, workload, prior
     pid = get_task_ref(stid).get("pid")
     check_user_in_project(uid, pid)
     check_epic_in_project(eid, pid)
-    
-    # Update epics
-    old_epic = get_subtask_ref(stid).get("eid")
-    # new epic is different
-    if not old_epic == eid:
-        # Update task epic
-        db.collection("subtasks").document(str(stid)).update({'eid': eid})
 
     if type(title) != str:
         raise InputError(f'title is not a string')
