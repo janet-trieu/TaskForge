@@ -18,6 +18,8 @@ from .classes import *
 from .profile_page import *
 from .achievement import *
 
+import datetime
+
 db = firestore.client()
 
 def create_project(uid, name, description, due_date, team_strength, picture):
@@ -45,6 +47,8 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         team_strength = ""
     if picture == None or picture == "":
         picture = "bleh.png"
+    if due_date == None or due_date == "":
+        due_date = ""
 
     check_valid_uid(uid)
 
@@ -53,12 +57,10 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         raise InputError("Project name has to be type of string!!!")
     if not type(description) == str:
         raise InputError("Project description has to be type of string!!!")
-    # if not due_date == None:
-    #     if not isinstance(due_date, date):
-    #         raise InputError("Project due date has to be type of date!!!")
     if not type(team_strength) == str:
         raise InputError("Project team strength has to be type of str!!!")
-    # below will have to have more checks implemented to ensure the input is a valid picture, type of png, jpg or jpeg
+    if not type(due_date) == str:
+        raise InputError("Project due date has to be type of string!!!")
     if not type(picture) == str:
         raise InputError("Project picture has to be type of string!!!")
 
@@ -71,6 +73,9 @@ def create_project(uid, name, description, due_date, team_strength, picture):
         raise InputError("Project description is too long. Please keep it below 1000 characters.")
     if len(description) <= 0:
         raise InputError("Project requies a description!!!")
+    if not due_date == "":
+        if not datetime.datetime.strptime(due_date, "%d/%m/%Y"):
+            raise InputError("Project due date has to be date formatted!!!")
     
     # TO-DO: check for due date being less than 1 day away from today
     if not team_strength == "" and int(team_strength) < 0:
@@ -346,6 +351,8 @@ def update_project(pid, uid, updates):
         elif key == "due_date":
             if not type(val) == str:
                 raise InputError("Project due date has to be type of string")
+            if not val == "" and not datetime.datetime.strptime(val, "%d/%m/%Y"):
+                raise InputError("Project due date has to be date formatted!!!")
             proj_ref.update({
                     "due_date": val
             })

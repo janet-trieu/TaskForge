@@ -192,7 +192,7 @@ def create_admin(uid):
 def storage_upload_file(fileName, destination_name):
     bucket = storage.bucket()
     blob = bucket.blob(destination_name)
-    blob.upload_from_filename(fileName)
+    blob.upload_from_filename(f'src/{fileName}')
     blob.make_public()
     return blob.public_url
 

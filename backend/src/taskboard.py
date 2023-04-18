@@ -12,7 +12,7 @@ from .workload import *
 from .achievement import *
 import re
 import time
-from datetime import datetime, time
+import datetime
 import os
 
 ### ========= EPICS ========= ###
@@ -557,7 +557,7 @@ def comment_task(uid, tid, comment):
         raise InputError("Comment must not be empty")
     if len(comment) > 1000:
         raise InputError("Comment must not be longer than 1000 characters")
-    now = datetime.now()
+    now = datetime.datetime.now()
     data = {
         "time": now.strftime("%d/%m/%Y"),
         "uid": uid,
@@ -594,7 +594,7 @@ def upload_file(uid, fileName, destination_name, tid):
     link = storage_upload_file(fileName, path)
     
     data = {
-        "time": datetime.now(),
+        "time": datetime.datetime.now(),
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": "",
@@ -602,9 +602,15 @@ def upload_file(uid, fileName, destination_name, tid):
         "link" : link
     }
     files = db.collection("tasks").document(str(tid)).get().get("files")
+    if (files is None):
+        files = []
+        files.append(data)
+        db.collection("tasks").document(str(tid)).set({"files": files})
+        return data
     files.append(data)
     db.collection("tasks").document(str(tid)).update({"files": files})
-    return link
+    os.remove(f"src/{destination_name}")
+    return data
     
 def get_file_link(uid, tid, fileName):
     """
@@ -660,7 +666,7 @@ def change_task_status(uid, tid, status):
         raise InputError("Not a valid status")
     
     if status == "Completed":
-        now = datetime.now()
+        now = datetime.datetime.now()
         db.collection("tasks").document(str(tid)).update({"completed": now.strftime("%d/%m/%Y")})
         # incremenet number of tasks completed
         update_user_num_tasks_completed(uid)
@@ -692,7 +698,7 @@ def show_tasks(uid, pid, hidden):
     """
     task_list = []
     check_user_in_project(uid, pid)
-    curr_time = datetime.now()
+    curr_time = datetime.datetime.now()
 
     tasks = db.collection("projects").document(str(pid)).get().get("tasks")
     task_list.extend(tasks.get("Not Started"))
@@ -710,7 +716,7 @@ def show_tasks(uid, pid, hidden):
             # if task has been completed and it has been more than a weeks since completed
             # this task is hidden
             if task_time != "":
-                task_time = datetime.strptime(task_time, "%d/%m/%Y")
+                task_time = datetime.datetime.strptime(task_time, "%d/%m/%Y")
                 difference = curr_time - task_time
             if difference.days <= 7:
                 task_list.append(task)
@@ -766,7 +772,8 @@ def get_taskboard(uid, pid, hidden):
             "workload": task_ref.get("workload"),
             "eid": task_ref.get("eid"),
             "comments": comments,
-            "subtasks": task_ref.get("subtasks")
+            "subtasks": task_ref.get("subtasks"),
+            "files": task_ref.get("files")
         }
         if eid == "" or eid == None:
             task_details['epic'] = "None"
@@ -774,6 +781,7 @@ def get_taskboard(uid, pid, hidden):
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         status_list = task_list[task_ref.get("status")]
         status_list = insert_tasklist(status_list, task_details)
+        print(status_list)
         task_list[task_ref.get("status")] = status_list
     return task_list
 
@@ -866,7 +874,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if deadline and datetime.strptime(deadline, "%d/%m/%Y"):
+    if deadline and not datetime.datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
@@ -941,7 +949,7 @@ def update_subtask(uid, stid, eid, title, description, deadline, workload, prior
         raise InputError(f'description is not a string')
     else:
         db.collection("subtasks").document(str(stid)).update({'description': description})
-    if datetime.strptime(deadline, "%d/%m/%Y"):
+    if datetime.datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'deadline': deadline})
@@ -983,31 +991,39 @@ def less_than(task_one, task_two):
     if (task_one['deadline'] == "" or task_one['deadline'] == None):
         task_one_deadline = None
     else: 
-        task_one_deadline = datetime.strptime(task_one['deadline'], "%d/%m/%Y")
+        task_one_deadline = datetime.datetime.strptime(task_one['deadline'], "%d/%m/%Y")
     if (task_two['deadline'] == "" or task_two['deadline'] == None):
         task_two_deadline = None
     else:         
-        task_two_deadline = datetime.strptime(task_two['deadline'], "%d/%m/%Y")
+        task_two_deadline = datetime.datetime.strptime(task_two['deadline'], "%d/%m/%Y")
 
-    if ((task_one_flagged == True and task_two_flagged == True) or (task_one_flagged == False and task_two_flagged == False)):
-        # Both have time stamps
-        if (task_one_deadline != None and task_two_deadline != None):
+    # Logic Punnet Square
+    # C = Compare, T = True, F = False
+    #                    2
+    #          | Tr | Tr | Fa | Fa |
+    #          | D  | ND | D  | ND |
+    #  1  Tr D | C  | T  | T  | T  
+    #     Tr ND| F  | T  | T  | T
+    #     Fa D | F  | F  | C  | T
+    #     Fa ND| F  | F  | F  | T
+
+    if (task_one_flagged == True):
+        if ((task_one_deadline != None) and (task_two_flagged == True and task_two_deadline != None)):
             if (task_one_deadline < task_two_deadline):
                 return True
             else:
-                return False       
-        # Indexed has a time stamp but task doesnt
-        if (task_one_deadline == None and task_two_deadline != None):
+                return False
+        elif (task_one_deadline == None):
             return False
-        # Both do not have timestamps
-        if (task_one_deadline == None and task_two_deadline == None):
+        else:
             return True
-        # Indexed does not have a timestamp so task should be added infront of it
-        if (task_one_deadline != None and task_two_deadline == None):
+    else:
+        if ((task_two_flagged == False) and (task_two_deadline == None)):
             return True
-    # task one isnt flagged so should be after flagged task
-    elif (task_one_flagged == False and task_two_flagged == True):
-        return False
-    # Task one is flagged and task two isnt so task should be inserted infront
-    elif (task_one_flagged == True and task_two_flagged == False):
-        return True
+        elif ((task_one_deadline != None) and (task_two_flagged == False and task_two_deadline != None)):
+            if (task_one_deadline < task_two_deadline):
+                return True
+            else:
+                return False
+        else:
+            return False

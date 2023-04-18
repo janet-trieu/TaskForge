@@ -353,7 +353,7 @@ def flask_upload_file():
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(f"src/{filename}")
-    return dumps('File Uploaded')
+    return dumps(filename)
     
 @app.route('/upload_file2', methods = ['POST'])
 def flask_upload_file2():
@@ -362,8 +362,8 @@ def flask_upload_file2():
     """
     uid = request.headers.get('Authorization')
     data = request.get_json()
-    upload_file(uid, data['file'], data["destination_name"], data["tid"])
-    return dumps('File Saved')
+    data = upload_file(uid, data['file'], data["destination_name"], data["tid"])
+    return dumps(data, indent=4, sort_keys=True, default=str)
 
 @app.route('/get_file_link', methods = ['GET'])
 def flask_get_file_link():
@@ -502,7 +502,7 @@ def flask_taskboard_show():
     uid = request.headers.get("Authorization")
     pid = request.args.get("pid")
     hidden = request.args.get("hidden")
-    return dumps(get_taskboard(uid, int(pid), bool(hidden)))
+    return dumps(get_taskboard(uid, int(pid), bool(hidden)), indent=4, sort_keys=True, default=str)
 
 # Search task in project
 @app.route("/taskboard/search", methods=["GET"])

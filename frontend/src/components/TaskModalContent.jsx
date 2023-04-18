@@ -80,7 +80,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
         <br />
         <button type="button" style={{backgroundColor: "grey"}} onClick={handleOpenAttachments}>Attachments</button>
         <Modal open={openAttachments} onClose={handleCloseAttachments}>
-          <TaskAttachmentsModalContent uid={uid} tid={details.tid} handleClose={handleCloseAttachments} />
+          <TaskAttachmentsModalContent uid={uid} tid={details.tid} files={details.files} handleClose={handleCloseAttachments} />
         </Modal>
         <br />
         <br />
