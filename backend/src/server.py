@@ -671,7 +671,7 @@ def flask_get_supply_and_demand():
     Returns snd list for a project
     """
     uid = request.args.get("uid")
-    return dumps(get_supply_and_demand(uid), indent=4, sort_keys=True, default=str)
+    return dumps(get_supply_and_demand(uid))
     
 
 # if __name__ == "__main__":
