@@ -629,9 +629,8 @@ def flask_get_user_workload():
     """
     Returns workload of a user for a certain project
     """
-    uid = request.headers.get("Authorization")
-    pid = int(request.args.get('pid'))
-    return dumps(get_user_workload(uid, pid))
+    uid = request.args.get("uid")
+    return dumps(get_user_workload(uid))
 
 @app.route("/workload/update_user_availability", methods=["POST"])
 def flask_update_user_availability():
@@ -640,7 +639,7 @@ def flask_update_user_availability():
     """
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    return dumps(update_user_availability(uid, data["pid"], data["availability"]))
+    return dumps(update_user_availability(uid, data["availability"]))
 
 @app.route("/workload/get_availability", methods=["GET"])
 def flask_get_availability():
@@ -648,33 +647,31 @@ def flask_get_availability():
     Returns users availability for a certain project
     """
     uid = request.headers.get("Authorization")
-    pid = int(request.args.get('pid'))
-    return dumps(get_availability(uid, pid))
+    return dumps(get_availability(uid))
 
 @app.route("/workload/get_availability_ratio", methods=["GET"])
 def flask_get_availability_ratio():
     """
     Returns availability ratio of a user in a certain project
     """
-    uid = request.headers.get("Authorization")
-    pid = int(request.args.get('pid'))
-    return dumps(get_availability_ratio(uid, pid))
+    uid = request.args.get("uid")
+    return dumps(get_availability_ratio(uid))
 
 @app.route("/workload/calculate_supply_demand", methods=["GET"])
 def flask_calculate_supply_demand():
     """
     Calculates and adds snd into a project
     """
-    pid = int(request.args.get('pid'))
-    return dumps(calculate_supply_demand(pid), indent=4, sort_keys=True, default=str)
+    uid = request.args.get("uid")
+    return dumps(calculate_supply_demand(uid), indent=4, sort_keys=True, default=str)
 
 @app.route("/workload/get_supply_demand", methods=["GET"])
 def flask_get_supply_and_demand():
     """
     Returns snd list for a project
     """
-    pid = int(request.args.get('pid'))
-    return dumps(get_supply_and_demand(pid), indent=4, sort_keys=True, default=str)
+    uid = request.args.get("uid")
+    return dumps(get_supply_and_demand(uid), indent=4, sort_keys=True, default=str)
     
 
 # if __name__ == "__main__":
