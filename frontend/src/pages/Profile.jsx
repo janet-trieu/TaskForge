@@ -26,6 +26,7 @@ const Profile = ({ firebaseApp }) => {
   const [open, setOpen] = useState(false);
   const [avaOpen, setAvaOpen] = useState(false);
   const [hideAchievements, setHideAchievements] = useState();
+  const [reviews, setReviews] = useState();
   const handleOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
   const handleAvaOpen = () => { setAvaOpen(true) };
@@ -35,10 +36,13 @@ const Profile = ({ firebaseApp }) => {
     if (location.pathname === '/profile') {
       setIsUser(true);
       const uid = await firebaseApp.auth().currentUser.uid;
+      const reviewData = await makeRequest(`/reputation/get_avg_reviews?viewee_uid=${uid}`, 'GET', null, uid);
       const data = await makeRequest('/profile/details', 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
         setDetails(data);
+        console.log(reviewData)
+        setReviews(reviewData);
         setIsLoading(false);
       }
 
@@ -63,10 +67,12 @@ const Profile = ({ firebaseApp }) => {
       setIsUser(false);
       const uid = await firebaseApp.auth().currentUser.uid;
       const requested_uid = location.pathname.split('/')[2];
+      const reviewData = await makeRequest(`/reputation/get_avg_reviews?viewee_uid=${requested_uid}`, 'GET', null, uid);
       const data = await makeRequest(`/connections/details?uid=${requested_uid}`, 'GET', null, uid);
       if (data.error) alert(data.error);
       else {
         setDetails(data);
+        setReviews(reviewData);
         setIsLoading(false);
       }
 
@@ -189,9 +195,9 @@ const Profile = ({ firebaseApp }) => {
                   <div>Task Quality</div>
                 </div>
                 <div>
-                  <div>##.#</div>
-                  <div>##.#</div>
-                  <div>##.#</div>
+                  <div>{reviews[0]}</div>
+                  <div>{reviews[1]}</div>
+                  <div>{reviews[2]}</div>
                 </div>
               </div>
             </div>
