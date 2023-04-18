@@ -293,6 +293,44 @@ def view_reviews(viewer_uid, viewee_uid):
     else:
         return None
     
+def get_avg_reviews(viewer_uid, viewee_uid):
+    check_valid_uid(viewer_uid)
+    check_valid_uid(viewee_uid)
+    visibility = db.collection("users").document(str(viewee_uid)).get().get("reputation").get("visibility")
+    avg = []
+    if viewee_uid == viewer_uid or visibility == True:
+        reputation = db.collection("users").document(str(viewee_uid)).get().to_dict()['reputation']
+        if (reputation['avg_communication'] == []):
+            return [0,0,0]
+        else:
+            avg.append(reputation['avg_communication'][-1])
+            avg.append(reputation['avg_time_management'][-1])
+            avg.append(reputation['avg_task_quality'][-1])
+        return avg
+    else:
+        return ["HIDDEN", "HIDDEN", "HIDDEN"]
+    
+def get_avg_overall_profile(uid):
+    check_valid_uid(uid)
+    reputation = db.collection("users").document(str(uid)).get().to_dict()['reputation']
+    if (reputation['avg'] == []):
+        return [0]
+    else:
+        return reputation['avg'][-1]
+    
+def get_avg_overall_conn(viewer_uid, viewee_uid):
+    check_valid_uid(viewer_uid)
+    check_valid_uid(viewee_uid)
+    visibility = db.collection("users").document(str(viewee_uid)).get().get("reputation").get("visibility")
+    if viewee_uid == viewer_uid or visibility == True:
+        reputation = db.collection("users").document(str(viewee_uid)).get().to_dict()['reputation']
+        if (reputation['avg'] == []):
+            return [0]
+        return reputation['avg'][-1]
+    else:
+        return "HIDDEN"
+
+    
 ### ========= Change Visibility ========= ###
 def change_review_visibility(uid, visibility):
     """

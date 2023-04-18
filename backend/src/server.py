@@ -74,7 +74,8 @@ def user_details():
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
         connections = len(get_connection_list(uid))
-        return dumps({"uid": uid, "display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
+        rating = get_avg_overall_profile(uid)
+        return dumps({"uid": uid, "display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": rating}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
@@ -316,6 +317,7 @@ def flask_get_connected_taskmasters():
 @app.route('/connections/details', methods=['GET'])
 def connection_details():
     # name, role, photo_url
+    curr_uid = request.headers.get("Authorization")
     uid = request.args.get("uid")
     if is_valid_user(uid) == False:
         return Response(status=400)
@@ -324,7 +326,9 @@ def connection_details():
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
         connections = len(get_connection_list(uid))
-        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections)})
+        rating = get_avg_overall_conn(curr_uid, uid)
+        email = str(get_email(uid))
+        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": rating, "email": email})
 
 @app.route('/connections/remove_taskmaster', methods=['POST'])
 def flask_remove_connected_taskmaster():
@@ -623,6 +627,13 @@ def flask_update_review():
     return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
                                data["communication"], data["time_management"], 
                                data["task_quality"], data["comment"]))
+
+@app.route("/reputation/get_avg_reviews", methods=['GET'])
+def flask_get_avg_reviews():
+    viewer_uid = request.headers.get("Authorization")
+    viewee_uid = request.args.get("viewee_uid")
+    return dumps(get_avg_reviews(viewer_uid, viewee_uid))
+
 #Workload
 @app.route("/workload/get_user_workload", methods=["GET"])
 def flask_get_user_workload():
