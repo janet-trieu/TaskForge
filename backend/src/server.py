@@ -401,7 +401,7 @@ def flask_create_subtask():
     Creates a subtask
     """
     data = request.get_json()
-    return dumps(create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+    return dumps(create_subtask(data["tid"], data["pid"], data["assignees"], data["title"], data["description"], data["deadline"],
                           data["workload"], data["priority"], data["status"]))
 
 # DETAILS #
