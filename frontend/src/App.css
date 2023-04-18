@@ -229,8 +229,9 @@ input[type='text'] {
 #tasks-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 2vw;
+  gap: 1em;
   margin-left: 2.5vw;
   margin-right: 2.5vw;
   margin-top: 4vh;
+  overflow: scroll;
 }

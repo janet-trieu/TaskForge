@@ -52,6 +52,10 @@ def view_project(pid, uid):
     else:
         is_pinned = False
 
+    project_member_names = []
+    for member in project["project_members"]:
+        project_member_names.append(get_display_name(member))
+
     return {
             "pid": pid,
             "name": project["name"],
@@ -61,6 +65,7 @@ def view_project(pid, uid):
             "team_strength": project["team_strength"],
             "picture": project["picture"],
             "project_members": project["project_members"],
+            "project_member_names": project_member_names,
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
             "is_pinned": is_pinned,
