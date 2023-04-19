@@ -19,8 +19,6 @@ from .connections import *
 from .classes import *
 from .achievement import *
 from .taskboard import *
-# from .notifications import *
-# from .profile_page import *
 
 db = firestore.client()
 

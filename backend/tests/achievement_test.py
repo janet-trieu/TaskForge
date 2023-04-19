@@ -1,5 +1,6 @@
 import pytest
 from firebase_admin import auth
+
 from src.test_helpers import *
 from src.projmaster import *
 from src.taskboard import *
@@ -8,6 +9,8 @@ from src.reputation import *
 
 try:
     pm_uid = create_user_email("achievements.pm@gmail.com", "admin123", "Project Master")
+    pm1_uid = create_user_email("achievements.pm1@gmail.com", "admin123", "Project Master1")
+    pm2_uid = create_user_email("achievements.pm2@gmail.com", "admin123", "Project Master2")
     tm0_uid = create_user_email("achievements.tm0@gmail.com", "taskmaster0", "Task Master0")
     tm1_uid = create_user_email("achievements.tm1@gmail.com", "taskmaster1", "Task Master1")
     tm2_uid = create_user_email("achievements.tm2@gmail.com", "taskmaster2", "Task Master2")
@@ -16,16 +19,18 @@ try:
 except auth.EmailAlreadyExistsError:
     pass
 pm_uid = auth.get_user_by_email("achievements.pm@gmail.com").uid
+pm1_uid = auth.get_user_by_email("achievements.pm1@gmail.com").uid
+pm2_uid = auth.get_user_by_email("achievements.pm2@gmail.com").uid
 tm0_uid = auth.get_user_by_email("achievements.tm0@gmail.com").uid
 tm1_uid = auth.get_user_by_email("achievements.tm1@gmail.com").uid
 tm2_uid = auth.get_user_by_email("achievements.tm2@gmail.com").uid
 tm3_uid = auth.get_user_by_email("achievements.tm3@gmail.com").uid
 tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
-
+'''
 ############################################################
 #                  Test for get_achievements               #
 ############################################################
-'''
+
 def test_task_complete_3():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
@@ -103,14 +108,14 @@ def test_connection_num():
     tm1_email = get_email(tm1_uid)
     tm2_email = get_email(tm2_uid)
 
-    nid = notification_connection_request(tm0_email, pm_uid)
+    nid = notification_connection_request(tm0_email, pm1_uid)
     connection_request_respond(tm0_uid, nid, True)
-    nid = notification_connection_request(tm1_email, pm_uid)
+    nid = notification_connection_request(tm1_email, pm1_uid)
     connection_request_respond(tm1_uid, nid, True)
-    nid = notification_connection_request(tm2_email, pm_uid)
+    nid = notification_connection_request(tm2_email, pm1_uid)
     connection_request_respond(tm2_uid, nid, True)
 
-    achievements = get_user_achievements(pm_uid)
+    achievements = get_user_achievements(pm1_uid)
 
     assert achievements[0]["aid"] == 4
 
@@ -118,35 +123,35 @@ def test_task_assign_num():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
+    add_tm_to_project(pid, tm1_uid)
     add_tm_to_project(pid, tm2_uid)
-    add_tm_to_project(pid, tm3_uid)
 
-    tid1 = create_task(tm3_uid, pid, "", [tm3_uid], "Task1", "description", "", None, None, "Not Started")
-    tid2 = create_task(tm3_uid, pid, "", [tm3_uid], "Task2", "description", "", None, None, "Not Started")
-    tid3 = create_task(tm3_uid, pid, "", [tm3_uid], "Task3", "description", "", None, None, "Not Started")
-    tid4 = create_task(tm3_uid, pid, "", [tm3_uid], "Task4", "description", "", None, None, "Not Started")
-    tid5 = create_task(tm3_uid, pid, "", [tm3_uid], "Task5", "description", "", None, None, "Not Started")
-    tid6 = create_task(tm3_uid, pid, "", [tm3_uid], "Task6", "description", "", None, None, "Not Started")
-    tid7 = create_task(tm3_uid, pid, "", [tm3_uid], "Task7", "description", "", None, None, "Not Started")
-    tid8 = create_task(tm2_uid, pid, "", [tm2_uid], "Task8", "description", "", None, None, "Not Started")
-    assign_task(tm2_uid, tid8, [tm2_uid, tm3_uid])
+    tid1 = create_task(tm2_uid, pid, "", [tm2_uid], "Task1", "description", "", None, None, "Not Started")
+    tid2 = create_task(tm2_uid, pid, "", [tm2_uid], "Task2", "description", "", None, None, "Not Started")
+    tid3 = create_task(tm2_uid, pid, "", [tm2_uid], "Task3", "description", "", None, None, "Not Started")
+    tid4 = create_task(tm2_uid, pid, "", [tm2_uid], "Task4", "description", "", None, None, "Not Started")
+    tid5 = create_task(tm2_uid, pid, "", [tm2_uid], "Task5", "description", "", None, None, "Not Started")
+    tid6 = create_task(tm2_uid, pid, "", [tm2_uid], "Task6", "description", "", None, None, "Not Started")
+    tid7 = create_task(tm2_uid, pid, "", [tm2_uid], "Task7", "description", "", None, None, "Not Started")
+    tid8 = create_task(tm1_uid, pid, "", [tm1_uid], "Task8", "description", "", None, None, "Not Started")
+    assign_task(tm1_uid, tid8, [tm1_uid, tm2_uid])
 
-    achievements = get_user_achievements(tm3_uid)
+    achievements = get_user_achievements(tm2_uid)
 
     assert achievements[0]["aid"] == 5
 
 def test_lone_wolf():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
+    pid = create_project(pm2_uid, "Project0", "Creating Project0 for testing", None, None)
 
-    update_project(pid, pm_uid, {"status": "Completed"})
+    update_project(pid, pm2_uid, {"status": "Completed"})
 
-    achievements = get_user_achievements(pm_uid)
+    achievements = get_user_achievements(pm2_uid)
 
     assert achievements[0]["aid"] == 6
 
 def test_reputation_num():
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
+    pid = create_project(pm2_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm0_uid)
     add_tm_to_project(pid, tm1_uid)
@@ -154,13 +159,13 @@ def test_reputation_num():
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
-    write_review(pm_uid, tm0_uid, pid, "5", "5", "5", "Very Good")
-    write_review(pm_uid, tm1_uid, pid, "5", "5", "5", "Very Good")
-    write_review(pm_uid, tm2_uid, pid, "5", "5", "5", "Very Good")
+    write_review(pm2_uid, tm0_uid, pid, "5", "5", "5", "Very Good")
+    write_review(pm2_uid, tm1_uid, pid, "5", "5", "5", "Very Good")
+    write_review(pm2_uid, tm2_uid, pid, "5", "5", "5", "Very Good")
 
-    achievements = get_user_achievements(pm_uid)
+    achievements = get_user_achievements(pm2_uid)
 
-    assert achievements[0]["aid"] == 7
+    assert achievements[1]["aid"] == 7
 
 ############################################################
 #                 Test for view_achievements               #
@@ -178,7 +183,6 @@ def test_view_my_achievements():
     res = view_achievement(pm_uid)
 
     assert achievements == res
-'''
 
 def test_view_multiple_achievements():
 
@@ -204,7 +208,6 @@ def test_view_multiple_achievements():
     assert res[0]["aid"] == 6
     assert res[1]["aid"] == 5
 
-'''
 def test_view_notmy_achievements():
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)

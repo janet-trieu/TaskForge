@@ -3,7 +3,7 @@ Test file for Flask http testing of workload + supply and demand
 '''
 import requests
 from src.taskboard import create_task
-from src.proj_master import create_project
+from src.projmaster import create_project
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
