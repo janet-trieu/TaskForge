@@ -28,7 +28,6 @@ const Settings = ({ firebaseApp }) => {
     const data = await makeRequest("/admin/is_admin", "GET", null, firebaseApp.auth().currentUser.uid);
     if (data.error) alert(data.error);
     else {
-      console.log(data)
       setAdmin(data);
       setIsLoading(false);
     }

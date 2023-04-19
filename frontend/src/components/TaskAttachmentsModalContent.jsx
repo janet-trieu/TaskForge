@@ -24,7 +24,6 @@ const TaskAttachmentsModalContent = forwardRef((props, ref) => {
     const data1 = await response.json();
 
     const data2 = await makeRequest("/upload_file2", "POST", {file: data1, destination_name: data1, tid: props.tid}, props.uid);
-    console.log(data2)
     const newFiles = files;
     newFiles.push(data2);
     setFiles(newFiles);

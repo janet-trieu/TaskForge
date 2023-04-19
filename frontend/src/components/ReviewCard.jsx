@@ -8,7 +8,6 @@ const ReviewCard = (props) => {
   }
 
   const isWriter = props.review.reviewer_uid === props.uid;
-  console.log(props.review)
   return (
       <div className="review-card">
         <div className="review-card-header">

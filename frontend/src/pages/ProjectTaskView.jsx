@@ -9,7 +9,6 @@ const ProjectTaskView = ({firebaseApp}) => {
 
   useEffect(async () => {
     const data = await makeRequest(`/projects/view?pid=${pid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
-    console.log(data);
   }, [])
 
   return (

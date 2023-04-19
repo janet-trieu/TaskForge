@@ -43,7 +43,6 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
   }
 
   const handleToggle = async (event) => {
-    console.log(event.target.checked)
     const data = await makeRequest('/achievements/toggle_visibility', 'POST', { action: event.target.checked }, details.uid);
     setAchievementVisible(data);
   }
