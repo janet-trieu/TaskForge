@@ -6,7 +6,7 @@ from src.global_counters import *
 from src.test_helpers import *
 from src.workload import *
 from src.taskboard import *
-from src.proj_master import *
+from src.projmaster import *
 import datetime
 
 try:

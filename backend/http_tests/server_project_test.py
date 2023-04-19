@@ -7,7 +7,7 @@ from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
 from src.projects import *
-from src.proj_master import *
+from src.projmaster import *
 
 port = 8000
 url = f"http://localhost:{port}/"

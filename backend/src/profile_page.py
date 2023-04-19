@@ -303,7 +303,7 @@ def get_DOB(uid):
     return get_user_ref(uid).get("DOB")
 
 ### ========= Get Projects ========= ###
-def get_projects(uid): 
+def get_user_projects(uid): 
     """
     Gets projects of the User from firestore database
 
@@ -460,6 +460,9 @@ def create_user_firestore(uid):
         'total_reviews_written': 0
     }
     user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [], 5, [])
+
+    # add the user into firestore db
+    users_ref.document(uid).set(user.to_dict())
 
     # Add welcome notification to new user
     notification_welcome(uid)

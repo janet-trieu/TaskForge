@@ -1,7 +1,7 @@
 import pytest
 from firebase_admin import auth
 from src.test_helpers import *
-from src.proj_master import *
+from src.projmaster import *
 from src.taskboard import *
 from src.achievement import *
 from src.reputation import *

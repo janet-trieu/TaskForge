@@ -10,7 +10,7 @@ from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
 from src.taskboard import *
-from src.proj_master import *
+from src.projmaster import *
 from src.test_helpers import add_tm_to_project
 
 # ============ SET UP ============ #

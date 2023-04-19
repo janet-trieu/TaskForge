@@ -5,7 +5,7 @@ from src.helper import *
 from src.profile_page import *
 from src.notifications import *
 from src.connections import *
-from src.proj_master import *
+from src.projmaster import *
 from src.taskboard import *
 
 

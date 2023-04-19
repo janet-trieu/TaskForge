@@ -9,7 +9,7 @@ from flask import Flask, request, Response
 from.achievement import *
 from .authentication import *
 from .admin import *
-from .proj_master import *
+from .projmaster import *
 from .profile_page import *
 from .projects import *
 from .connections import *
