@@ -2,10 +2,9 @@ from json import dumps
 from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
 import os
-from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
-from waitress import serve
+# from waitress import serve
 
 from.achievement import *
 from .authentication import *
@@ -32,7 +31,6 @@ def defaultHandler(err):
 
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
-mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
