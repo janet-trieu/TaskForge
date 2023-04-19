@@ -9,6 +9,7 @@ import { Modal } from '@mui/material';
 const Connections = ({ firebaseApp }) => {
   const [isLoading, setIsLoading] = useState('Loading...');
   const [connections, setConnections] = useState();
+  const [currConnections, setCurrConnections] = useState(null);
   const [openConnectionSend, setOpenConnectionSend] = useState(false);
   const handleOpenConnectionSend = () => { setOpenConnectionSend(true) };
   const handleCloseConnectionSend = () => { setOpenConnectionSend(false) };
@@ -32,11 +33,17 @@ const Connections = ({ firebaseApp }) => {
           <Modal open={openConnectionSend} onClose={handleCloseConnectionSend}>
             <ConnectionSendModalContent handleClose={handleCloseConnectionSend} uid={currentUser.uid} />
           </Modal>
-          <ConnectionsSearchbar />
+          <ConnectionsSearchbar connections={connections} setConnections={setCurrConnections} />
         </div>
         {isLoading || (
           <div id="connections-card-container">
-            {connections.map((connection, idx) => {
+            {currConnections === null
+            ?
+            connections.map((connection, idx) => {
+              return <ConnectionCard key={idx} photo={connection.photo_url} displayName={connection.display_name} role={connection.role} uid={connection.uid}/>
+            })
+            :
+            currConnections.map((connection, idx) => {
               return <ConnectionCard key={idx} photo={connection.photo_url} displayName={connection.display_name} role={connection.role} uid={connection.uid}/>
             })}
           </div>
