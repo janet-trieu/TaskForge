@@ -225,11 +225,10 @@
 #         "project_members": project_members
 #     })
     
-#     user_ref = db.collection("users").document(str(uid_to_be_removed))
-#     user_projs = get_user_projects(uid_to_be_removed)
-#     user_projs.remove(pid)
-#     user_ref.update({"projects": user_projs})
-#     user_ref.collection("availability").document(str(pid)).delete()
+    # user_ref = db.collection("users").document(str(uid_to_be_removed))
+    # user_projs = get_projects(uid_to_be_removed)
+    # user_projs.remove(pid)
+    # user_ref.update({"projects": user_projs})
     
 #     return 0
 
