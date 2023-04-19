@@ -42,7 +42,6 @@ def test_get_assigned_tasklist_show_completed():
     assert task1 == {"tid": tid1, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task1", "description": "Task1 Description",
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
     assigned_list = get_user_assigned_task(uid1, True)
-    print(assigned_list)
     assert assigned_list == [{'tid': tid1, 'title': 'Task1', 'project_name': 'boobs', 'deadline': '1679749200', 'priority': None, 
                               'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}]
 
@@ -63,7 +62,6 @@ def test_get_assigned_task_list_show_completed_two_projects():
     assert task2 == {"tid": tid2, "pid": pid2, "eid": eid2, "assignees": [uid1], "subtasks": [], "title": "Task1", "description": "Task1 Description",
                      "deadline": "1679749201", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": False, "completed": ""}
     assigned_list = get_user_assigned_task(uid1, True)
-    print(assigned_list)
 
     assert assigned_list == [{'tid': tid1, 'title': 'Task1', 'project_name': 'boobs', 'deadline': '1679749200', 'priority': None, 
                               'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': False}, 

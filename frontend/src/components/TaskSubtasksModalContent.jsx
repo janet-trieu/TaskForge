@@ -26,7 +26,6 @@ const TaskSubtasksModalContent = forwardRef((props, ref) => {
     const data = await makeRequest("/subtasks/get_all", "GET", {tid: props.tid}, props.uid);
     if (data.code && data.code !== 200) alert(data.message);
     else {
-      console.log(data)
       setSubtasks(data);
       setIsLoading(false);
     }

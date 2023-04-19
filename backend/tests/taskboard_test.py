@@ -90,7 +90,6 @@ def test_show_taskboard_one_flag():
     assert task2 == {"tid": tid2, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task2", "description": "Task2 Description",
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": True, "completed": ""}
     taskboard = get_taskboard(uid1, pid1, True)
-    print(taskboard)
     assert taskboard == {'Not Started': [{'tid': tid2, 'title': 'Task2', 'deadline': '1679749200', 'priority': None, 
                                           'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': True},
                                           {'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 

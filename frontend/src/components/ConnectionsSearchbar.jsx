@@ -11,7 +11,6 @@ const ConnectionsSearchbar = (props) => {
 
     const newConnections = props.connections.filter((connection) => {
       if (connection.display_name.toLowerCase().includes(query.toLowerCase())) {
-        console.log(`matched ${connection.display_name} with ${query}`)
         return true
       }
       return false

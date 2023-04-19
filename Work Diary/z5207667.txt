@@ -115,3 +115,13 @@ on demand, say, after that day was finished. Similar issue with supply and deman
 or whenever it gets called by the frontend. It is not yet clear when it would be called from frontend, but its an option.
 We had our meeting to wrap up the last things we need to do before the presentation. I need to finish off flask tests for workload + snd,
 and also go back to upload/download, also added in listing outgoing connection requests that have not been responded to yet
+
+============================================================================================================================
+
+Week 10
+
+Finished workload + snd. Had to change how they worked back to global from project, since it was both easier and what the spec detailed.
+We did alot of debugging and testing on frontend the day before our presentation, which really improved things alot. We had our 
+presentation which went very well. We went overtime but it wasnt a big deal. After, I fixed all of my tests whichbroke after 
+implementation was changed to fit frontend. Next thing to do is do is clean up the codebase, make sure it works on a VM, and complete
+the final report.

@@ -52,7 +52,6 @@ def get_user_assigned_task(uid, show_completed):
             else:
                 task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
             task_list = insert_tasklist(task_list, task_details)
-            print(task_list)
     elif show_completed == False:
         for task in tasks:
             task_ref = get_task_ref(task)

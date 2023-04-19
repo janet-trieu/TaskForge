@@ -793,7 +793,6 @@ def get_taskboard(uid, pid, hidden):
             task_details['epic'] = db.collection("epics").document(str(eid)).get().get("title")
         status_list = task_list[task_ref.get("status")]
         status_list = insert_tasklist(status_list, task_details)
-        print(status_list)
         task_list[task_ref.get("status")] = status_list
     return task_list
 
