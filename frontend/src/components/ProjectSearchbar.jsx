@@ -5,7 +5,6 @@ import { makeRequest } from "../helpers";
 const ProjectSearchbar = ({ setProjects, setIsLoading, uid, showCompleted, setShowCompleted }) => {
   const handleSearch = async (event) => {
     event.preventDefault();
-    console.log(event)
     setIsLoading('Loading...');
     const data = await makeRequest('/projects/search', 'GET', {query: event.target.searchbar.value}, uid);
     if (data.error) alert(data.error);

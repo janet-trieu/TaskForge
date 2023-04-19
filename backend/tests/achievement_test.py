@@ -142,7 +142,6 @@ def test_lone_wolf():
     update_project(pid, pm_uid, {"status": "Completed"})
 
     achievements = get_user_achievements(pm_uid)
-    print(achievements)
 
     assert achievements[0]["aid"] == 6
 
@@ -202,7 +201,6 @@ def test_view_multiple_achievements():
 
     # lone wolf should be achieved now, and should be ordered first
     res = view_achievement(pm_uid)
-    print(res)
     assert res[0]["aid"] == 6
     assert res[1]["aid"] == 5
 

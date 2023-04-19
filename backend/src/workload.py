@@ -111,5 +111,4 @@ def get_supply_and_demand(uid):
     check_valid_uid(uid)
     calculate_supply_demand(uid)
     user_ref = db.collection("users").document(str(uid))
-    print(user_ref.get().get("snd"))
     return user_ref.get().get("snd")

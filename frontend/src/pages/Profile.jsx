@@ -41,7 +41,6 @@ const Profile = ({ firebaseApp }) => {
       if (data.error) alert(data.error);
       else {
         setDetails(data);
-        console.log(reviewData)
         setReviews(reviewData);
         setIsLoading(false);
       }

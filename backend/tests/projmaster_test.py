@@ -176,8 +176,6 @@ def test_revive_completed_project():
 
     assert proj_ref.get().get("status") == "Not Started"
 
-    print(proj_ref.get().get("status"))
-
     res = update_project(pid, pm_uid, {"status": "Completed"})
 
     assert res == 0
@@ -259,7 +257,6 @@ def test_remove_project_member():
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    print(project_members)
     assert tm1_uid not in project_members
 
     reset_projects()
