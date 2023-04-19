@@ -1,5 +1,16 @@
-from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
+'''
+Feature: Connections
+Functionalities:
+ - connection_request_respond(uid, nid, response)
+ - get_connection_requests(uid)
+ - get_connected_taskmasters(uid)
+ - remove_connected_taskmaster(uid, uid_remove)
+ - remove_connected_taskmaster(uid, uid_remove)
+ - search_taskmasters(uid, search_string)
+ - get_outgoing_requests(uid)
+'''
 
+from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
 from .error import *
 from .helper import *
 from .profile_page import *
@@ -17,21 +28,23 @@ def connection_request_respond(uid, nid, response):
     if (not does_nid_exists(uid, nid)): raise InputError('Notification invalid')
     if (not isinstance(response, bool)): raise InputError('Response should be bool')
     
+    #delete notification
     nid_ref = db.collection('notifications').document(uid)
     uid_sender = nid_ref.get().get(nid).get('uid_sender')
     db.collection('notifications').document(uid).update({nid:DELETE_FIELD})
-    if (not response): return {}
+    if response == True:
+        notification_accepted_request(uid_sender, uid)
+    else:
+        notification_denied_request(uid_sender, uid)
+        return {}
+    #add each other to each connection list
     u_ref = db.collection('users').document(uid)
     u_ref.update({'connections' : ArrayUnion([uid_sender])})
     u_ref = db.collection('users').document(uid_sender)
     u_ref.update({'connections' : ArrayUnion([uid])})
     db.collection('notifications').document(uid).update({nid:DELETE_FIELD})
 
-    if response == True:
-        notification_accepted_request(uid_sender, uid)
-    else:
-        notification_denied_request(uid_sender, uid)
-    
+    #add to outgoing requests list
     user_ref = db.collection('users').document(str(uid_sender))
     outgoing = user_ref.get().get("outgoing_requests")
     for req in outgoing:

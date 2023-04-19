@@ -2,10 +2,9 @@ from json import dumps
 from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
 import os
-from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
-from waitress import serve
+# from waitress import serve
 
 from.achievement import *
 from .authentication import *
@@ -31,7 +30,6 @@ def defaultHandler(err):
 
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
-mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -638,7 +636,7 @@ def flask_get_user_workload():
     """
     Returns workload of a user for a certain project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_user_workload(uid))
 
 @app.route("/workload/update_user_availability", methods=["POST"])
@@ -663,7 +661,7 @@ def flask_get_availability_ratio():
     """
     Returns availability ratio of a user in a certain project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_availability_ratio(uid))
 
 @app.route("/workload/calculate_supply_demand", methods=["GET"])
@@ -671,7 +669,7 @@ def flask_calculate_supply_demand():
     """
     Calculates and adds snd into a project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(calculate_supply_demand(uid), indent=4, sort_keys=True, default=str)
 
 @app.route("/workload/get_supply_demand", methods=["GET"])
@@ -679,7 +677,7 @@ def flask_get_supply_and_demand():
     """
     Returns snd list for a project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_supply_and_demand(uid))
     
 @app.route("/subtasks/get_all", methods=["GET"])

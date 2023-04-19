@@ -1,7 +1,7 @@
 # Imports
 from firebase_admin import firestore
 from firebase_admin import auth
-
+from google.cloud.firestore_v1.transforms import ArrayUnion
 from .global_counters import *
 from .classes import Epic, Task, Subtask
 from .error import *
@@ -376,8 +376,14 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
     subtask_ref.document(str(value)).set(subtask.to_dict())
 
     project_subtasks = db.collection("tasks").document(str(tid)).get().get("subtasks")
+    task_ref = db.collection("tasks").document(str(tid))
+    if (project_subtasks is None):
+        project_subtasks = [value]
+        task_ref.set({'subtasks': project_subtasks})
+        update_stid()
+        return
     project_subtasks.append(value)
-    db.collection("tasks").document(str(tid)).update({"subtasks": project_subtasks})
+    task_ref.update({'subtasks': project_subtasks})
     update_stid()
 
     return {
