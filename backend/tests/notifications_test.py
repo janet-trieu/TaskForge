@@ -142,10 +142,3 @@ def test_leave_request_notification():
     assert actual_notification.get('type') == 'leave_request'
     assert actual_notification.get('uid_sender') == user_id1
     assert actual_notification.get('nid') == nid
-
-# SPRINT 3 #
-def test_review_notification():
-    pass
-
-def test_achievement_notification():
-    pass
