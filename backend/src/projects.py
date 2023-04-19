@@ -52,6 +52,10 @@ def view_project(pid, uid):
     else:
         is_pinned = False
 
+    project_member_names = []
+    for member in project["project_members"]:
+        project_member_names.append(get_display_name(member))
+
     return {
             "pid": pid,
             "name": project["name"],
@@ -61,6 +65,7 @@ def view_project(pid, uid):
             "team_strength": project["team_strength"],
             "picture": project["picture"],
             "project_members": project["project_members"],
+            "project_member_names": project_member_names,
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
             "is_pinned": is_pinned,
@@ -154,28 +159,36 @@ def search_project(uid, query):
 
     pinned_projects = get_pinned_projects(uid)
 
-    return_list = []
-
+    pinned_list = []
+    unpinned_list = []
     for pid in projects:
-        project = get_project(pid)
-        pm_uid = project["uid"]
+        pm_uid = db.collection("projects").document(str(pid)).get().get("uid")
+        name = db.collection("projects").document(str(pid)).get().get("name")
+        description = db.collection("projects").document(str(pid)).get().get("description")
         pm_name = get_display_name(str(pm_uid))
 
-        if pid in pinned_projects and (query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == ""):
-            return_list.append(get_project(pid))
-            print(f"Successfully added {project['name']} to list of search result")
+        if (query.lower() in name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == ""):
+            project = get_project(pid)
+            if pid in pinned_projects:
+                project["pinned"] = True
+                pinned_list.append(project)
+            else:
+                project["pinned"] = False
+                unpinned_list.append(project)
+            print(f"Successfully added {name} to list of search result")
 
-    for pid in projects:
-        project = get_project(pid)
-        pm_uid = project["uid"]
-        pm_name = get_display_name(str(pm_uid))
+    # for pid in projects:
+    #     project = get_project(pid)
+    #     pm_uid = project["uid"]
+    #     pm_name = get_display_name(str(pm_uid))
 
-        if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
-            if pid not in return_list:
-                return_list.append(get_project(pid))
-                print(f"Successfully added {project['name']} to list of search result")
+    #     if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
+    #         if pid not in return_list:
+    #             return_list.append(get_project(pid))
+    #             print(f"Successfully added {project['name']} to list of search result")
 
-    return_list = list(filter(None, return_list))
+    #return_list = list(filter(None, return_list))
+    return_list = pinned_list + unpinned_list
 
     return return_list
 

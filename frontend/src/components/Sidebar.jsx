@@ -46,6 +46,12 @@ const Sidebar = ({ firebaseApp }) => {
       case "settings":
         setSettingsHighlight("highlighted");
         break;
+      case "reputation":
+        setProfileHighlight("highlighted");
+        break;
+      case "achievements":
+        setProfileHighlight("highlighted");
+        break;
       default:
         setHomeHighlight("highlighted");
     }

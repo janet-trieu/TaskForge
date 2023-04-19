@@ -34,7 +34,7 @@ def check_valid_eid(eid):
         raise InputError(f'eid {eid} does not exist in database')
     
 def check_epic_in_project(eid, pid):
-    if eid == "None":
+    if str(eid) == "None":
         return
     check_valid_eid(eid)
     check_valid_pid(pid)
@@ -65,14 +65,6 @@ def check_valid_stid(stid):
     doc = db.collection('subtasks').document(str(stid)).get()
     if not doc.exists:
         raise InputError(f'stid {stid} does not exist in database')
-
-def check_valid_rid(rid):
-    if not isinstance(rid, int):
-        raise InputError('rid needs to be an int')
-    
-    doc = db.collection('reviews').document(str(rid)).get()
-    if not doc.exists:
-        raise InputError(f'rid {rid} does not exist in database')
 
 def check_connected(uid1, uid2):
     user_ref = db.collection('users').document(str(uid1))
@@ -200,7 +192,7 @@ def create_admin(uid):
 def storage_upload_file(fileName, destination_name):
     bucket = storage.bucket()
     blob = bucket.blob(destination_name)
-    blob.upload_from_filename(fileName)
+    blob.upload_from_filename(f'src/{fileName}')
     blob.make_public()
     return blob.public_url
 

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import './SettingsModal.css'
 import './Searchbar.css';
 import { makeRequest } from "../helpers";
 
-const SettingsModalSearch = ({ firebaseApp, title, onClose, action, warning }) => {
+const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, warning }, ref) => {
   const handleConfirm = async (action, warning, event) => {
     event.preventDefault();
     if (!event.target.searchbar.value) {
@@ -55,6 +55,6 @@ const SettingsModalSearch = ({ firebaseApp, title, onClose, action, warning }) =
       </div>
     </>
   )
-}
+});
 
 export default SettingsModalSearch;

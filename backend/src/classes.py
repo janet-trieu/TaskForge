@@ -17,19 +17,24 @@ class User(object):
         DOB (str): date of birth of the suer
         is_admin (boolean): admin status of the user
         is_banned (boolean): ban status of the user
-        is_removed (boolean): removal status of the user
         achievements (list): list of achievements the user has obtained
         projects (list): list of project ids that the user has joined
         pinned_projects (list): list of project ids that the user has pinned
-        epics (list): list of epic ids that the user has been assigned
         tasks (list): list of tasks ids that the user has been assigned
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
         reputation (dict): a dict of reviews and averaged scores
+        workload (int)
+        num_projs_completed (int)
+        num_tasks_completed (int)
+        hide_achievements (boolean)
+        outgoing_requests (list)
+        availability (float): float of days available over the next 5 days
+        snd (list)
     """
     def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, 
                 tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, 
-                hide_achievements, outgoing_requests):
+                hide_achievements, outgoing_requests, availability, snd):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -49,6 +54,8 @@ class User(object):
         self.num_tasks_completed = num_tasks_completed
         self.hide_achievements = hide_achievements
         self.outgoing_requests = outgoing_requests
+        self.availability = availability
+        self.snd = snd
         
     def to_dict(self):
         return {
@@ -70,7 +77,9 @@ class User(object):
             "num_projs_completed": self.num_projs_completed,
             "num_tasks_completed": self.num_tasks_completed,
             "hide_achievements": self.hide_achievements,
-            "outgoing_requests":self.outgoing_requests
+            "outgoing_requests":self.outgoing_requests,
+            "availability": self.availability,
+            "snd": self.snd
         }
 
 class Epic():

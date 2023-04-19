@@ -43,8 +43,8 @@ const TaskCommentsModalContent = forwardRef((props, ref) => {
         <button type="submit">Send Comment</button>
       </form>
       <div>
-        {comments.map(comment => {
-          return <CommentCard><DisplayName>{comment.display_name}</DisplayName>{comment.comment}</CommentCard>
+        {comments.map((comment, idx) => {
+          return <CommentCard key={idx}><DisplayName>{comment.display_name}</DisplayName>{comment.comment}</CommentCard>
         })}
       </div>
       {rerender}

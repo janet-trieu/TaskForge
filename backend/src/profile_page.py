@@ -141,17 +141,17 @@ def update_photo(uid, new_photo_url):
     Returns:
         None
     """
-    # user_ref = db.collection("users").document(uid)
-    # user_ref.update({"picture": new_photo_url})
-    try:
-        user = auth.get_user(uid)
-        user = auth.update_user({"photo_url": new_photo_url})
-    except:
-        print("Error occurred in trying to update user photo")
-        print(f"UID: {uid} | new_photo_url: {new_photo_url}")
-        print(f"this is user: {user.display_name}")
-    else:
-        print('Sucessfully updated user: {0}'.format(uid))
+    user_ref = db.collection("users").document(uid)
+    user_ref.update({"picture": new_photo_url})
+    # try:
+    #     user = auth.get_user(uid)
+    #     user = auth.update_user({"picture": new_photo_url})
+    # except:
+    #     print("Error occurred in trying to update user photo")
+    #     print(f"UID: {uid} | new_photo_url: {new_photo_url}")
+    #     print(f"this is user: {user.display_name}")
+    # else:
+    #     print('Sucessfully updated user: {0}'.format(uid))
 
 ### ========= Update Role ========= ###
 def update_role(uid, new_role):
@@ -459,7 +459,7 @@ def create_user_firestore(uid):
         'visibility': True,
         'total_reviews_written': 0
     }
-    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [])
+    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [], 5, [])
     
     print(users_ref.document(uid).set(user.to_dict()))
 

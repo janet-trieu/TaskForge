@@ -1,0 +1,40 @@
+.task-epic {
+    font-weight: 500;
+    font-size: 0.9em;
+    padding: 4px 8px;
+    border-radius: 16px;
+    display: inline-block;
+    border-radius: 16px;
+}
+
+.task-title {
+    font-size: 1.2em;
+}
+
+.task-deadline {
+    color: gray;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-right: 0.5vw;
+}
+
+.task-priority {
+    font-weight: 500;
+    font-size: 0.9em;
+    padding: 4px 8px;
+    border-radius: 16px;
+    display: inline-block;
+    border-radius: 16px;
+}
+
+.Low {
+    background-color: lightgreen;
+}
+
+.Moderate {
+    background-color: yellow;
+}
+
+.High {
+    background-color: lightcoral;
+}

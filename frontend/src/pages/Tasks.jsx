@@ -17,9 +17,8 @@ const Tasks = ({ firebaseApp }) => {
     else {
       setTasks(data);
       setIsLoading(false);
-      console.log(data);
     }
-  }, [showCompleted])
+  }, [])
 
   return (
     <>

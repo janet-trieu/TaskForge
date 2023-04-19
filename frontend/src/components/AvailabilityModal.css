@@ -1,0 +1,43 @@
+.availability-modal {
+    justify-content: center;
+    display: flex;
+}
+
+.availability-modal-content {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    border-radius: 10px;
+    padding: 1vw 1vw;
+    border: 1px solid #C4C4C4;
+    background-color: white;
+}
+
+.availability-modal-header {
+    padding: 10px;
+    color: #2E2E32;
+}
+
+.availability-modal-title {
+    margin: 0;
+}
+
+.availability-modal-body {
+    padding: 10px;
+    line-height: 10px;
+}
+
+.availability-modal-footer {
+    padding: 10px;
+    gap: 0.5vw;
+    float: right;
+    display: flex;
+}
+
+.button-cancel {
+    background: transparent;
+    color: #2E2E32;
+}
+
+.button-confirm {
+    background: #FFBEBE;
+    color: #2E2E32;
+}
