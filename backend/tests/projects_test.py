@@ -11,12 +11,10 @@ from src.profile_page import *
 
 try:
     pm_uid = create_user_email("projtest.pm@gmail.com", "admin123", "Project Master")
-    tm_uid = create_user_email("projtest.tm@gmail.com", "tm1asdas23455", "Task Master")
 except auth.EmailAlreadyExistsError:
     pass
 pm_uid = auth.get_user_by_email("projtest.pm@gmail.com").uid
-tm_uid = auth.get_user_by_email("projtest.tm@gmail.com").uid
-'''
+
 ############################################################
 #                    Test for view_project                 #
 ############################################################
@@ -255,16 +253,17 @@ def test_leave_project_not_in_project():
 ############################################################
 #                 Test for respond_invitation              #
 ############################################################
-'''
+
 def test_accept_invitation():
 
     pm_email = auth.get_user(pm_uid).email
-    tm_email = auth.get_user(tm_uid).email
+
+    tm_uid = create_test_user("project", 0)
     
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None)
 
-    nid = notification_connection_request(pm_email, tm_email)
-    connection_request_respond(tm_uid, nid, True)
+    nid = notification_connection_request(pm_email, tm_uid)
+    connection_request_respond(pm_uid, nid, True)
 
     res = invite_to_project(pid, pm_uid, [tm_uid])
     assert res == 0
@@ -295,15 +294,17 @@ def test_accept_invitation():
     project_members = proj_ref.get().get("project_members")
 
     assert tm_uid in project_members
-'''
+
 def test_reject_invitation():
 
-    tm_uid = create_test_user("project", 0)
+    pm_email = auth.get_user(pm_uid).email
+
+    tm_uid = create_test_user("project", 1)
     
     pid = create_project(pm_uid, "Project B", "Projec B xyz", None, None)
 
-    nid = notification_connection_request(tm_uid, pm_uid)
-    connection_request_respond(tm_uid, nid, True)
+    nid = notification_connection_request(pm_email, tm_uid)
+    connection_request_respond(pm_uid, nid, True)
 
     res = invite_to_project(pid, pm_uid, [tm_uid])
     assert res == 0
@@ -378,4 +379,3 @@ def test_pin_pinned_project():
 
     with pytest.raises(InputError):
         pin_project(pid, pm_uid, 0)
-'''
