@@ -40,7 +40,7 @@ def test_create_project_every_args():
     reset_projects()
     
     # test for project creation
-    pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023-12-31", "test1.jpg")
+    pid = create_project(pm_uid, "Project1", "Creating Project1 for testing", "31/12/2023", "test1.jpg")
 
     assert pid == 0
 
@@ -109,12 +109,12 @@ def test_create_project_invalid_description_length():
 def test_create_project_invalid_due_date_type():
 
     with pytest.raises(InputError):
-        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, -1)
+        create_project(pm_uid, "Project1", "Creating Project1 for testing", -1, None)
 
 def test_create_project_invalid_due_date_format():
 
-    with pytest.raises(InputError):
-        create_project(pm_uid, "Project1", "Creating Project1 for testing", None, -1, "2023/1/1")
+    with pytest.raises(ValueError):
+        create_project(pm_uid, "Project1", "Creating Project1 for testing", "2023/1/1", None)
 
 ############################################################
 #           Test for revive_completed_project              #
@@ -263,7 +263,8 @@ def test_invite_to_project():
 
     receiver_uids.append(tm0_uid)
 
-    nid = notification_connection_request(tm0_uid, pm_uid)
+    tm_email = auth.get_user(tm0_uid).email
+    nid = notification_connection_request(tm_email, pm_uid)
     connection_request_respond(tm0_uid, nid, True)
 
     res = invite_to_project(pid, sender_uid, receiver_uids)
@@ -282,9 +283,13 @@ def test_multiple_invite_to_project():
     receiver_uids.append(tm2_uid)
     receiver_uids.append(tm3_uid)
 
-    nid1 = notification_connection_request(tm1_uid, pm_uid)
-    nid2 = notification_connection_request(tm2_uid, pm_uid)
-    nid3 = notification_connection_request(tm3_uid, pm_uid)
+    tm1_email = auth.get_user(tm1_uid).email
+    tm2_email = auth.get_user(tm2_uid).email
+    tm3_email = auth.get_user(tm3_uid).email
+
+    nid1 = notification_connection_request(tm1_email, pm_uid)
+    nid2 = notification_connection_request(tm2_email, pm_uid)
+    nid3 = notification_connection_request(tm3_email, pm_uid)
     connection_request_respond(tm1_uid, nid1, True)
     connection_request_respond(tm2_uid, nid2, True)
     connection_request_respond(tm3_uid, nid3, True)
@@ -356,7 +361,7 @@ def test_update_project():
         "name": "Project 123",
         "description": "description 123",
         "status": "In Progress",
-        "due_date": "2023-11-30",
+        "due_date": "31/12/2023",
         "picture": "testing.png"
     }
 
@@ -372,7 +377,7 @@ def test_update_project():
     assert name == "Project 123"
     assert description == "description 123"
     assert status == "In Progress"
-    assert due_date == "2023-11-30"
+    assert due_date == "31/12/2023"
     assert picture == "testing.png"
 
 def test_update_project_invalid_name_type():
@@ -445,7 +450,7 @@ def test_update_project_invalid_due_date_format():
 
     pid = create_project(pm_uid, "Project 0", "description", None, None)
 
-    with pytest.raises(InputError):
+    with pytest.raises(ValueError):
         update_project(pid, pm_uid, {"due_date": "2023/1/1"})
 
 def test_update_project_not_project_master():
