@@ -31,7 +31,6 @@ def defaultHandler(err):
 
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
-mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
