@@ -1,16 +1,15 @@
-from .profile_page import *
-from .error import *
-from firebase_admin import auth
 '''
 Feature: Admin
 Functionalities:
-    - give_admin
-    - ban_user
-    - unban_user
-    - remove_user
-    - readd_user
+    - give_admin(uid_admin, uid_user)
+    - ban_user(uid_admin, uid_user)
+    - unban_user(uid_admin, uid_user)
+    - remove_user(uid_admin, uid_user)
+    - readd_user(uid_admin, uid_user)
 '''
-
+from .profile_page import *
+from .error import *
+from firebase_admin import auth
 
 def give_admin(uid_admin, uid_user):
     '''

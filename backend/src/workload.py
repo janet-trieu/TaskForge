@@ -1,3 +1,14 @@
+'''
+Feature: Workload
+Functionalities:
+ - get_user_workload(uid)
+ - update_user_availability(uid, availability)
+ - get_availability(uid)
+ - get_availability_ratio(uid)
+ - calculate_supply_demand(uid)
+ - get_supply_and_demand(uid)
+'''
+
 from .helper import *
 from datetime import datetime, timedelta
 import pytz

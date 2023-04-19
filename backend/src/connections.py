@@ -1,5 +1,16 @@
-from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
+'''
+Feature: Connections
+Functionalities:
+ - connection_request_respond(uid, nid, response)
+ - get_connection_requests(uid)
+ - get_connected_taskmasters(uid)
+ - remove_connected_taskmaster(uid, uid_remove)
+ - remove_connected_taskmaster(uid, uid_remove)
+ - search_taskmasters(uid, search_string)
+ - get_outgoing_requests(uid)
+'''
 
+from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
 from .error import *
 from .helper import *
 from .profile_page import *
