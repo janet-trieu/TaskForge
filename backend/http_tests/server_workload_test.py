@@ -1,7 +1,6 @@
 '''
 Test file for Flask http testing of workload + supply and demand
 '''
-import pytest
 import requests
 from src.taskboard import create_task
 from src.proj_master import create_project
@@ -53,3 +52,6 @@ def test_workload_get_supply_demand():
     headers_dict = {'Authorization': uid}
     resp = requests.get(url + '/workload/get_supply_demand', headers=headers_dict)
     assert resp.status_code == 200
+
+def test_reset():
+    reset_database()

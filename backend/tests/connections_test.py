@@ -111,12 +111,5 @@ def test_get_outgoing_requests():
     assert(len(get_outgoing_requests(uid5)) == 2)
 
 
-def test_clean_up():
-    try:
-        delete_user(uid1)
-        delete_user(uid2)
-        delete_user(uid3)
-        delete_user(uid4)
-        delete_user(uid5)
-    except:
-        pass
+def test_reset():
+    reset_database()

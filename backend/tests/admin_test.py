@@ -1,9 +1,7 @@
-import pytest
-import firebase_admin
-from firebase_admin import credentials, auth
-from firebase_admin import firestore
+from firebase_admin import  auth
 from src.proj_master import create_project
 from src.taskboard import create_task, create_subtask
+from src.test_helpers import reset_database
 
 # from src.profile_page import *
 from src.admin import *
@@ -124,4 +122,6 @@ def test_remove_user():
         check_user_in_subtask(user_uid, tid, stid)
     except InputError:
         pass
-    
+
+def test_reset():
+    reset_database()
