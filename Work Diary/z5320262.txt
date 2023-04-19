@@ -190,7 +190,7 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
 
 ///////////////////////////////////////////
 
-## Week 7 ##
+## Week 8 ##
 
 ??? What was planned for the period since the last work diary entry ???
 - Assign sprint 3 tasks
@@ -212,3 +212,58 @@ We gave ourselves the tasks of reading the scope of the project more throughly a
 - Finish Retrospective B report and submit
 - Work on frontend for achievements
 - Fix frontend styling to make it look nicer
+
+///////////////////////////////////////////
+
+## Week 9 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Finish Retrospective B report and submit
+- Work on frontend for achievements
+- Fix frontend styling to make it look nicer
+
+
+??? What was finished ???
+- Retrospective B
+
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- N/A
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- N/A
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish achievements frontend
+- Fix task card to display relevant data e.g. epic, due date
+
+///////////////////////////////////////////
+
+## Week 10 ##
+
+??? What was planned for the period since the last work diary entry ???
+- Finish Retrospective B report and submit
+- Work on frontend for achievements
+- Fix frontend styling to make it look nicer
+
+??? What was finished ???
+- Retrospective B
+- Achievements frontend
+- Task card fixes
+- Workload frontend
+- Final notification calls
+- Small frontend fixes
+- Final demo
+
+??? What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) ???
+- There was an issue with workload backend logic where it was meant to be global instead of project based. This was quickly reverted before frontend implementation.
+- We changed supply and demand to be global based as well
+
+??? What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered ???
+- Minor frontend bug fixes + quality of life
+  > this happened because a lot of frontend implementation was done last minute due to busy schedules, however we are told that our frontend looks well and software quality will be more focused
+  with the code style etc. so we may not work on styling frontend more so we can work on the report and cleaning up code
+
+??? What is planned for the next period (e.g., next week) ???
+- Finish report and submit
+- Clean up code and submit
