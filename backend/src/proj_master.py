@@ -224,7 +224,6 @@ def remove_project_member(pid, uid, uid_to_be_removed):
     user_projs = get_projects(uid_to_be_removed)
     user_projs.remove(pid)
     user_ref.update({"projects": user_projs})
-    user_ref.collection("availability").document(str(pid)).delete()
     
     return 0
 
