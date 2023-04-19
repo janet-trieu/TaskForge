@@ -228,3 +228,26 @@ What was not finished, why this happened, how this affects the overall project p
 
 What is planned for the next period (e.g., next week)
 - Continue working on sp3
+
+=== Week 9 ===
+General Content:
+- Finish off sp3
+- Prepare for final demo
+- Prepare for final report
+
+What was planned for the period since the last work diary entry
+- Continue working on sp3
+
+What was finished
+- Some sp3 features
+
+What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- N/A
+
+What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- N/A, nothing is highlighted as an issue at current stage
+
+What is planned for the next period (e.g., next week)
+- Finish off sp3
+- Finalise structure for the final demo
+- Start prepping for the final report
