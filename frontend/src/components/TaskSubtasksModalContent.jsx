@@ -11,16 +11,16 @@ const TaskSubtasksModalContent = forwardRef((props, ref) => {
   const handleOpenCreate = () => { setOpenCreate(true) };
   const handleCloseCreate = () => { setOpenCreate(false) };
 
-  const testSubtask = {
-    stid: "EXA-001",
-    title: "This is the task title.",
-    description: "This is the description of the subtask.",
-    status: "In Progress",
-    deadline: "01/01/2001",
-    workload: 3,
-    priority: "Low",
-    assignees: ["test@email.com", "test1@email.com", "test2@email.com"]
-  }
+  // const testSubtask = {
+  //   stid: "EXA-001",
+  //   title: "This is the task title.",
+  //   description: "This is the description of the subtask.",
+  //   status: "In Progress",
+  //   deadline: "01/01/2001",
+  //   workload: 3,
+  //   priority: "Low",
+  //   assignees: ["test@email.com", "test1@email.com", "test2@email.com"]
+  // }
 
   useEffect(async () => {
     const data = await makeRequest("/subtasks/get_all", "GET", {tid: props.tid}, props.uid);
@@ -44,7 +44,7 @@ const TaskSubtasksModalContent = forwardRef((props, ref) => {
         {isLoading || subtasks.map((subtask, idx) => {
           return <SubtaskCard key={idx} uid={props.uid} subtask={subtask}/>
         })}
-        <SubtaskCard uid={props.uid} subtask={testSubtask}/>
+        {/* <SubtaskCard uid={props.uid} subtask={testSubtask}/> */}
       </div>
     </div>
   );
