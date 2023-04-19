@@ -1,3 +1,14 @@
+'''
+Feature: Workload
+Functionalities:
+ - get_user_workload(uid)
+ - update_user_availability(uid, availability)
+ - get_availability(uid)
+ - get_availability_ratio(uid)
+ - calculate_supply_demand(uid)
+ - get_supply_and_demand(uid)
+'''
+
 from .helper import *
 from datetime import datetime, timedelta
 import pytz
@@ -23,7 +34,7 @@ def get_user_workload(uid):
         status = task_ref.get().get("status")
         if (status != "In Progress" and status != "Testing/Reviewing"): continue
         due_date = task_ref.get().get("deadline")
-        if (str(curr_time + timedelta(days = 7)) < str(due_date)): continue
+        if (str(curr_time + timedelta(days = 7)) < str(due_date)): continue #if due within 7 days
         task_wl = int(task_ref.get().get("workload"))
         if (task_wl is None):
             task_wl = 0

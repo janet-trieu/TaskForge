@@ -30,10 +30,14 @@ def test_update_availability():
     assert(get_availability(uid) == 4.5)
     
 def test_availability_ratio():
-    assert(get_availability_ratio(uid) == (5/4.5)*100)
+    num = round((5/4.5)*100)
+    assert(get_availability_ratio(uid) == num)
 
 def test_supply_and_demand():
     calculate_supply_demand(uid)
     data = get_supply_and_demand(uid)
     assert(data[0]["demand"] == 5)
     assert(data[0]["supply"] == 4.5)
+
+def test_reset():
+    reset_database()
