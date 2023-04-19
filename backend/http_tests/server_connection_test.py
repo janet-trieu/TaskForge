@@ -111,9 +111,4 @@ def test_remove_connected_taskmaster():
     assert resp.status_code == 200
 
 def test_clean_up():
-    try:
-        delete_user(uid1)
-        delete_user(uid2)
-        delete_user(uid3)
-    except:
-        pass
+    reset_database()
