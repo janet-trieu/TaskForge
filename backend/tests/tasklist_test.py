@@ -31,8 +31,8 @@ uid1 = auth.get_user_by_email("taskboardtest1@gmail.com").uid
 uid2 = auth.get_user_by_email("taskboardtest2@gmail.com").uid
 uid3 = auth.get_user_by_email("taskboardtest3@gmail.com").uid
 
-pid1 = create_project(str(uid1), "boobs", "butts", "", None, "")
-pid2 = create_project(str(uid1), "bootie", "butts", "", None, "")
+pid1 = create_project(str(uid1), "boobs", "butts", None, None)
+pid2 = create_project(str(uid1), "booties", "butts", None, None)
 
 def test_get_assigned_tasklist_show_completed():
     eid1 = create_epic(str(uid1), pid1, "Epic1", "Epic1 Description", "#ffa28e")

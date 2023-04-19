@@ -25,7 +25,6 @@ const ProjectModalContent = forwardRef((props, ref) => {
         name: event.target.name.value,
         description: event.target.description.value,
         due_date: event.target.dueDate.value,
-        team_strength: event.target.teamStrength.value,
         status: event.target.status.value,
         picture: icon
       }
@@ -42,7 +41,6 @@ const ProjectModalContent = forwardRef((props, ref) => {
       details.name = body.updates.name;
       details.description = body.updates.description;
       details.due_date = body.updates.due_date;
-      details.team_strength = body.updates.team_strength;
       details.status = body.updates.status;
       details.picture = body.updates.picture;
       props.setDetails(details);
@@ -92,8 +90,6 @@ const ProjectModalContent = forwardRef((props, ref) => {
       <label htmlFor="dueDate"><h3>Due Date</h3></label>
       <input type="text" id="dueDate" name="dueDate" style={{width: '20em', marginTop: '0'}} placeholder="DD/MM/YYYY" defaultValue={props.details.due_date}/>
 
-      <label htmlFor="teamStrength"><h3>Team Strength</h3></label>
-      <input type="text" id="teamStrength" name="teamStrength" style={{width: '20em', marginTop: '0'}} placeholder="Add a team strength..." defaultValue={props.details.team_strength}/>
       <br />
       <br />
       <button type="submit">Save Changes</button>

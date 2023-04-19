@@ -18,7 +18,7 @@ except auth.EmailAlreadyExistsError:
 uid = auth.get_user_by_email("file1@gmail.com").uid
 
 
-pid = create_project(uid, "Project 123", "description", None, None, None)
+pid = create_project(uid, "Project 123", "description", None, None)
 eid = create_epic(uid, pid, 'title', 'desc', '#fcba03')
 tid = create_task(uid, pid, eid, [uid], 'FILE', 'FILE', 0, 0, "", "Not Started")
 

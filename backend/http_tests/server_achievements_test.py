@@ -31,7 +31,7 @@ url = f"http://localhost:{port}/"
 
 def test_view_achievements():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm0_uid)
 
@@ -56,7 +56,7 @@ def test_view_achievements():
 
 def test_view_achievements_notmy():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -81,7 +81,7 @@ def test_view_achievements_notmy():
 
 def test_view_hidden():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 

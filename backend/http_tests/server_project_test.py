@@ -29,7 +29,7 @@ tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 ############################################################
 def test_view_project():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     # add tm to project
     add_tm_to_project(pid, tm1_uid)
@@ -49,7 +49,6 @@ def test_view_project():
         "description": project["description"],
         "status": project["status"],
         "due_date": project["due_date"],
-        "team_strength": project["team_strength"],
         "picture": project["picture"],
         "project_members": project["project_members"],
         "epics": extract_epics(pid),
@@ -60,7 +59,7 @@ def test_view_project():
 
 def test_view_project_invalid_pid():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': tm1_uid}
     params = {'pid': -1}
@@ -72,7 +71,7 @@ def test_view_project_invalid_pid():
 
 def test_view_project_invalid_uid():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': "invalid"}
     params = {'pid': pid}
@@ -84,7 +83,7 @@ def test_view_project_invalid_uid():
 
 def test_view_project_not_in_project():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': tm1_uid}
     params = {'pid': pid}
@@ -100,7 +99,7 @@ def test_view_project_not_in_project():
 
 def test_search_empty_query():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -120,7 +119,7 @@ def test_search_empty_query():
 
 def test_search_project_simple():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does spiking", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -140,7 +139,7 @@ def test_search_project_simple():
 
 def test_search_project_pm_name():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does spiking", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -160,9 +159,9 @@ def test_search_project_pm_name():
 
 def test_search_project_verbose():
 
-    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
-    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
+    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None)
+    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None)
 
     add_tm_to_project(pid1, tm1_uid)
     add_tm_to_project(pid2, tm1_uid)
@@ -204,9 +203,9 @@ def test_search_project_verbose():
 
 def test_search_partial_member():
 
-    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
-    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
+    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None)
+    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None)
 
     add_tm_to_project(pid1, tm3_uid)
     add_tm_to_project(pid2, tm3_uid)
@@ -224,13 +223,11 @@ def test_search_partial_member():
     # no proj3
     assert search_json == [proj1, proj2]
 
-    reset_projects()
-
 def test_search_return_nothing():
 
-    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
-    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
+    pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
+    pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None)
+    pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None)
 
     query = "asdwqdasd"
     header = {'Authorization': tm1_uid}
@@ -248,7 +245,7 @@ def test_search_return_nothing():
 ############################################################
 def test_leave_project():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -269,7 +266,7 @@ def test_leave_project():
 
 def test_leave_project_invalid_pid():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -287,7 +284,7 @@ def test_leave_project_invalid_pid():
 
 def test_leave_project_invalid_uid():
     
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -305,7 +302,7 @@ def test_leave_project_invalid_uid():
 
 def test_leave_project_not_in_project():
     
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
@@ -325,7 +322,7 @@ def test_leave_project_not_in_project():
 
 def test_accept_invitation():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     nid = notification_connection_request(tm1_uid, pm_uid)
     connection_request_respond(tm1_uid, nid, True)
@@ -368,7 +365,7 @@ def test_accept_invitation():
 
 def test_reject_invitation():
     
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     nid = notification_connection_request(tm2_uid, pm_uid)
     connection_request_respond(tm2_uid, nid, True)
@@ -416,7 +413,7 @@ def test_reject_invitation():
 ############################################################
 def test_pin_unpin_project():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     user_ref = get_user_ref(pm_uid)
     assert pid not in user_ref.get("pinned_projects")
@@ -450,7 +447,7 @@ def test_pin_unpin_project():
     assert unpin_resp.status_code == 400
 
 def test_pin_invalid_project():
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     # pin project
     header = {'Authorization': pm_uid}
@@ -462,7 +459,7 @@ def test_pin_invalid_project():
 
 def test_pin_not_in_project():
 
-    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
+    pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None)
 
     # pin project
     header = {'Authorization': tm3_uid}

@@ -99,7 +99,7 @@ def test_remove_usertype():
 
 def test_remove_user():
     assert(is_admin(admin_uid))
-    pid = create_project(user_uid, "Project 123", "description", None, None, None)
+    pid = create_project(user_uid, "Project 123", "description", None, None)
     tid = create_task(user_uid, pid, None, [get_email(user_uid)], "", "", 0, 0, "Low", "Not Started")
     stid = create_subtask(user_uid, tid, pid, [user_uid], "", "", 0, 0, "Low", "Not Started")
     remove_user(admin_uid, user_uid)

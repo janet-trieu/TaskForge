@@ -28,7 +28,7 @@ tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
 '''
 def test_task_complete_3():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm0_uid)
 
@@ -46,7 +46,7 @@ def test_task_complete_3():
 
 def test_task_complete_5():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -68,9 +68,9 @@ def test_task_complete_5():
 
 def test_proj_complete_3():
 
-    pid1 = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None, None)
-    pid2 = create_project(pm_uid, "Project2", "Creating Project2 for testing", None, None, None)
-    pid3 = create_project(pm_uid, "Project3", "Creating Project3 for testing", None, None, None)
+    pid1 = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None)
+    pid2 = create_project(pm_uid, "Project2", "Creating Project2 for testing", None, None)
+    pid3 = create_project(pm_uid, "Project3", "Creating Project3 for testing", None, None)
 
     update_project(pid1, pm_uid, {"status": "Completed"})
     update_project(pid2, pm_uid, {"status": "Completed"})
@@ -82,11 +82,11 @@ def test_proj_complete_3():
 
 def test_proj_complete_5():
 
-    pid1 = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None, None)
-    pid2 = create_project(pm_uid, "Project2", "Creating Project2 for testing", None, None, None)
-    pid3 = create_project(pm_uid, "Project3", "Creating Project3 for testing", None, None, None)
-    pid4 = create_project(pm_uid, "Project4", "Creating Project4 for testing", None, None, None)
-    pid5 = create_project(pm_uid, "Project5", "Creating Project5 for testing", None, None, None)
+    pid1 = create_project(pm_uid, "Project1", "Creating Project1 for testing", None, None)
+    pid2 = create_project(pm_uid, "Project2", "Creating Project2 for testing", None, None)
+    pid3 = create_project(pm_uid, "Project3", "Creating Project3 for testing", None, None)
+    pid4 = create_project(pm_uid, "Project4", "Creating Project4 for testing", None, None)
+    pid5 = create_project(pm_uid, "Project5", "Creating Project5 for testing", None, None)
 
     update_project(pid1, pm_uid, {"status": "Completed"})
     update_project(pid2, pm_uid, {"status": "Completed"})
@@ -116,7 +116,7 @@ def test_connection_num():
 
 def test_task_assign_num():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm2_uid)
     add_tm_to_project(pid, tm3_uid)
@@ -137,7 +137,7 @@ def test_task_assign_num():
 
 def test_lone_wolf():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -146,7 +146,7 @@ def test_lone_wolf():
     assert achievements[0]["aid"] == 6
 
 def test_reputation_num():
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm0_uid)
     add_tm_to_project(pid, tm1_uid)
@@ -168,7 +168,7 @@ def test_reputation_num():
 
 def test_view_my_achievements():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -182,7 +182,7 @@ def test_view_my_achievements():
 
 def test_view_multiple_achievements():
 
-    pid = create_project(pm_uid, "Project Achievements", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project Achievements", "Creating Project0 for testing", None, None)
 
     tid1 = create_task(pm_uid, pid, "", [pm_uid], "Task1", "description", "", None, None, "Not Started")
     tid2 = create_task(pm_uid, pid, "", [pm_uid], "Task2", "description", "", None, None, "Not Started")
@@ -207,7 +207,7 @@ def test_view_multiple_achievements():
 '''
 def test_view_notmy_achievements():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -236,7 +236,7 @@ def test_view_no_achievements():
 
 def test_view_visibility_off():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 

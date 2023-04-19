@@ -36,7 +36,7 @@ except AccessError:
 
 # Create project #
 try:
-    pid = create_project(user_id0, "Project Notification", "Description", None, None, None)
+    pid = create_project(user_id0, "Project Notification", "Description", None, None)
     invite_to_project(pid, user_id0, [user_id1])
 except:
     pid = get_pid('Project Notification')

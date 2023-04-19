@@ -37,7 +37,6 @@ def test_create_project_use_default_vals():
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
-        "team_strength": None,
         "picture": None
     })
 
@@ -51,7 +50,6 @@ def test_create_project_use_all_vals():
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": "2023-12-31",
-        "team_strength": "5",
         "picture": "test1.jpg"
     })
 
@@ -65,7 +63,6 @@ def test_create_multiple_projects():
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
-        "team_strength": None,
         "picture": None
     })
 
@@ -75,7 +72,6 @@ def test_create_multiple_projects():
         "name": "Project1",
         "description": "Creating Project1 for testing",
         "due_date": "2023-12-31",
-        "team_strength": "5",
         "picture": "test1.jpg"
     })
 
@@ -89,7 +85,6 @@ def test_create_project_TypeError():
         "name": -1,
         "description": "Creating Project0 for testing",
         "due_date": None,
-        "team_strength": None,
         "picture": None
     })
 
@@ -103,7 +98,6 @@ def test_create_project_ValueError():
         "name": "Project0",
         "description": "",
         "due_date": None,
-        "team_strength": None,
         "picture": None
     })
 
@@ -117,7 +111,6 @@ def test_create_project_invalid_uid():
         "name": "Project0",
         "description": "Creating Project0 for testing",
         "due_date": None,
-        "team_strength": None,
         "picture": None
     })
 
@@ -131,7 +124,7 @@ def test_create_project_invalid_uid():
 
 def test_revive_completed_project():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     proj_ref = db.collection("projects").document(str(pid))
 
@@ -159,7 +152,7 @@ def test_revive_completed_project_not_proj_master():
 
     incorrect_uid = tm1_uid
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     proj_ref = db.collection("projects").document(str(pid))
 
@@ -183,7 +176,7 @@ def test_revive_completed_project_not_proj_master():
 
 def test_revive_non_completed_project():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
     
     proj_ref = db.collection("projects").document(str(pid))
 
@@ -207,7 +200,7 @@ def test_revive_non_completed_project():
 
 def test_remove_project_member():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     add_tm_to_project(pid, tm1_uid)
     add_tm_to_project(pid, tm2_uid)
@@ -229,7 +222,7 @@ def test_remove_project_member():
 
 def test_remove_project_member_not_proj_master():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -249,7 +242,7 @@ def test_remove_project_member_not_proj_master():
 
 def test_remove_project_member_invalid_pid():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     add_tm_to_project(pid, tm1_uid)
     add_tm_to_project(pid, tm2_uid)
@@ -270,7 +263,7 @@ def test_remove_project_member_invalid_pid():
 
 def test_remove_invalid_project_member():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': pm_uid}
     remove_resp = requests.post(url + "projects/remove", headers=header, json={
@@ -289,7 +282,7 @@ def test_remove_invalid_project_member():
 def test_invite_to_project():
 
     tm0_email = auth.get_user(tm0_uid).email
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     nid = notification_connection_request(tm0_uid, pm_uid)
     connection_request_respond(tm0_uid, nid, True)
@@ -310,7 +303,7 @@ def test_multiple_invite_to_project():
     tm2_email = auth.get_user(tm2_uid).email
     tm3_email = auth.get_user(tm3_uid).email
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     nid1 = notification_connection_request(tm1_uid, pm_uid)
     nid2 = notification_connection_request(tm2_uid, pm_uid)
@@ -333,7 +326,7 @@ def test_invite_to_invalid_project():
     
     tm1_email = auth.get_user(tm1_uid).email
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
@@ -347,7 +340,7 @@ def test_invite_to_invalid_project():
 
 def test_invite_invalid_receiver_uid():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
@@ -363,7 +356,7 @@ def test_invite_uid_already_in_project():
 
     tm1_email = auth.get_user(tm1_uid).email
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     add_tm_to_project(pid, tm1_uid)
 
@@ -387,7 +380,7 @@ def test_invite_uid_already_in_project():
 
 def test_update_project():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     proj_ref = db.collection("projects").document(str(pid))
 
@@ -396,7 +389,6 @@ def test_update_project():
         "description": "description 123",
         "status": "In Progress",
         "due_date": "2023-11-30",
-        "team_strength": "5",
         "picture": "testing.png"
     }
 
@@ -412,28 +404,25 @@ def test_update_project():
     description = proj_ref.get().get("description")
     status = proj_ref.get().get("status")
     due_date = proj_ref.get().get("due_date")
-    team_strength = proj_ref.get().get("team_strength")
     picture = proj_ref.get().get("picture")
 
     assert name == "Project 123"
     assert description == "description 123"
     assert status == "In Progress"
     assert due_date == "2023-11-30"
-    assert team_strength == "5"
     assert picture == "testing.png"
 
     reset_projects() 
 
 def test_update_project_invalid_type():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     updates = {
         "name": -1,
         "description": -1,
         "status": -1,
         "due_date": -1,
-        "team_strength": -1,
         "picture": -1
     }
 
@@ -449,14 +438,13 @@ def test_update_project_invalid_type():
 
 def test_update_project_invalid_value():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     updates = {
         "name": "A"*2000,
         "description": "A"*2000,
         "status": "bleh",
         "due_date": "202020",
-        "team_strength": "-1",
         "picture": "hi"
     }
 
@@ -472,7 +460,7 @@ def test_update_project_invalid_value():
 
 def test_update_project_completed():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     updates = {
         "status": "Completed",
@@ -502,7 +490,7 @@ def test_update_project_completed():
 
 def test_update_project_invalid_pid():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     updates = {
         "status": "Completed",
@@ -520,7 +508,7 @@ def test_update_project_invalid_pid():
 
 def test_update_project_not_project_master():
 
-    pid = create_project(pm_uid, "Project 123", "description", None, None, None)
+    pid = create_project(pm_uid, "Project 123", "description", None, None)
 
     updates = {
         "status": "Completed",

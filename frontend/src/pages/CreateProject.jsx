@@ -25,7 +25,6 @@ const CreateProject = ({ firebaseApp }) => {
       name: event.target.name.value,
       description: event.target.description.value,
       due_date: null,
-      team_strength: null,
       status: null,
       picture: icon
     }
