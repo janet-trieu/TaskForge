@@ -289,18 +289,18 @@ class Project():
     A Project class that will be stored in firestore.
 
     Attributes:
-        self.pid = pid
-        self.uid = uid
-        self.name = name
-        self.description = description
-        self.status = status
-        self.due_date = due_date
-        self.picture = picture
-        self.project_members = project_members
-        self.epics = epics
-        self.tasks = tasks
-        self.subtasks = subtasks
-        self.snd = snd
+        pid (int): positive integer representing a project id
+        uid (str): project master uid
+        name (str): project name
+        description (str): project description
+        status (str): project status
+        due_date (str): format: dd/mm/yyyy, project's due date
+        picture (str): project logo
+        project_members (list): list of project member's uids
+        epics (list): list of epics in the project
+        tasks (list of dictionaries): all the tasks in the project
+        subtasks (list): list of subtasks in the project
+        snd (): TODO
     """
     def __init__(self, pid, uid, name, description, status, due_date, picture, project_members, epics, tasks, subtasks, snd):
         self.pid = pid
