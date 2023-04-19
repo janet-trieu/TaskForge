@@ -39,7 +39,6 @@ add_tm_to_project(pid2, uid2)
 
 def test_datetime():
     now = datetime.now()
-    print(now.strftime("%d/%m/%Y"))
     return
 
 
@@ -100,7 +99,6 @@ def test_valid_view_own_view():
     change_review_visibility(uid2, True)
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid2, uid2)
-    print(reviews)
     delete_review(uid1, uid2, pid1)
 
 # Test: Valid View, own view, off visibility
@@ -109,7 +107,6 @@ def test_valid_view_own_view_visibility_off():
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid2, uid2)
     assert reviews != None
-    print(reviews)
     delete_review(uid1, uid2, pid1)
     return
 
@@ -118,7 +115,6 @@ def test_valid_view_other_visibility_on():
     change_review_visibility(uid2, True)
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid1, uid2)
-    print(reviews)
     delete_review(uid1, uid2, pid1)
 
 # Test: Valid View, view other, visbiility off, show nothing
@@ -150,5 +146,4 @@ def test_update_review():
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     update_review(uid1, uid2, pid1, "5", "4", "5", "Very good")
     reviews = view_reviews(uid2, uid2)
-    print(reviews)
     delete_review(uid1, uid2, pid1)    

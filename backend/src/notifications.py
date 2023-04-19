@@ -46,7 +46,6 @@ def create_nid(uid, type):
     Returns:
         nid (str): Notification ID
     '''
-    # print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     if (doc_dict is None):
         count = 0

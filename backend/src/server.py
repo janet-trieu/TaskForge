@@ -21,7 +21,6 @@ from .reputation import *
 
 def defaultHandler(err):
     response = err.get_response()
-    print('response', err, err.get_response())
     response.data = dumps({
         "code": err.code,
         "name": "System Error",
@@ -574,7 +573,6 @@ def flask_share_achievement():
     data = request.get_json()
     uid_list = []
     for email in data["receiver_emails"]:
-        print(email)
         try:
             uid = auth.get_user_by_email(email).uid
         except auth.UserNotFoundError:
