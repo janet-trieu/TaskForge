@@ -20,10 +20,10 @@ const CreateProject = ({ firebaseApp }) => {
   const cancelButtonHandler = () => navigate('/projects');
   const createButtonHandler = async (event) => {
     event.preventDefault();
+
     const body = {
       name: event.target.name.value,
-      description: event.target.type.value,
-      invites: event.target.invites.value,
+      description: event.target.description.value,
       due_date: null,
       team_strength: null,
       status: null,
@@ -32,12 +32,19 @@ const CreateProject = ({ firebaseApp }) => {
 
     if (!body.name) {alert('Please enter a project name.'); return;}
     if (!body.description) {alert('Please enter a project type.'); return;}
-    if (body.icon === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
+    if (body.picture === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
+
     const uid = await firebaseApp.auth().currentUser.uid;
-    const data = await makeRequest("/projects/create", "POST", body, uid);
-    if (data.error) alert(data.error);
-    else { 
-      alert('Project has been successfully created!')
+    const data1 = await makeRequest("/projects/create", "POST", body, uid);
+    if (data1.error) alert(data1.error);
+    else {
+      if (event.target.invites.value) {
+        const invites = event.target.invites.value.split(", ");
+        const data2 = await makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: data1}, uid)
+        if (data2.error) {alert(data2.error); return;}
+      }
+      
+      alert('Project has been successfully created!');
       navigate('/projects');
     }
   };
@@ -55,11 +62,12 @@ const CreateProject = ({ firebaseApp }) => {
         <label htmlFor='project-name'>Project Name</label><br />
         <input type='text' name='name' id='project-name' /><br />
         <br />
-        <label htmlFor='project-type'>Project Type</label><br />
-        <input type='text' name='type' id='project-type' placeholder="e.g. Software Project" /><br />
+        <label htmlFor='project-description'>Project Description</label><br />
+        <input type='text' name='description' id='project-description' placeholder="e.g. Software Project" /><br />
         <br />
         <label htmlFor='project-invite'>Invite People to Project</label><br />
-        <input type='text' name='invites' id='project-invite' /><br />
+        <p style={{fontSize: '0.8em', margin: '0'}}>Must be a list of emails separated by a comma and a space ", "</p>
+        <input type='text' name='invites' id='project-invite' placeholder="e.g. user1@email.com, user2@email.com, ..."/><br />
         <br />
         <button style={{backgroundColor: 'gray'}} onClick={cancelButtonHandler}>Cancel</button>
         &nbsp;&nbsp;

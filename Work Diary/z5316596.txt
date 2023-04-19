@@ -43,3 +43,39 @@ Flask and API was the main technical obstacle. Retrieving the correct status cod
 
 Sprint 2 is planned, where tasks was delegated to me. Retrospective report is also planned to be finished.
 
+Week 6
+Beginning sprint 2 I was assigned Task Management. I was quite busy during flex week so I only planned on creating the general class for the three: Epics, Tasks, Subtasks.
+
+I finished the classes for the task management related items and created skeleton functions for the features that needed to be implemented.
+
+The main obstacles was communication with the other members and needing to know where to meet when it comes to cross feature implementation. For example, how does task interact with project, how does task interact with notifications. They were overcome after coming back together and discussing implementation and showing eachother's progress.
+
+The actual functions were not finished yet, but as task management is its own isolated feature, it did not halt the progress of sprint 2.
+
+Finishing every feature in sprint 2 is planned.
+
+Week 7
+This week, the entirity of sprint 2 was planned to be finished. 
+
+The backend implementation of task management was finished, however, needs to be altered in some aspects to accomodate to frontend's needs and the needs of other features.
+
+The main problems include:
+- discussing consistent use of time (unix vs datetime str). This was overcome by discussing the pros and cons of each and finalising with datetime str.
+- what is exactly inside taskboard, tasklist and project view.
+- what attributes frontend needs.
+
+file attachment was not finished and was redelegated for vincent to finish as he had a lighter workload this sprint and was not busy at the time. Search tasklist was also not implemented according to the required specs of the assignment. Further, many functions were inconsistent in the returning of tasks. Such that, we deliberated and found if we return a list of tasks in any form, they should be in order of Closest deadline and flagged, then closest deadlines not flagged. Further, API wrappers for these functions were not created yet as Joseph and I needed to talk about task management implementation in frontend.
+As a result, sprint 2 was unofficially extended a week until the demo for front end to catch up in implementation.
+
+I was delegated reputation for sprint 3.
+
+Week 8
+Starting sprint 3 and bug fixing sprint 2 was planned for this period
+
+I finished many of the tests for reputation and the skeleton functions for reputation.
+
+There was no real trouble with this week except for communicating with my team and finalising how reputation should be implemented in the database. It is planned for everything reputation to be stored in the user with fields such as reviews and the averages of the scores over time to make it easier for the trend functions.
+
+The actual implementation of the functions have not been finished yet. This does not set back the project by anything as the sprint is 2 weeks and it is relatively easy to finish in the next upcoming week.
+
+Finishing reputation is planned to be finished for the next period.

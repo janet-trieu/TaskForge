@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
-import { Draggable } from 'react-beautiful-dnd';
 import Modal from '@mui/material/Modal';
 import TaskModalContent from "./TaskModalContent";
+import './TaskCard.css'
 
 const Container = styled.div`
   border: 1px solid lightgrey;
@@ -14,24 +14,26 @@ const Container = styled.div`
 
 const TaskCard = (props) => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => {setOpen(true)};
-  const handleClose = () => {setOpen(false)};
+  const handleOpen = () => { setOpen(true) };
+  const handleClose = () => { setOpen(false) };
+
+  let epic = null;
+  for (const curr of props.epics) {
+    if (curr.eid === props.task.eid) epic = curr;
+  }
+
   return (
-    <Draggable draggableId={props.task.id} index={props.index}>
-      {provided => (<>
-        <Container
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          onClick={handleOpen}
-        >
-          {props.task.content}
-        </Container>
-        <Modal open={open} onClose={handleClose}>
-          <TaskModalContent tid={props.task.id} uid={props.uid} />
-        </Modal>
-      </>)}
-    </Draggable>
+    <>
+      <Container onClick={handleOpen}>
+        {epic !== null ? <div className="task-epic" style={{backgroundColor: epic.colour}}>{epic.title}</div> : <></>}
+        <div className="task-title">{props.task.title}</div>
+        {props.task.deadline !== "" ? <div className="task-deadline">{props.task.deadline}</div> : <></>}
+        {props.task.priority !== "" ? <div className={`task-priority ${props.task.priority}`}>{props.task.priority}</div> : <></>}
+      </Container>
+      <Modal open={open} onClose={handleClose}>
+        <TaskModalContent details={props.task} uid={props.uid} epics={props.epics} tasks={props.tasks} setTasks={props.setTasks} setOpen={setOpen} forceUpdate={props.forceUpdate} pid={props.pid}/>
+      </Modal>
+    </>
   );
 }
 

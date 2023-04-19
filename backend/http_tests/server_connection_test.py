@@ -19,111 +19,95 @@ except auth.EmailAlreadyExistsError:
 
 uid1 = auth.get_user_by_email("conn1@gmail.com").uid
 uid2 = auth.get_user_by_email("conn2@gmail.com").uid
-uid3 = auth.get_user_by_email("conn3@gmail.com").uid
-
-def test_connection_request_respond_failure():
-    """
-    Giving an int instead of a string
-    """
-    json_dict = {'uid': uid2, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', json=json_dict)
-    
-    assert resp.status_code == 200
-    
-    json_dict = {'uid': 1, 'nid': 2, 'response' : 1}
-    resp = requests.post(url + '/connections/request_respond', json=json_dict)
-
-    assert resp.status_code == 400
-    
+uid3 = auth.get_user_by_email("conn3@gmail.com").uid  
 
 def test_connection_request_respond_decline_success():
     """
     Successfully declining a connection request
     """
     headers_dict = {'Authorization': uid2}
-    json_dict = {'uid': uid2, 'uid_sender': uid1}
+    json_dict = {'user_email': get_email(uid1)}
     resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
-    
-    json_dict = {'uid': uid2, 'nid': nid, 'response' : False}
+    headers_dict = {'Authorization': uid1}
+    json_dict = {'nid': nid, 'response' : False}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
 
+def test_get_outgoing_requests():
+    headers_dict = {'Authorization': uid2}
+    json_dict = {'user_email': get_email(uid1)}
+    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
+    assert resp.status_code == 200
+    
+    resp = requests.get(url + '/notifications/get_outgoing_requests', headers=headers_dict)
+    assert resp.status_code == 200
+    
 def test_connection_request_respond_accept_success():
     """
     Successfully accepting a connection request
     """
     headers_dict = {'Authorization': uid2}
-    json_dict = {'uid': uid2, 'uid_sender': uid1}
+    json_dict = {'user_email': get_email(uid1)}
     resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
-    
+    headers_dict = {'Authorization': uid1}
     json_dict = {'uid': uid2, 'nid': nid, 'response' : True}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
-
-def test_get_connection_requests_failure():
-    """
-    Giving an int instead of a string
-    """
-    headers_dict = {'Authorization': uid3}
-    json_dict = {'uid': uid3, 'uid_sender': uid1}
-    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
-    
-    assert resp.status_code == 200
-    json_dict = {'uid': 1}
-    resp = requests.post(url + '/connections/get_connection_requests', json=json_dict)
-
-    assert resp.status_code == 400
 
 def test_get_connection_requests_success():
     """
     Successfully getting a connection request list
     """
     headers_dict = {'Authorization': uid3}
-    json_dict = {'uid': uid3, 'uid_sender': uid1}
+    json_dict = {'user_email': get_email(uid1)}
     resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     
-    resp = requests.post(url + '/connections/get_connection_requests', headers=headers_dict)
+    resp = requests.get(url + '/connections/get_connection_requests', headers=headers_dict)
 
     assert resp.status_code == 200
-
-def test_connected_taskmasters_failure():
-    """
-    Giving an int instead of a string
-    """
-    json_dict = {'uid': 1}
-    resp = requests.post(url + '/connections/get_connected_taskmasters', json=json_dict)
-
-    assert resp.status_code == 400
 
 def test_connected_taskmasters_success():
     """
     Successfully getting a connected tm list
     """
     headers_dict = {'Authorization': uid3}
-    json_dict = {'uid': uid3, 'uid_sender': uid2}
+    json_dict = {'user_email': get_email(uid2)}
     resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
     
     assert resp.status_code == 200
     nid = resp.json()
     
-    json_dict = {'uid': uid3, 'nid': nid, 'response' : True}
+    headers_dict = {'Authorization': uid2}
+    json_dict = {'nid': nid, 'response' : True}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 200
     
     json_dict = {'uid': uid3}
-    resp = requests.post(url + '/connections/get_connected_taskmasters', headers=headers_dict, json=json_dict)
+    resp = requests.get(url + '/connections/get_connected_taskmasters', headers=headers_dict, json=json_dict)
     
+    assert resp.status_code == 200
+
+def test_search_taskmasters():
+    headers_dict = {'Authorization': uid3}
+    json_dict = {'search_string': "conn"}
+    resp = requests.get(url + '/connections/search_taskmasters', headers=headers_dict, json=json_dict)
+    assert resp.status_code == 200
+
+def test_remove_connected_taskmaster():
+    headers_dict = {'Authorization': uid1}
+    json_dict = {'uid_remove': uid2}
+    resp = requests.post(url + '/connections/remove_taskmaster', headers=headers_dict, json=json_dict)
     assert resp.status_code == 200
 
 def test_clean_up():

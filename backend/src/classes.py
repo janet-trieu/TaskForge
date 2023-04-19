@@ -1,3 +1,10 @@
+'''
+File to store the all the classes
+'''
+
+from firebase_admin import firestore
+db = firestore.client()
+
 class User(object):
     """
     User Class that will be stored in the firestore database
@@ -10,15 +17,24 @@ class User(object):
         DOB (str): date of birth of the suer
         is_admin (boolean): admin status of the user
         is_banned (boolean): ban status of the user
-        is_removed (boolean): removal status of the user
         achievements (list): list of achievements the user has obtained
         projects (list): list of project ids that the user has joined
-        epics (list): list of epic ids that the user has been assigned
+        pinned_projects (list): list of project ids that the user has pinned
         tasks (list): list of tasks ids that the user has been assigned
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
+        reputation (dict): a dict of reviews and averaged scores
+        workload (int)
+        num_projs_completed (int)
+        num_tasks_completed (int)
+        hide_achievements (boolean)
+        outgoing_requests (list)
+        availability (float): float of days available over the next 5 days
+        snd (list)
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, is_removed, achievements, projects, tasks, subtasks, connections):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, 
+                tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, 
+                hide_achievements, outgoing_requests, availability, snd):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -26,13 +42,20 @@ class User(object):
         self.DOB = DOB
         self.is_admin = is_admin
         self.is_banned = is_banned
-        self.is_removed = is_removed
         self.achievements = achievements
         self.projects = projects
+        self.pinned_projects = pinned_projects
         self.tasks = tasks
         self.subtasks = subtasks
         self.connections = connections
-        
+        self.reputation = reputation
+        self.workload = workload
+        self.num_projs_completed = num_projs_completed
+        self.num_tasks_completed = num_tasks_completed
+        self.hide_achievements = hide_achievements
+        self.outgoing_requests = outgoing_requests
+        self.availability = availability
+        self.snd = snd
         
     def to_dict(self):
         return {
@@ -43,12 +66,20 @@ class User(object):
             'DOB': self.DOB,
             'is_admin': self.is_admin,
             'is_banned': self.is_banned,
-            'is_removed': self.is_removed,
             "achievements": self.achievements,
             "projects": self.projects,
+            "pinned_projects": self.pinned_projects,
             "tasks": self.tasks,
             "subtasks": self.subtasks,
-            "connections": self.connections
+            "connections": self.connections,
+            "reputation": self.reputation,
+            "workload": self.workload,
+            "num_projs_completed": self.num_projs_completed,
+            "num_tasks_completed": self.num_tasks_completed,
+            "hide_achievements": self.hide_achievements,
+            "outgoing_requests":self.outgoing_requests,
+            "availability": self.availability,
+            "snd": self.snd
         }
 
 class Epic():
@@ -207,3 +238,103 @@ class Comments():
             'body': self.body,
             'time': self.time
         }
+    
+class Review():
+    """
+    A Review class that is stored in User in firestore.
+
+    Attributes:
+        reviewee_uid (str): uid of the user that is being reviewed
+        reviewer_uid (str): uid of the user that left the review
+        pid (int): pid of the project that is shared between the reviewer and the reviewee
+        date (str): date of when the review was written, in "%d/%m/%Y" format
+        communication (int): 
+        time_management (int):
+        task_quality (int):
+        comment (str): 
+    """
+
+    def __init__(self, reviewer_uid, reviewer_name, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
+        self.reviewer_uid = reviewer_uid
+        self.reviewer_name = reviewer_name
+        self.reviewee_uid = reviewee_uid
+        self.pid = pid
+        self.date = date
+        self.communication = communication
+        self.time_management = time_management
+        self.task_quality = task_quality
+        self.comment = comment
+
+    def to_dict(self):
+        return {
+            "reviewer_uid": self.reviewer_uid,
+            "reviewer_name": self.reviewer_name,
+            "reviewee_uid": self.reviewee_uid,
+            "pid": self.pid,
+            "date": self.date,
+            "communication": self.communication,
+            "time_management": self.time_management,
+            "task_quality": self.task_quality,
+            "comment": self.comment
+        }
+
+class Project():
+    """
+    A Project class that will be stored in firestore.
+
+    Attributes:
+     - 
+     - 
+    """
+    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks, snd):
+        self.pid = pid
+        self.uid = uid
+        self.name = name
+        self.description = description
+        self.status = status
+        self.due_date = due_date
+        self.team_strength = team_strength
+        self.picture = picture
+        self.project_members = project_members
+        self.epics = epics
+        self.tasks = tasks
+        self.subtasks = subtasks
+        self.snd = snd
+    
+    def to_dict(self):
+        return {
+            "pid": self.pid,
+            "uid": self.uid,
+            "name": self.name,
+            "description": self.description,
+            "status": self.status,
+            "due_date": self.due_date,
+            "team_strength": self.team_strength,
+            "picture": self.picture,
+            "project_members": self.project_members,
+            "epics": self.epics,
+            "tasks": self.tasks,
+            "subtasks": self.subtasks,
+            "snd": self.snd
+        }
+
+def get_project(pid):
+    doc = db.collection("projects").document(str(pid)).get()
+
+    project = Project(
+        doc.get("pid"),
+        doc.get("uid"),
+        doc.get("name"),
+        doc.get("description"),
+        doc.get("status"),
+        doc.get("due_date"),
+        doc.get("team_strength"),
+        doc.get("picture"),
+        doc.get("project_members"),
+        doc.get("epics"),
+        doc.get("tasks"),
+        doc.get("subtasks"),
+        doc.get("snd")
+    )
+
+    return project.to_dict()

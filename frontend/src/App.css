@@ -65,6 +65,10 @@
   cursor: pointer;
 }
 
+.highlighted {
+  background-color: rgb(236, 236, 236);
+}
+
 .sidebar-button img {
   width: 2vw;
 }
@@ -103,13 +107,15 @@
 #create-project-form label {
   font-weight: bold;
 }
+#create-project-form input {
+  width: 35em;
+}
 
-input {
+input[type='text'] {
   background-color: white;
   color: black;
-  padding: 1vh;
-  margin-top: 1vh;
-  width: 30vw;
+  padding: 0.5em;
+  margin-top: 1em;
   border-color: lightgray;
   border-radius: 10px;
 }
@@ -194,6 +200,10 @@ input {
   border-radius: 10px;
 }
 
+.profile-box-content {
+  height: 70%;
+}
+
 #projects-container {
   display: flex;
   flex-wrap: wrap;
@@ -216,14 +226,12 @@ input {
   padding: 2em;
 }
 
-.task-modal {
-  background-color: white;
-  /* width: 50vw;
-  height: 50vh; */
-  box-sizing: border-box;
-  border: solid black 2px;
-  border-radius: 10px;
-  padding: 2.5em;
+#tasks-container {
   display: flex;
-  gap: 5em;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-left: 2.5vw;
+  margin-right: 2.5vw;
+  margin-top: 4vh;
+  overflow: scroll;
 }

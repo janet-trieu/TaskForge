@@ -9,17 +9,27 @@ from src.helper import *
 from src.projects import *
 from src.profile_page import *
 
-try:
-    pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
-    tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
-    tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
-    tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
-except auth.EmailAlreadyExistsError:
-    pass
-pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
-tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
-tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
-tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+# try:
+#     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
+#     tm0_uid = create_user_email("projecttest.tm0@gmail.com", "taskmaster1", "Task Master1")
+#     tm1_uid = create_user_email("projecttest.tm1@gmail.com", "taskmaster1", "Task Master1")
+#     tm2_uid = create_user_email("projecttest.tm2@gmail.com", "taskmaster1", "Task Master2")
+#     tm3_uid = create_user_email("projecttest.tm3@gmail.com", "taskmaster1", "Task Master3")
+#     tm4_uid = create_user_email("projecttest.tm4@gmail.com", "taskmaster1", "Task Master3")
+#     tm5_uid = create_user_email("projecttest.tm5@gmail.com", "taskmaster1", "Task Master3")
+#     tm6_uid = create_user_email("projecttest.tm6@gmail.com", "taskmaster1", "Task Master3")
+#     tm7_uid = create_user_email("projecttest.tm7@gmail.com", "taskmaster1", "Task Master3")
+# except auth.EmailAlreadyExistsError:
+#     pass
+# pm_uid = auth.get_user_by_email("projectmaster@gmail.com").uid
+# tm0_uid = auth.get_user_by_email("projecttest.tm0@gmail.com").uid
+# tm1_uid = auth.get_user_by_email("projecttest.tm1@gmail.com").uid
+# tm2_uid = auth.get_user_by_email("projecttest.tm2@gmail.com").uid
+# tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
+# tm4_uid = auth.get_user_by_email("projecttest.tm4@gmail.com").uid
+# tm5_uid = auth.get_user_by_email("projecttest.tm5@gmail.com").uid
+# tm6_uid = auth.get_user_by_email("projecttest.tm6@gmail.com").uid
+# tm7_uid = auth.get_user_by_email("projecttest.tm7@gmail.com").uid
 
 ############################################################
 #                    Test for view_project                 #
@@ -27,16 +37,17 @@ tm3_uid = auth.get_user_by_email("projecttest.tm3@gmail.com").uid
 
 def test_view_project():
 
-    reset_projects()
+    pm_uid = create_test_user("project", 0)
+    tm0_uid = create_test_user("project", 1)
     
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
     # add tm to project
-    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm0_uid)
 
     project = get_project(pid)
 
-    res = view_project(pid, tm1_uid)
+    res = view_project(pid, tm0_uid)
 
     assert res == {
         "pid": pid,
@@ -49,36 +60,36 @@ def test_view_project():
         "project_members": project["project_members"],
         "epics": extract_epics(pid),
         "tasks": extract_tasks(pid),
-        "is_pinned": project["is_pinned"]
+        "is_pinned": False
     }
 
 def test_view_project_invalid_pid():
 
+    pm_uid = create_test_user("project", 0)
+
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
-    # add tm to project
-    add_tm_to_project(pid, tm1_uid)
-
     with pytest.raises(InputError):
-        view_project(-1, tm1_uid)
-        
-    reset_projects()
+        view_project(-1, pm_uid)
 
 def test_view_project_invalid_uid():
+
+    pm_uid = create_test_user("project", 0)
 
     pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
 
     with pytest.raises(InputError):
         view_project(pid, "invalid")
 
-    reset_projects()
-
 def test_view_project_not_in_project():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 1)
+
+    pid = create_project(pm_uid, "Project1231231", "Creating Project0 for testing", None, None, None)
 
     with pytest.raises(AccessError):
-        view_project(pid, tm1_uid)
+        view_project(pid, tm_uid)
 
 ############################################################
 #                   Test for search_project                #
@@ -86,14 +97,15 @@ def test_view_project_not_in_project():
 
 def test_search_empty_query():
 
-    reset_projects()
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 2)
 
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
-    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm_uid)
 
     query = ""
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     project = get_project(pid)
 
@@ -101,97 +113,93 @@ def test_search_empty_query():
 
 def test_search_project_simple():
 
-    reset_projects()
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 3)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    add_tm_to_project(pid1, tm1_uid)
+    add_tm_to_project(pid1, tm_uid)
 
     query = "Alpha"
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     assert res == [get_project(pid1)]
     
 def test_search_project_upper_lower():
-    reset_projects()
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 4)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
-    add_tm_to_project(pid1, tm1_uid)
+    add_tm_to_project(pid1, tm_uid)
 
     query = "alpha"
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     assert res == [get_project(pid1)]
 
 def test_search_project_pm_name():
-    reset_projects()
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 89)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
-    add_tm_to_project(pid1, tm1_uid)
+    add_tm_to_project(pid1, tm_uid)
 
-    query = "Master"
-    res = search_project(tm1_uid, query)
+    query = "User0"
+    res = search_project(tm_uid, query)
 
     assert res == [get_project(pid1)]
 
 def test_search_project_verbose():
-    reset_projects()
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 6)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
     pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
 
-    add_tm_to_project(pid1, tm1_uid)
-    add_tm_to_project(pid2, tm1_uid)
-    add_tm_to_project(pid3, tm1_uid)
+    add_tm_to_project(pid1, tm_uid)
+    add_tm_to_project(pid2, tm_uid)
+    add_tm_to_project(pid3, tm_uid)
 
     proj1 = get_project(pid1)
     proj2 = get_project(pid2)
     proj3 = get_project(pid3)
 
-    # tm1 is a part of the 3 projects created above
-    query = "Alpha"
-    res = search_project(tm1_uid, query)
-
-    assert res == [proj1]
-
-    query = "Receiving"
-    res = search_project(tm1_uid, query)
-
-    assert res == [proj2]
-
     query = "Project"
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     assert res == [proj1, proj2, proj3]
 
-    reset_projects()
-
 def test_search_partial_member():
-    reset_projects()
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 7)
 
     pid1 = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
     pid2 = create_project(pm_uid, "Project Beta", "Beta does Receiving", None, None, None)
     pid3 = create_project(pm_uid, "Project Gamma", "Gamma does Serving", None, None, None)
 
-    add_tm_to_project(pid1, tm1_uid)
-    add_tm_to_project(pid2, tm1_uid)
+    add_tm_to_project(pid1, tm_uid)
+    add_tm_to_project(pid2, tm_uid)
 
     proj1 = get_project(pid1)
     proj2 = get_project(pid2)
 
     # tm1 is a part of the 2 projects created above
     query = "Project"
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     assert res == [proj1, proj2]
 
-    reset_projects()
-
 def test_search_return_nothing():
 
+    tm_uid = create_test_user("project", 8)
+
     query = "asdwqdasd"
-    res = search_project(tm1_uid, query)
+    res = search_project(tm_uid, query)
 
     assert res == []
 
@@ -201,38 +209,45 @@ def test_search_return_nothing():
 
 def test_leave_project():
 
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 9)
+
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     # add tm1 into project
-    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm_uid)
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
-    res = request_leave_project(pid, tm1_uid, msg)
+    res = request_leave_project(pid, tm_uid, msg)
 
     assert res == 0
 
-    reset_projects()
-
 def test_leave_project_invalid_pid():
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 9)
 
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     # add tm1 into project
-    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm_uid)
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
     with pytest.raises(InputError):
-        request_leave_project(-1, tm1_uid, msg)
+        request_leave_project(-1, tm_uid, msg)
 
     reset_projects()
 
 def test_leave_project_invalid_uid():
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 9)
     
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
     # add tm1 into project
-    add_tm_to_project(pid, tm1_uid)
+    add_tm_to_project(pid, tm_uid)
 
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
@@ -242,6 +257,9 @@ def test_leave_project_invalid_uid():
     reset_projects()
 
 def test_leave_project_not_in_project():
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 2)
     
     pid = create_project(pm_uid, "Project Alpha", "Alpha does Spiking", None, None, None)
 
@@ -250,7 +268,7 @@ def test_leave_project_not_in_project():
     msg = "Hi Project Master, I would like to leave the project Project Alpha due to xyz reasons."
 
     with pytest.raises(AccessError):
-        request_leave_project(pid, tm1_uid, msg)
+        request_leave_project(pid, tm_uid, msg)
 
     reset_projects()
 
@@ -259,16 +277,19 @@ def test_leave_project_not_in_project():
 ############################################################
 
 def test_accept_invitation():
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 2)
     
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-    nid = notification_connection_request(tm1_uid, pm_uid)
-    connection_request_respond(tm1_uid, nid, True)
+    nid = notification_connection_request(tm_uid, pm_uid)
+    connection_request_respond(tm_uid, nid, True)
 
-    res = invite_to_project(pid, pm_uid, [tm1_uid])
+    res = invite_to_project(pid, pm_uid, [tm_uid])
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm_uid)
 
     notif_pid = invite_ref.get("pid")
     has_read = invite_ref.get("has_read")
@@ -279,12 +300,11 @@ def test_accept_invitation():
     assert pid == notif_pid
 
     accept = True
-    msg = "Hi Project Master, I will gladly join Project A!"
 
-    res = respond_project_invitation(notif_pid, tm1_uid, accept, msg)
+    res = respond_project_invitation(notif_pid, tm_uid, accept)
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm1_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm_uid)
 
     has_read = invite_ref.get("has_read")
     response = invite_ref.get("response")
@@ -294,19 +314,22 @@ def test_accept_invitation():
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    assert tm1_uid in project_members
+    assert tm_uid in project_members
 
 def test_reject_invitation():
+
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 3)
     
     pid = create_project(pm_uid, "Project B", "Projec B xyz", None, None, None)
 
-    nid = notification_connection_request(tm2_uid, pm_uid)
-    connection_request_respond(tm2_uid, nid, True)
+    nid = notification_connection_request(tm_uid, pm_uid)
+    connection_request_respond(tm_uid, nid, True)
 
-    res = invite_to_project(pid, pm_uid, [tm2_uid])
+    res = invite_to_project(pid, pm_uid, [tm_uid])
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm2_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm_uid)
 
     notif_pid = invite_ref.get("pid")
     has_read = invite_ref.get("has_read")
@@ -317,12 +340,11 @@ def test_reject_invitation():
     assert pid == notif_pid
 
     accept = False
-    msg = "Hi Project Master, sorry, but I cannot join Project A"
 
-    res = respond_project_invitation(notif_pid, tm2_uid, accept, msg)
+    res = respond_project_invitation(notif_pid, tm_uid, accept)
     assert res == 0
 
-    invite_ref = get_notif_ref_proj_invite(pid, tm2_uid)
+    invite_ref = get_notif_ref_proj_invite(pid, tm_uid)
 
     has_read = invite_ref.get("has_read")
     response = invite_ref.get("response")
@@ -333,113 +355,51 @@ def test_reject_invitation():
     proj_ref = db.collection("projects").document(str(pid))
     project_members = proj_ref.get().get("project_members")
 
-    assert not tm2_uid in project_members
-
-def test_reject_invitation_no_msg():
-    
-    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
-
-    nid = notification_connection_request(tm3_uid, pm_uid)
-    connection_request_respond(tm3_uid, nid, True)
-
-    res = invite_to_project(pid, pm_uid, [tm3_uid])
-    assert res == 0
-
-    invite_ref = get_notif_ref_proj_invite(pid, tm3_uid)
-
-    notif_pid = invite_ref.get("pid")
-    has_read = invite_ref.get("has_read")
-    response = invite_ref.get("response")
-
-    assert has_read == False
-    assert response == False
-    assert pid == notif_pid
-
-    accept = False
-    msg = ""
-
-    with pytest.raises(InputError):
-        respond_project_invitation(notif_pid, tm3_uid, accept, msg)
-
-    reset_projects()
+    assert not tm_uid in project_members
 
 ############################################################
 #                    Test for pin_project                  #
 ############################################################
+def test_pin_unpin_project():
 
-def test_pin_project():
+    pm_uid = create_test_user("project", 0)
+
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-    proj_ref = db.collection("projects").document(str(pid))
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == False
-
-    res = pin_project(pid, pm_uid, True)
+    res = pin_project(pid, pm_uid, 0)
     assert res == 0
-
-    proj_ref = db.collection("projects").document(str(pid))
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == True
-
-def test_unpin_project():
-    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
-
-    proj_ref = db.collection("projects").document(str(pid))
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == False
-
-    res = pin_project(pid, pm_uid, True)
-    assert res == 0
-
-    proj_ref = db.collection("projects").document(str(pid))
-    is_pinned = proj_ref.get().get("is_pinned")
     
-    assert is_pinned == True
+    user_ref = get_user_ref(pm_uid)
+    assert pid in user_ref.get("pinned_projects")
 
     # now unpin
-    res = pin_project(pid, pm_uid, False)
+    res = pin_project(pid, pm_uid, 1)
     assert res == 0
 
-    proj_ref = db.collection("projects").document(str(pid))
-    is_pinned = proj_ref.get().get("is_pinned")
-    
-    assert is_pinned == False
+    user_ref = get_user_ref(pm_uid)
+    assert pid not in user_ref.get("pinned_projects")
 
 def test_pin_invalid_project():
+    pm_uid = create_test_user("project", 0)
+
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-    proj_ref = db.collection("projects").document(str(pid))
-
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == False
-
     with pytest.raises(InputError):
-        pin_project(-1, pm_uid, True)
+        pin_project(-1, pm_uid, 0)
 
 def test_pin_not_in_project():
-    pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
-
-    proj_ref = db.collection("projects").document(str(pid))
-
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == False
+    pm_uid = create_test_user("project", 0)
+    tm_uid = create_test_user("project", 12312)
+    pid = create_project(pm_uid, "Project 123123123", "Projec A xyz", None, None, None)
 
     with pytest.raises(AccessError):
-        pin_project(pid, tm1_uid, True)
+        pin_project(pid, tm_uid, 0)
 
 def test_pin_pinned_project():
+    pm_uid = create_test_user("project", 0)
     pid = create_project(pm_uid, "Project A", "Projec A xyz", None, None, None)
 
-    proj_ref = db.collection("projects").document(str(pid))
-
-    is_pinned = proj_ref.get().get("is_pinned")
-
-    assert is_pinned == False
+    pin_project(pid, pm_uid, 0)
 
     with pytest.raises(InputError):
-        pin_project(pid, pm_uid, False)
+        pin_project(pid, pm_uid, 0)

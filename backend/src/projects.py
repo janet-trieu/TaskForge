@@ -3,6 +3,9 @@ Feature: Project Management
 Functionalities:
  - view_project()
  - request_leave_project()
+ - respond_project_invitation()
+ - search_project()
+ - pin_project()
 '''
 
 from firebase_admin import firestore, auth
@@ -10,7 +13,7 @@ from firebase_admin import firestore, auth
 from .error import *
 from .notifications import *
 from .test_helpers import *
-from .proj_class import *
+from .classes import *
 
 db = firestore.client()
 
@@ -43,6 +46,16 @@ def view_project(pid, uid):
     if not uid in project["project_members"]:
         raise AccessError(f"ERROR: User is not in the project")
 
+    pinned_projects = get_pinned_projects(uid)
+    if pid in pinned_projects:
+        is_pinned = True
+    else:
+        is_pinned = False
+
+    project_member_names = []
+    for member in project["project_members"]:
+        project_member_names.append(get_display_name(member))
+
     return {
             "pid": pid,
             "name": project["name"],
@@ -52,9 +65,11 @@ def view_project(pid, uid):
             "team_strength": project["team_strength"],
             "picture": project["picture"],
             "project_members": project["project_members"],
+            "project_member_names": project_member_names,
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
-            "is_pinned": project["is_pinned"]
+            "is_pinned": is_pinned,
+            "uid": project["uid"]
     }
 
 def extract_epics(pid):
@@ -84,9 +99,6 @@ def extract_epics(pid):
             "colour": epic_doc.get("colour")
         }
         return_list.append(return_dict)
-    
-    if len(return_list) == 1:
-        return return_list[0]
 
     return return_list
 
@@ -143,23 +155,41 @@ def search_project(uid, query):
     
     check_valid_uid(uid)
 
-    docs = db.collection("projects").stream()
+    projects = get_user_ref(uid).get("projects")
 
-    return_list = []
+    pinned_projects = get_pinned_projects(uid)
 
-    for doc in docs:
-        pid = doc.to_dict().get("pid")
-        project = get_project(pid)
-        pm_uid = project["uid"]
-        pm_name = auth.get_user(str(pm_uid)).display_name
+    pinned_list = []
+    unpinned_list = []
+    for pid in projects:
+        pm_uid = db.collection("projects").document(str(pid)).get().get("uid")
+        name = db.collection("projects").document(str(pid)).get().get("name")
+        description = db.collection("projects").document(str(pid)).get().get("description")
+        pm_name = get_display_name(str(pm_uid))
 
-        if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
-            if uid in project["project_members"]:
-                return_list.append(get_project(pid))
-                print(f"Successfully added {project['name']} to list of search result")
+        if (query.lower() in name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == ""):
+            project = get_project(pid)
+            if pid in pinned_projects:
+                project["pinned"] = True
+                pinned_list.append(project)
+            else:
+                project["pinned"] = False
+                unpinned_list.append(project)
+            print(f"Successfully added {name} to list of search result")
 
-    return_list = list(filter(None, return_list))
-    return_list.sort(key=lambda x: (-x["is_pinned"], x["pid"]))
+    # for pid in projects:
+    #     project = get_project(pid)
+    #     pm_uid = project["uid"]
+    #     pm_name = get_display_name(str(pm_uid))
+
+    #     if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
+    #         if pid not in return_list:
+    #             return_list.append(get_project(pid))
+    #             print(f"Successfully added {project['name']} to list of search result")
+
+    #return_list = list(filter(None, return_list))
+    return_list = pinned_list + unpinned_list
+
     return return_list
 
 def request_leave_project(pid, uid, msg):
@@ -202,7 +232,7 @@ def request_leave_project(pid, uid, msg):
 
     pm_uid = proj_ref.get().get("uid")
 
-    notification_leave_request(uid, pm_uid, pid)
+    notification_leave_request(pm_uid, uid, pid)
 
     return 0
 
@@ -291,7 +321,7 @@ def respond_project_invitation(pid, uid, accept):
 
     return 0
 
-def pin_project(pid, uid, is_pinned):
+def pin_project(pid, uid, action):
     '''
     Pin or unpin a project 
     - has to be in the project
@@ -300,7 +330,7 @@ def pin_project(pid, uid, is_pinned):
     Arguments:
     - pid (project id)
     - uid (project or task master id)
-    - is_pinned (bool)
+    - action: 0 for pin, 1 for unpin
 
     Returns:
     - 0 for successful response
@@ -316,22 +346,33 @@ def pin_project(pid, uid, is_pinned):
     
     check_valid_uid(uid)
 
-    proj_ref = db.collection("projects").document(str(pid))
-    if proj_ref == None:
-        raise InputError(f"ERROR: Failed to get reference for project {pid}")
-
-    if uid not in proj_ref.get().get("project_members"):
+    user_ref = db.collection("users").document(str(uid))
+    
+    if not pid in user_ref.get().get("projects"):
         raise AccessError(f"ERROR: Cannot pin/unpin a project you are not in")
 
-    curr_pin = proj_ref.get().get("is_pinned")
+    pinned_projects = user_ref.get().get("pinned_projects")
 
-    # specified project is not pinned, and user wants to pin
-    if (curr_pin == False and is_pinned == True) or (curr_pin == True and is_pinned == False):
-        proj_ref.update({
-            "is_pinned": is_pinned
-        })
-
-    else:
-        raise InputError(f"ERROR: Cannot pin/unpin a project that is already pinned/unpinned")
+    # user wants to pin the project
+    if action == 0:
+        if pid in pinned_projects:
+            raise InputError(f"ERROR: Cannot pin a project that is already pinned")
+        else:
+            pinned_projects.append(pid)
+            user_ref.update({"pinned_projects": pinned_projects})
+    elif action == 1:
+        if pid not in pinned_projects:
+            raise InputError(f"ERROR: Cannot unpin a project that is not pinned")
+        else:
+            pinned_projects.remove(pid)
+            user_ref.update({"pinned_projects": pinned_projects})
 
     return 0
+
+def get_pinned_projects(uid):
+    '''
+    A simple helper to return the list of pids, where the user has pinned
+    '''
+    user_ref = get_user_ref(uid)
+
+    return user_ref.get("pinned_projects")
