@@ -1,14 +1,23 @@
 '''
-Frontend notes: 
-- unread indicator + tab
-- clicking on the notification makes it read - change has_read to True
-- responding to responsive notifications makes it read - change has_read to True
-- responsive notifications have special message fields when the user 'accepts' or 'declines'
-    - so we dont have to worry about deleting the notification and the user remembers what they responded
-    - e.g. user presses accept to connection request. the notification text is changed from 'notification_msg' to 'accept_msg'
-TODO notes:
-- When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
-- ASSUMPTION should be covered by the function the notfiication is called in
+Feature: Notifications
+Functionalities:
+ - get_uid_from_email2()
+ - create_nid()
+ - is_connected()
+ - get_notifications()
+ - clear_notification()
+ - clear_all_notifications()
+ - notification_welcome()
+ - notification_connection_request()
+ - notification_project_invite()
+ - notification_assigned_task()
+ - notification_comment()
+ - notification_review()
+ - notification_achievement()
+ - notification_achievement_share()
+ - notification_leave_request()
+ - notification_accepted_request()
+ - notification_denied_request()
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
@@ -21,17 +30,22 @@ db = firestore.client()
 def get_uid_from_email2(email):
     """
     Gets uid of the User from auth database using email of the user
-
     Args:
         email (str): email of the user that can be found in auth database
-
     Returns:
         A string corresponding with the UID of the user found in the auth and firestore database
     """
     return auth.get_user_by_email(email).uid
 
 def create_nid(uid, type):
-
+    '''
+    Creates notification ID based on the type and how many currently exists
+    Args:
+        uid (str): User ID
+        type (str): Notification type
+    Returns:
+        nid (str): Notification ID
+    '''
     # print(f"this is uid: {uid}")
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     if (doc_dict is None):
@@ -49,6 +63,12 @@ def create_nid(uid, type):
 
 def is_connected(uid1, uid2):
     '''
+    Helper to check if two users are connected
+    Args:
+        uid1 (str): User ID of first user
+        uid2 (str): User ID of second user
+    Returns:
+        (boolean): If users are connected
     Assume uids have already been checked as existing
     '''
     connections = db.collection('users').document(uid1).get().to_dict().get('connections')
@@ -56,7 +76,6 @@ def is_connected(uid1, uid2):
     if (uid2 in connections): return True
     return False
     
-
 # ============ FUNCTIONS ============ #
 def get_notifications(uid):
     '''
@@ -301,7 +320,7 @@ def notification_achievement(uid, aid):
     Creates and adds notification when an achievement has been completed.
     Args:
         uid (string): User being notified
-        achievement_str (string): Achievement that has been completed
+        aid (int): Achievement that has been completed
     Returns:
         nid (string): Notification ID of newly created notification
     ASSUMPTION that the achievement has been fulfilled
