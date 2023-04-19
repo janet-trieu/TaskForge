@@ -640,7 +640,7 @@ def flask_get_user_workload():
     """
     Returns workload of a user for a certain project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_user_workload(uid))
 
 @app.route("/workload/update_user_availability", methods=["POST"])
@@ -665,7 +665,7 @@ def flask_get_availability_ratio():
     """
     Returns availability ratio of a user in a certain project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_availability_ratio(uid))
 
 @app.route("/workload/calculate_supply_demand", methods=["GET"])
@@ -673,7 +673,7 @@ def flask_calculate_supply_demand():
     """
     Calculates and adds snd into a project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(calculate_supply_demand(uid), indent=4, sort_keys=True, default=str)
 
 @app.route("/workload/get_supply_demand", methods=["GET"])
@@ -681,7 +681,7 @@ def flask_get_supply_and_demand():
     """
     Returns snd list for a project
     """
-    uid = request.args.get("uid")
+    uid = request.headers.get("Authorization")
     return dumps(get_supply_and_demand(uid))
     
 @app.route("/subtasks/get_all", methods=["GET"])
