@@ -79,3 +79,14 @@ There was no real trouble with this week except for communicating with my team a
 The actual implementation of the functions have not been finished yet. This does not set back the project by anything as the sprint is 2 weeks and it is relatively easy to finish in the next upcoming week.
 
 Finishing reputation is planned to be finished for the next period.
+
+Week 9
+Finished the implementation of reputation was planned for this period and helping start the report and planning the demo.
+
+I finished the entirety of the reputation implentation including the tests. Further also bugfixed the implementation for sprint 2 related functions for cohesion between backend and frontend, especially subtasks and taskboard. I also helped plan my part in the demonstration with the functions I implemented.
+
+No real problems with sprint 3 but bugfixing with subtasks and planning how it should be implemented on the frontend was annoying. We ended up communicating on how to proceed with a clear goal and ended up meeting those goals. 
+
+No major setbacks due to this.
+
+Finishing the report is planned.
