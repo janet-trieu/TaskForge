@@ -19,6 +19,8 @@ from .connections import *
 from .classes import *
 from .achievement import *
 from .taskboard import *
+from .epics import delete_epic
+from .tasks import delete_task
 
 db = firestore.client()
 

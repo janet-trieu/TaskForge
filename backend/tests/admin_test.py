@@ -1,6 +1,7 @@
 from firebase_admin import  auth
 from src.projmaster import create_project
-from src.taskboard import create_task, create_subtask
+from src.tasks import create_task
+from src.subtasks import create_subtask
 from src.test_helpers import reset_database
 
 # from src.profile_page import *
