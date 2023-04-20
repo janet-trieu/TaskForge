@@ -67,3 +67,182 @@ Start working on the project, pushed back til after completion of proposal
 Complete proposal.
 Begin working on implementation
 Research how to integrate Firestore and Firebase Authentication.
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 4 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish and submit the proposal
+Start planning the project design
+Start implementation of sprint 1 features
+
+# What was finished #
+
+Proposal was finished and submitted
+Planning of project design
+Most frontend implementation for sprint 1 features
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Lack of time for sprint 1, there was a lot of setup for frontend and as the only frontend person it was hard to complete on time
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+N/A
+
+# What is planned for the next period (e.g., next week) #
+
+Finish sprint 1 frontend and demo
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 5 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 1 frontend and demo
+
+# What was finished #
+
+Most of sprint 1 frontend
+Demo
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Lack of time for sprint 1, there was a lot of setup for frontend and as the only frontend person it was hard to complete on time
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+Some frontend sprint 1 functionality was not finished due to lack of time, this delayed the completion of sprint 1 on the frontend and reduced the amount of time that could be spent on sprint 2 frontend
+We will have a second person (Janet) assist with frontend from sprint 2 onward to ensure this does not happen again
+
+# What is planned for the next period (e.g., next week) #
+
+Finish sprint 1 frontend implementation, begin sprint 2 frontend
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 6 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 1 frontend implementation, begin sprint 2 frontend
+
+# What was finished #
+
+Sprint 2 frontend
+Parts of sprint 2 frontend
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Time management
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+N/A
+
+# What is planned for the next period (e.g., next week) #
+
+Finsish sprint 2 frontend
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 7 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 2 frontend
+
+# What was finished #
+
+Most of sprint 2 frontend
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Time management
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+Some sprint 2 frontend implementation, wasnt finished due to lack of time, pushed back the finishing of sprint 2 slightly, to fix Janet is working on more frontend for sprint 3
+
+# What is planned for the next period (e.g., next week) #
+
+Finish sprint 2 frontend, begin sprint 3 frontend
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 8 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 2 frontend, begin sprint 3 frontend
+
+# What was finished #
+
+Most sprint 2 frontend
+Some sprint 3 frontend
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Time management
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+N/A
+
+# What is planned for the next period (e.g., next week) #
+
+Finish sprint 2 and sprint 3 frontend
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 9 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 2 and sprint 3 frontend
+
+# What was finished #
+
+Sprint 2 frontend
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Time management
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+Sprint 3 frontend, due to lack of time, this should not really effect overall progress as i plan to complete it by the final demo, no adjustments needed
+
+# What is planned for the next period (e.g., next week) #
+
+Finish sprint 3 implementation
+Start and finish final report
+
+-----------------------------------------------------------------------------------------------------------
+
+### Week 10 ###
+
+# What was planned for the period since the last work diary entry #
+
+Finish sprint 3 implementation
+Start and finish final report
+
+# What was finished #
+
+Sprint 3 implementation
+final report
+
+# What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work) #
+
+Time management
+
+# What was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered #
+
+N/A
+
+# What is planned for the next period (e.g., next week) #
+
+N/A
