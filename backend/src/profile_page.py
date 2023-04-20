@@ -7,6 +7,7 @@ from .global_counters import *
 from .classes import *
 from .error import *
 from .notifications import *
+from .helper import make_admin
 
 db = firestore.client()
 
@@ -47,6 +48,8 @@ def create_user_email(email, password, display_name):
             print("Invalid email address")
     else:   
         create_user_firestore(user.uid)
+        if (get_curr_tuid() == 0):
+            make_admin(user.uid)
         update_tuid()
         print('Sucessfully created new user: {0}'.format(user.uid))
         return user.uid
