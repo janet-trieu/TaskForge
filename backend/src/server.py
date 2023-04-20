@@ -124,8 +124,9 @@ def admin_give_admin():
     give_admin flask
     """
     data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(give_admin(uid_user, data["uid_admin"]))
+    uid_admin = request.headers.get('Authorization')
+    uid_user = auth.get_user_by_email(data["uid_user"]).uid
+    return dumps(give_admin(uid_admin, uid_user))
 
 @app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
@@ -133,8 +134,9 @@ def admin_ban_user():
     ban_user flask
     """
     data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(ban_user(uid_user, data["uid_admin"]))
+    uid_admin = request.headers.get('Authorization')
+    uid_user = auth.get_user_by_email(data["uid_user"]).uid
+    return dumps(ban_user(uid_admin, uid_user))
     
 @app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
@@ -142,8 +144,9 @@ def admin_unban_user():
     unban_user flask
     """
     data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(unban_user(uid_user, data["uid_admin"]))
+    uid_admin = request.headers.get('Authorization')
+    uid_user = auth.get_user_by_email(data["uid_user"]).uid
+    return dumps(unban_user(uid_admin, uid_user))
     
 @app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
@@ -151,8 +154,9 @@ def admin_remove_user():
     remove_user flask
     """
     data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(remove_user(uid_user, data["uid_admin"]))
+    uid_admin = request.headers.get('Authorization')
+    uid_user = auth.get_user_by_email(data["uid_user"]).uid
+    return dumps(remove_user(uid_admin, uid_user))
 
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])

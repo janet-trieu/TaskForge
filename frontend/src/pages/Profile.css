@@ -2,6 +2,10 @@
     padding: 2.5%;
 }
 
+.profile-box-content-task {
+    padding: 2.5%;
+}
+
 .profile-box-header {
     display: flex;
     align-items: center;

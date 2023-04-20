@@ -166,6 +166,8 @@ def create_task(uid, pid, eid, assignees, title, description, deadline, workload
     
     if (not isinstance(workload, (str, int))):
         workload = 0
+    if workload == "":
+        workload = 0
     
     task = Task(value, pid, eid, "", [], title, description, deadline, workload, priority, "Not Started", [], [], False, "")
     task_ref.document(str(value)).set(task.to_dict())
@@ -887,6 +889,8 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError('priority is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'priority': priority})
+    if workload == "":
+        workload = 0
     change_task_status(uid, tid, status)
     flag_task(uid, tid, flagged)
 
