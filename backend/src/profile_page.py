@@ -466,7 +466,12 @@ def create_user_firestore(uid):
 
     # add the user into firestore db
     users_ref.document(uid).set(user.to_dict())
-
+    
+    create_user_firestore(uid)
+    if (get_curr_tuid() == 0):
+        make_admin(uid)
+    update_tuid()
+    
     # Add welcome notification to new user
     notification_welcome(uid)
 
