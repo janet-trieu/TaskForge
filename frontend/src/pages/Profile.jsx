@@ -26,6 +26,7 @@ const Profile = ({ firebaseApp }) => {
   const [open, setOpen] = useState(false);
   const [avaOpen, setAvaOpen] = useState(false);
   const [hideAchievements, setHideAchievements] = useState();
+  const [repVisibility, setRepVisibility] = useState();
   const [reviews, setReviews] = useState();
   const handleOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
@@ -113,18 +114,37 @@ const Profile = ({ firebaseApp }) => {
   }
 
   const checkHideVisibility = async () => {
-    let uid = firebaseApp.auth().currentUser.uid
+    let uid = firebaseApp.auth().currentUser.uid;
+    if (location.pathname === "/profile") {
+      setHideAchievements(false);
+      return;
+    }
     if (location.pathname !== "/profile") uid = location.pathname.split('/')[2];
 
-    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
-    if (data.error) alert(data.error);
-    if (data === true && !isUser) setHideAchievements(true);
+    const achData = await makeRequest(`/achievements/get_hide_visibility?uid=${uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    if (achData.error) alert(achData.error);
+    if (achData === true && !isUser) setHideAchievements(true);
     else setHideAchievements(false);
   };
+
+  const checkRepVisibility = async () => {
+    let uid = firebaseApp.auth().currentUser.uid;
+    if (location.pathname === "/profile") {
+      setRepVisibility(true);
+      return;
+    }
+    if (location.pathname !== "/profile") uid = location.pathname.split('/')[2];
+
+    const repData = await makeRequest(`/reputation/get_visibility?uid=${uid}`, 'GET', null, firebaseApp.auth().currentUser.uid);
+    if (repData.error) alert(repData.error);
+    if (repData === false && !location.pathname !== "/profile") setRepVisibility(false);
+    else setRepVisibility(true);
+  }
 
   useEffect(() => {
     getInformation();
     checkHideVisibility();
+    checkRepVisibility();
   }, []);
 
   return (
@@ -157,8 +177,8 @@ const Profile = ({ firebaseApp }) => {
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={taskIcon} /></div>
                 <div className='profile-box-header-title'>Assigned Tasks</div>
-                </div>
-                <button onClick={() => navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}>View Assigned Task List</button>
+              </div>
+              <button onClick={() => navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}>View Assigned Task List</button>
               <div>
               </div>
             </div>
@@ -187,22 +207,24 @@ const Profile = ({ firebaseApp }) => {
           </div>
         </div>
         <div className="profile-row">
-          <div className='profile-box' onClick={() => navigate(location.pathname === "/profile" ? "/reputation" : `/reputation/${location.pathname.split('/')[2]}`)}>
-            <div className="profile-box-content">
-              <div className='profile-box-header'>
-                <div className='profile-box-header-icon'><img src={starIcon} /></div>
-                <div className='profile-box-header-title'>Reputation</div>
-              </div>
-              <div id="profile-reputation-box">
-                <div>
-                  <div>Communication</div>
-                  <div>Time Management</div>
-                  <div>Task Quality</div>
+          <div className={repVisibility ? "" : "hide"}>
+            <div className='profile-box' onClick={() => navigate(location.pathname === "/profile" ? "/reputation" : `/reputation/${location.pathname.split('/')[2]}`)}>
+              <div className="profile-box-content">
+                <div className='profile-box-header'>
+                  <div className='profile-box-header-icon'><img src={starIcon} /></div>
+                  <div className='profile-box-header-title'>Reputation</div>
                 </div>
-                <div>
-                  <div>{reviews[0]}</div>
-                  <div>{reviews[1]}</div>
-                  <div>{reviews[2]}</div>
+                <div id="profile-reputation-box">
+                  <div>
+                    <div>Communication</div>
+                    <div>Time Management</div>
+                    <div>Task Quality</div>
+                  </div>
+                  <div>
+                    <div>{reviews[0]}</div>
+                    <div>{reviews[1]}</div>
+                    <div>{reviews[2]}</div>
+                  </div>
                 </div>
               </div>
             </div>

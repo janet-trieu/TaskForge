@@ -622,6 +622,11 @@ def flask_toggle_reputation_visibility():
     data = request.get_json()
     return dumps(change_review_visibility(uid, data["visibility"]))
 
+@app.route("/reputation/get_visibility", methods=["GET"])
+def flask_get_reputation_visibility():
+    uid = request.args.get("uid")
+    return dumps(get_review_visibility(uid))
+
 @app.route("/reputation/update_review", methods=["POST"])
 def flask_update_review():
     reviewer_uid = request.headers.get("Authorization")
