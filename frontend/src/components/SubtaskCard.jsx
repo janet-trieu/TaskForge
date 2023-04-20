@@ -3,7 +3,7 @@ import { makeRequest } from "../helpers";
 
 const SubtaskCard = (props) => {
 
-  const assignees = props.subtask.assignees !== "" ? props.subtask.assignees.join("\n") : "";
+  const assignees = props.subtask.assignees && props.subtask.assignees !== "" ? props.subtask.assignees.join("\n") : "";
 
   const handleSubmit = (event) => {
     event.preventDefault();

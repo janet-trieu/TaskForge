@@ -27,7 +27,7 @@ const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       const newSubtasks = props.subtasks;
-      newSubtasks.unshift(data);
+      newSubtasks.push(data);
       props.setSubtasks(newSubtasks);
       props.handleClose();
     }

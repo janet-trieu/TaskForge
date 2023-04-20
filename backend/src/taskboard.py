@@ -386,17 +386,7 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
     task_ref.update({'subtasks': project_subtasks})
     update_stid()
 
-    return {
-        "stid": value,
-        "title": title,
-        "deadline": deadline,
-        "priority": priority,
-        "status": status,
-        "assignee_emails": assignees,
-        "flagged": False,
-        "description": description,
-        "workload": workload
-    }
+    return subtask.to_dict()
 
 ### ========= Get Subtask Ref ========= ###
 def get_subtask_ref(stid):
