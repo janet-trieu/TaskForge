@@ -185,7 +185,11 @@ def create_admin(uid):
     }
 
     db.collection('users').document(uid).set(data)
-    
+
+def make_admin(uid):
+    user_ref = db.collection('users').document(uid)
+    user_ref.update({"is_admin" : True})
+
 ############################################################
 #                       Storage                            #
 ############################################################
