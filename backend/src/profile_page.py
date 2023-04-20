@@ -141,17 +141,17 @@ def update_photo(uid, new_photo_url):
     Returns:
         None
     """
-    # user_ref = db.collection("users").document(uid)
-    # user_ref.update({"picture": new_photo_url})
-    try:
-        user = auth.get_user(uid)
-        user = auth.update_user({"photo_url": new_photo_url})
-    except:
-        print("Error occurred in trying to update user photo")
-        print(f"UID: {uid} | new_photo_url: {new_photo_url}")
-        print(f"this is user: {user.display_name}")
-    else:
-        print('Sucessfully updated user: {0}'.format(uid))
+    user_ref = db.collection("users").document(uid)
+    user_ref.update({"picture": new_photo_url})
+    # try:
+    #     user = auth.get_user(uid)
+    #     user = auth.update_user({"picture": new_photo_url})
+    # except:
+    #     print("Error occurred in trying to update user photo")
+    #     print(f"UID: {uid} | new_photo_url: {new_photo_url}")
+    #     print(f"this is user: {user.display_name}")
+    # else:
+    #     print('Sucessfully updated user: {0}'.format(uid))
 
 ### ========= Update Role ========= ###
 def update_role(uid, new_role):
@@ -303,7 +303,7 @@ def get_DOB(uid):
     return get_user_ref(uid).get("DOB")
 
 ### ========= Get Projects ========= ###
-def get_projects(uid): 
+def get_user_projects(uid): 
     """
     Gets projects of the User from firestore database
 
@@ -459,9 +459,10 @@ def create_user_firestore(uid):
         'visibility': True,
         'total_reviews_written': 0
     }
-    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False)
-    
-    print(users_ref.document(uid).set(user.to_dict()))
+    user = User(uid, value, "", "", "", False, False, [], [], [], [], [], [], reputation, 0, 0, 0, False, [], 5, [])
+
+    # add the user into firestore db
+    users_ref.document(uid).set(user.to_dict())
 
     # Add welcome notification to new user
     notification_welcome(uid)

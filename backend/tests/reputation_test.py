@@ -10,7 +10,7 @@ from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
 from src.reputation import *
-from src.proj_master import *
+from src.projmaster import *
 from src.test_helpers import add_tm_to_project
 from datetime import datetime, time
 
@@ -31,15 +31,14 @@ uid1 = auth.get_user_by_email("reputationtest1@gmail.com").uid
 uid2 = auth.get_user_by_email("reputationtest2@gmail.com").uid
 uid3 = auth.get_user_by_email("reputationtest3@gmail.com").uid
 
-pid1 = create_project(str(uid1), "project_1", "project_1", "", None, "")
-pid2 = create_project(str(uid1), "project_2", "project_2", "", None, "")
+pid1 = create_project(str(uid1), "project_1", "project_1", None, None)
+pid2 = create_project(str(uid1), "project_2", "project_2", None, None)
 add_tm_to_project(pid1, uid2)
 update_project(pid1, uid1, {"status": "Completed"})
 add_tm_to_project(pid2, uid2)
 
 def test_datetime():
     now = datetime.now()
-    print(now.strftime("%d/%m/%Y"))
     return
 
 
@@ -100,7 +99,6 @@ def test_valid_view_own_view():
     change_review_visibility(uid2, True)
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid2, uid2)
-    print(reviews)
     delete_review(uid1, uid2, pid1)
 
 # Test: Valid View, own view, off visibility
@@ -109,7 +107,6 @@ def test_valid_view_own_view_visibility_off():
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid2, uid2)
     assert reviews != None
-    print(reviews)
     delete_review(uid1, uid2, pid1)
     return
 
@@ -118,7 +115,6 @@ def test_valid_view_other_visibility_on():
     change_review_visibility(uid2, True)
     write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
     reviews = view_reviews(uid1, uid2)
-    print(reviews)
     delete_review(uid1, uid2, pid1)
 
 # Test: Valid View, view other, visbiility off, show nothing
@@ -143,3 +139,11 @@ def test_number_of_reviews_written():
     reviews = get_number_of_reviews_written(uid1)
     assert reviews == 1
     delete_review(uid1, uid2, pid1)
+
+# Test: Update
+def test_update_review():
+    change_review_visibility(uid2, True)
+    write_review(uid1, uid2, pid1, "5", "5", "5", "Very good")
+    update_review(uid1, uid2, pid1, "5", "4", "5", "Very good")
+    reviews = view_reviews(uid2, uid2)
+    delete_review(uid1, uid2, pid1)    

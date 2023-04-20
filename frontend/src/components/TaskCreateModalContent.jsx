@@ -11,7 +11,7 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const assigneesValue = event.target.assignees.value;
-    const assignees = assigneesValue === [""] ? assigneesValue.split(", ") : [];
+    const assignees = assigneesValue ? assigneesValue.split(", ") : [];
     let eid = null;
     for (const epic of props.epics) {
       if (epic.title === event.target.epic.value) {eid = epic.eid};
@@ -35,6 +35,9 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       // insert task to board??
+      const newTasks = props.tasks;
+      newTasks[body.status].unshift(data);
+      props.setTasks(newTasks);
       props.handleClose();
     }
   }

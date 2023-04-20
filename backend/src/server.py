@@ -1,26 +1,26 @@
 from json import dumps
 from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
-import os
 from flask_mail import Mail, Message
+import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
-from waitress import serve
+# from waitress import serve
 
 from.achievement import *
 from .authentication import *
 from .admin import *
-from .proj_master import *
+from .projmaster import *
 from .profile_page import *
 from .projects import *
 from .connections import *
 from .taskboard import *
 from .tasklist import *
 from .helper import *
+from .reputation import *
 
 def defaultHandler(err):
     response = err.get_response()
-    print('response', err, err.get_response())
     response.data = dumps({
         "code": err.code,
         "name": "System Error",
@@ -73,7 +73,8 @@ def user_details():
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
         connections = len(get_connection_list(uid))
-        return dumps({"display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": int(0)}), 200
+        rating = get_avg_overall_profile(uid)
+        return dumps({"uid": uid, "display_name": display_name, "email": email, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": rating}), 200
 
 @app.route('/profile/update', methods=['PUT'])
 def profile_update():
@@ -124,7 +125,7 @@ def admin_give_admin():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(give_admin(data["uid_admin"], uid_user))
+    return dumps(give_admin(uid_user, data["uid_admin"]))
 
 @app.route("/admin/ban_user", methods=["POST"])
 def admin_ban_user():
@@ -133,7 +134,7 @@ def admin_ban_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(ban_user(data["uid_admin"], uid_user))
+    return dumps(ban_user(uid_user, data["uid_admin"]))
     
 @app.route("/admin/unban_user", methods=["POST"])
 def admin_unban_user():
@@ -142,7 +143,7 @@ def admin_unban_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(unban_user(data["uid_admin"], uid_user))
+    return dumps(unban_user(uid_user, data["uid_admin"]))
     
 @app.route("/admin/remove_user", methods=["POST"])
 def admin_remove_user():
@@ -151,24 +152,14 @@ def admin_remove_user():
     """
     data = request.get_json()
     uid_user = request.headers.get('Authorization')
-    return dumps(remove_user(data["uid_admin"], uid_user))
-
-@app.route("/admin/readd_user", methods=["POST"])
-def admin_readd_user():
-    """
-    readd_user flask
-    """
-    data = request.get_json()
-    uid_user = request.headers.get('Authorization')
-    return dumps(readd_user(data["uid_admin"], uid_user))
-
+    return dumps(remove_user(uid_user, data["uid_admin"]))
 
 #PROJECT MASTER ROUTES
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    pid = create_project(uid, data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
+    pid = create_project(uid, data["name"], data["description"], data["due_date"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])
@@ -232,6 +223,7 @@ def flask_delete_project():
     return dumps(res)
 
 # NOTIFICATIONS ROUTES #
+
 @app.route('/notifications/get', methods=['GET'])
 def flask_get_notifications():
     uid = request.headers.get('Authorization')
@@ -254,6 +246,11 @@ def flask_notification_connection_request():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     return dumps(notification_connection_request(data["user_email"], uid))
+
+@app.route('/notifications/get_outgoing_requests', methods=['GET'])
+def flask_get_outgoing_requests():
+    uid = request.headers.get('Authorization')
+    return dumps(get_outgoing_requests(uid))
 
 # PROJECT MANAGEMENT ROUTES #
 @app.route("/projects/view", methods=["GET"])
@@ -319,6 +316,7 @@ def flask_get_connected_taskmasters():
 @app.route('/connections/details', methods=['GET'])
 def connection_details():
     # name, role, photo_url
+    curr_uid = request.headers.get("Authorization")
     uid = request.args.get("uid")
     if is_valid_user(uid) == False:
         return Response(status=400)
@@ -327,7 +325,9 @@ def connection_details():
         photo_url = str(get_photo(uid))
         role = str(get_role(uid))
         connections = len(get_connection_list(uid))
-        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections)})
+        rating = get_avg_overall_conn(curr_uid, uid)
+        email = str(get_email(uid))
+        return dumps({"display_name": display_name, "role": role, "photo_url": photo_url, "num_connections": str(connections), "rating": rating, "email": email})
 
 @app.route('/connections/remove_taskmaster', methods=['POST'])
 def flask_remove_connected_taskmaster():
@@ -350,28 +350,33 @@ def flask_search_taskmasters():
 # TASK MANAGEMENT #	
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
+    """
+    Flask upload file to storage
+    """
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(f"src/{filename}")
-    return dumps('File Uploaded')
+    return dumps(filename)
     
 @app.route('/upload_file2', methods = ['POST'])
 def flask_upload_file2():
+    """
+    Flask upload file details to firestore
+    """
     uid = request.headers.get('Authorization')
     data = request.get_json()
-    upload_file(uid, data['file'], data["destination_name"], data["tid"])
-    return dumps('File Saved')
+    data = upload_file(uid, data['file'], data["destination_name"], data["tid"])
+    return dumps(data, indent=4, sort_keys=True, default=str)
 
-@app.route('/download_file', methods = ['GET'])
-def flask_download_file():
+@app.route('/get_file_link', methods = ['GET'])
+def flask_get_file_link():
+    """
+    Flask get link to file on storage
+    """
     uid = request.headers.get('Authorization')
+    tid = request.args.get("tid")
     fileName = request.args.get("fileName")
-    # fileName = request.get_json()['fileName']
-    download_file(uid, fileName)
-    newName = re.sub('.*' + '/', '', fileName) #test.jpg
-    send_from_directory(app.root_path, newName)
-    os.remove(f"{app.root_path}/{newName}")
-    return dumps('File Sent')
+    return dumps(get_file_link(uid, tid, fileName))
 
 # CREATE #
 @app.route("/epic/create", methods=["POST"])
@@ -399,7 +404,8 @@ def flask_create_subtask():
     Creates a subtask
     """
     data = request.get_json()
-    return dumps(create_subtask(data["tid"], data["pid"], data["eid"], data["assignees"], data["title"], data["description"], data["deadline"],
+    uid = request.headers.get("Authorization")
+    return dumps(create_subtask(uid, data["tid"], int(data["pid"]), data["assignees"], data["title"], data["description"], data["deadline"],
                           data["workload"], data["priority"], data["status"]))
 
 # DETAILS #
@@ -466,7 +472,7 @@ def flask_task_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_task(uid, data["tid"], int(data["eid"]), 
+    return dumps(update_task(uid, data["tid"], data["eid"], 
                              data["title"], data["description"], data["deadline"], 
                              data["workload"], data["priority"], data["status"], data["flagged"]))
 
@@ -477,7 +483,7 @@ def flask_subtask_update():
     """
     data = request.get_json()
     uid = request.headers.get("Authorization")
-    return dumps(update_subtask(uid, data["stid"], data["eid"], data["assignees"], 
+    return dumps(update_subtask(uid, data["stid"], data["assignees"], 
                                 data["title"], data["description"], data["deadline"], 
                                 data["workload"], data["priority"], data["status"]))
 
@@ -499,7 +505,7 @@ def flask_taskboard_show():
     uid = request.headers.get("Authorization")
     pid = request.args.get("pid")
     hidden = request.args.get("hidden")
-    return dumps(get_taskboard(uid, int(pid), bool(hidden)))
+    return dumps(get_taskboard(uid, int(pid), bool(hidden)), indent=4, sort_keys=True, default=str)
 
 # Search task in project
 @app.route("/taskboard/search", methods=["GET"])
@@ -555,11 +561,132 @@ def flask_toggle_achievement_visibility():
     data = request.get_json()
     return dumps(toggle_achievement_visibility(uid, data["action"]))
 
+@app.route("/achievements/get_hide_visibility", methods=["GET"])
+def flask_check_achievement_visibility():
+    uid = request.args.get("uid")
+
+    return dumps(check_achievement_visibility(uid))
+
 @app.route("/achievements/share", methods=["POST"])
 def flask_share_achievement():
+    sender_uid = request.headers.get('Authorization')
+    data = request.get_json()
+    uid_list = []
+    for email in data["receiver_emails"]:
+        try:
+            uid = auth.get_user_by_email(email).uid
+        except auth.UserNotFoundError:
+            return Response(
+                f"Specified email {email} does not exist",
+                status=400
+            )
+        else:
+            uid_list.append(uid)
+    return dumps(share_achievement(sender_uid, uid_list, data["aid"]))
+
+@app.route("/achievements/locked", methods=["GET"])
+def flask_locked_achievement():
+    uid = request.args.get("uid")
+
+    return dumps(list_unachieved(uid))
+
+@app.route('/achievements/name', methods=['GET'])
+def flask_get_name_achievement():
+    uid = request.args.get("uid")
+    display_name = str(get_display_name(uid))
+    return dumps({"display_name": display_name})
+
+# Reputation
+@app.route("/reputation/add_review", methods=["POST"])
+def flask_add_review():
+    reviewer_uid = request.headers.get("Authorization")
+    data = request.get_json()
+    
+    return dumps(write_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                              data["communication"], data["time_management"], 
+                              data["task_quality"], data["comment"]))
+
+@app.route("/reputation/view_reputation", methods=["GET"])
+def flask_view_reputation():
+    viewer_uid = request.headers.get("Authorization")
+    viewee_uid = request.args.get("viewee_uid")
+    return dumps(view_reviews(viewer_uid, viewee_uid))
+
+@app.route("/reputation/toggle_visibility", methods=["POST"])
+def flask_toggle_reputation_visibility():
     uid = request.headers.get("Authorization")
     data = request.get_json()
-    return dumps(share_achievement(uid, data["receiver_uids"], data["aid"]))
+    return dumps(change_review_visibility(uid, data["visibility"]))
+
+@app.route("/reputation/update_review", methods=["POST"])
+def flask_update_review():
+    reviewer_uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(update_review(reviewer_uid, data["reviewee_uid"], data["pid"], 
+                               data["communication"], data["time_management"], 
+                               data["task_quality"], data["comment"]))
+
+@app.route("/reputation/get_avg_reviews", methods=['GET'])
+def flask_get_avg_reviews():
+    viewer_uid = request.headers.get("Authorization")
+    viewee_uid = request.args.get("viewee_uid")
+    return dumps(get_avg_reviews(viewer_uid, viewee_uid))
+
+#Workload
+@app.route("/workload/get_user_workload", methods=["GET"])
+def flask_get_user_workload():
+    """
+    Returns workload of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_user_workload(uid))
+
+@app.route("/workload/update_user_availability", methods=["POST"])
+def flask_update_user_availability():
+    """
+    Updates availability of a user for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    data = request.get_json()
+    return dumps(update_user_availability(uid, data["availability"]))
+
+@app.route("/workload/get_availability", methods=["GET"])
+def flask_get_availability():
+    """
+    Returns users availability for a certain project
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_availability(uid))
+
+@app.route("/workload/get_availability_ratio", methods=["GET"])
+def flask_get_availability_ratio():
+    """
+    Returns availability ratio of a user in a certain project
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_availability_ratio(uid))
+
+@app.route("/workload/calculate_supply_demand", methods=["GET"])
+def flask_calculate_supply_demand():
+    """
+    Calculates and adds snd into a project
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(calculate_supply_demand(uid), indent=4, sort_keys=True, default=str)
+
+@app.route("/workload/get_supply_demand", methods=["GET"])
+def flask_get_supply_and_demand():
+    """
+    Returns snd list for a project
+    """
+    uid = request.headers.get("Authorization")
+    return dumps(get_supply_and_demand(uid))
+    
+@app.route("/subtasks/get_all", methods=["GET"])
+def flask_subtask_get_all():
+    uid = request.headers.get("Authorization")
+    tid = int(request.args.get('tid'))
+    return dumps(get_all_subtasks(uid, tid))
 
 # if __name__ == "__main__":
 #     # app.run(port=8000, debug=True)

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import './SettingsModal.css';
 
-const SettingsModalConfirm = ({ firebaseApp, title, onClose, action, warning }) => {
+const SettingsModalConfirm = forwardRef(({ firebaseApp, title, onClose, action, warning }, ref) => {
   const handleConfirm = async (action) => {
     switch (action) {
       case 'Reset Password':
@@ -31,6 +31,6 @@ const SettingsModalConfirm = ({ firebaseApp, title, onClose, action, warning }) 
       </div>
     </>
   )
-}
+});
 
 export default SettingsModalConfirm;

@@ -1,5 +1,11 @@
 '''
 File to store the all the classes
+ - User class
+ - Epic class
+ - Task class
+ - Comments class
+ - Review class
+ - Project class
 '''
 
 from firebase_admin import firestore
@@ -17,17 +23,24 @@ class User(object):
         DOB (str): date of birth of the suer
         is_admin (boolean): admin status of the user
         is_banned (boolean): ban status of the user
-        is_removed (boolean): removal status of the user
         achievements (list): list of achievements the user has obtained
         projects (list): list of project ids that the user has joined
         pinned_projects (list): list of project ids that the user has pinned
-        epics (list): list of epic ids that the user has been assigned
         tasks (list): list of tasks ids that the user has been assigned
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
         reputation (dict): a dict of reviews and averaged scores
+        workload (int)
+        num_projs_completed (int)
+        num_tasks_completed (int)
+        hide_achievements (boolean)
+        outgoing_requests (list)
+        availability (float): float of days available over the next 5 days
+        snd (list)
     """
-    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, hide_achievements):
+    def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, 
+                tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, 
+                hide_achievements, outgoing_requests, availability, snd):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -46,6 +59,9 @@ class User(object):
         self.num_projs_completed = num_projs_completed
         self.num_tasks_completed = num_tasks_completed
         self.hide_achievements = hide_achievements
+        self.outgoing_requests = outgoing_requests
+        self.availability = availability
+        self.snd = snd
         
     def to_dict(self):
         return {
@@ -66,7 +82,10 @@ class User(object):
             "workload": self.workload,
             "num_projs_completed": self.num_projs_completed,
             "num_tasks_completed": self.num_tasks_completed,
-            "hide_achievements": self.hide_achievements
+            "hide_achievements": self.hide_achievements,
+            "outgoing_requests":self.outgoing_requests,
+            "availability": self.availability,
+            "snd": self.snd
         }
 
 class Epic():
@@ -241,8 +260,9 @@ class Review():
         comment (str): 
     """
 
-    def __init__(self, reviewer_uid, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
+    def __init__(self, reviewer_uid, reviewer_name, reviewee_uid, pid, date, communication, time_management, task_quality, comment):
         self.reviewer_uid = reviewer_uid
+        self.reviewer_name = reviewer_name
         self.reviewee_uid = reviewee_uid
         self.pid = pid
         self.date = date
@@ -254,6 +274,7 @@ class Review():
     def to_dict(self):
         return {
             "reviewer_uid": self.reviewer_uid,
+            "reviewer_name": self.reviewer_name,
             "reviewee_uid": self.reviewee_uid,
             "pid": self.pid,
             "date": self.date,
@@ -268,22 +289,32 @@ class Project():
     A Project class that will be stored in firestore.
 
     Attributes:
-     - 
-     - 
+        pid (int): positive integer representing a project id
+        uid (str): project master uid
+        name (str): project name
+        description (str): project description
+        status (str): project status
+        due_date (str): format: dd/mm/yyyy, project's due date
+        picture (str): project logo
+        project_members (list): list of project member's uids
+        epics (list): list of epics in the project
+        tasks (list of dictionaries): all the tasks in the project
+        subtasks (list): list of subtasks in the project
+        snd (): TODO
     """
-    def __init__(self, pid, uid, name, description, status, due_date, team_strength, picture, project_members, epics, tasks, subtasks):
+    def __init__(self, pid, uid, name, description, status, due_date, picture, project_members, epics, tasks, subtasks, snd):
         self.pid = pid
         self.uid = uid
         self.name = name
         self.description = description
         self.status = status
         self.due_date = due_date
-        self.team_strength = team_strength
         self.picture = picture
         self.project_members = project_members
         self.epics = epics
         self.tasks = tasks
         self.subtasks = subtasks
+        self.snd = snd
     
     def to_dict(self):
         return {
@@ -293,12 +324,12 @@ class Project():
             "description": self.description,
             "status": self.status,
             "due_date": self.due_date,
-            "team_strength": self.team_strength,
             "picture": self.picture,
             "project_members": self.project_members,
             "epics": self.epics,
             "tasks": self.tasks,
-            "subtasks": self.subtasks
+            "subtasks": self.subtasks,
+            "snd": self.snd
         }
 
 def get_project(pid):
@@ -311,42 +342,12 @@ def get_project(pid):
         doc.get("description"),
         doc.get("status"),
         doc.get("due_date"),
-        doc.get("team_strength"),
         doc.get("picture"),
         doc.get("project_members"),
         doc.get("epics"),
         doc.get("tasks"),
-        doc.get("subtasks")
+        doc.get("subtasks"),
+        doc.get("snd")
     )
 
     return project.to_dict()
-
-# class Achievements(object):
-#     '''
-#     Class for achievements that will be stored in the firestore database
-
-#     Attributes:
-#      - uid (user id)
-#      - aid (achievement id)
-#      - title (achievement title)
-#      - description (achievement description)
-#      - icon
-#      - time acquired
-#     '''
-#     def __init__(self, uid, aid, title, description, icon, time_acquired):
-#         self.uid = uid
-#         self.aid = aid
-#         self.title = title
-#         self.description = description
-#         self.icon = icon
-#         self.time_acquired = time_acquired
-
-#     def to_dict(self):
-#         return {
-#             "uid": self.uid,
-#             "aid": self.aid,
-#             "title": self.title,
-#             "description": self.description,
-#             "icon": self.icon,
-#             "time_acquired": self.time_acquired
-#         }

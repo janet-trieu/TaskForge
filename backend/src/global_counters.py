@@ -1,7 +1,3 @@
-'''
-IMPORTANT: Frontend needs to ensure the documents 'total_projects', 'total_epics', 'total_tasks' and 'total_user' exist
-by calling init at the VERY START of the system's life
-'''
 from firebase_admin import firestore
 
 db = firestore.client()

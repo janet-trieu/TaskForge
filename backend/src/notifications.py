@@ -1,14 +1,23 @@
 '''
-Frontend notes: 
-- unread indicator + tab
-- clicking on the notification makes it read - change has_read to True
-- responding to responsive notifications makes it read - change has_read to True
-- responsive notifications have special message fields when the user 'accepts' or 'declines'
-    - so we dont have to worry about deleting the notification and the user remembers what they responded
-    - e.g. user presses accept to connection request. the notification text is changed from 'notification_msg' to 'accept_msg'
-TODO notes:
-- When task, reviews, achievements are implemented - this may need to be updated to suit the databases of them :)
-- ASSUMPTION should be covered by the function the notfiication is called in
+Feature: Notifications
+Functionalities:
+ - get_uid_from_email2()
+ - create_nid()
+ - is_connected()
+ - get_notifications()
+ - clear_notification()
+ - clear_all_notifications()
+ - notification_welcome()
+ - notification_connection_request()
+ - notification_project_invite()
+ - notification_assigned_task()
+ - notification_comment()
+ - notification_review()
+ - notification_achievement()
+ - notification_achievement_share()
+ - notification_leave_request()
+ - notification_accepted_request()
+ - notification_denied_request()
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
@@ -18,9 +27,25 @@ from .helper import *
 db = firestore.client()
 
 # ============ HELPERS ============ #
-def create_nid(uid, type):
+def get_uid_from_email2(email):
+    """
+    Gets uid of the User from auth database using email of the user
+    Args:
+        email (str): email of the user that can be found in auth database
+    Returns:
+        A string corresponding with the UID of the user found in the auth and firestore database
+    """
+    return auth.get_user_by_email(email).uid
 
-    # print(f"this is uid: {uid}")
+def create_nid(uid, type):
+    '''
+    Creates notification ID based on the type and how many currently exists
+    Args:
+        uid (str): User ID
+        type (str): Notification type
+    Returns:
+        nid (str): Notification ID
+    '''
     doc_dict = db.collection('notifications').document(uid).get().to_dict()
     if (doc_dict is None):
         count = 0
@@ -37,6 +62,12 @@ def create_nid(uid, type):
 
 def is_connected(uid1, uid2):
     '''
+    Helper to check if two users are connected
+    Args:
+        uid1 (str): User ID of first user
+        uid2 (str): User ID of second user
+    Returns:
+        (boolean): If users are connected
     Assume uids have already been checked as existing
     '''
     connections = db.collection('users').document(uid1).get().to_dict().get('connections')
@@ -44,7 +75,6 @@ def is_connected(uid1, uid2):
     if (uid2 in connections): return True
     return False
     
-
 # ============ FUNCTIONS ============ #
 def get_notifications(uid):
     '''
@@ -56,7 +86,7 @@ def get_notifications(uid):
     '''
     check_valid_uid(uid)
 
-    notf_data = db.collection('notifications').document(uid).get().to_dict()
+    notf_data = db.collection('notifications').document(str(uid)).get().to_dict()
 
     # Sort notification dictionaries by time_sent in descending order
     sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
@@ -121,6 +151,7 @@ def notification_connection_request(user_email, uid_sender):
         nid (string): Notification ID of newly created notification
     '''
     uid = auth.get_user_by_email(user_email).uid # get uid of requestee by email
+    if (uid == uid_sender): raise AccessError('Cant connect to yourself')
     check_valid_uid(uid_sender)
 
     if (is_connected(uid, uid_sender)): raise AccessError('Already connected')
@@ -141,6 +172,17 @@ def notification_connection_request(user_email, uid_sender):
     }
 
     db.collection("notifications").document(str(uid)).update(notification)
+
+    user_ref = db.collection('users').document(str(uid_sender))
+    outgoing = user_ref.get().get("outgoing_requests")
+    data = {
+        "time_sent": str(datetime.now()),
+        "nid": nid,
+        "uid_requesting": get_uid_from_email2(user_email),
+        "display_name": get_display_name(get_uid_from_email2(user_email))
+    }
+    outgoing.append(data)
+    user_ref.update({"outgoing_requests":outgoing})
     return nid
 
 def notification_project_invite(uid, uid_sender, pid):
@@ -243,13 +285,12 @@ def notification_comment(uid, uid_sender, pid, tid):
     db.collection("notifications").document(uid).update(notification)
     return nid
 
-def notification_review(uid, uid_sender, rid):
+def notification_review(uid, uid_sender):
     '''
     Creates and adds notification when a review is added to a user's profile.
     Args:
         uid (string): User being notified
         uid_sender (string): User who made review
-        rid (int): Review created
     Returns:
         nid (string): Notification ID of newly created notification
     ASSUMPTION that the users are connected(?)
@@ -263,7 +304,6 @@ def notification_review(uid, uid_sender, rid):
         nid : {
             "has_read": False,
             "notification_msg": f"{sender_name} has reviewed you.",
-            "rid": rid,
             "time_sent": str(datetime.now()),
             "type": notification_type,
             "uid_sender": uid_sender,
@@ -279,7 +319,7 @@ def notification_achievement(uid, aid):
     Creates and adds notification when an achievement has been completed.
     Args:
         uid (string): User being notified
-        achievement_str (string): Achievement that has been completed
+        aid (int): Achievement that has been completed
     Returns:
         nid (string): Notification ID of newly created notification
     ASSUMPTION that the achievement has been fulfilled
@@ -293,6 +333,7 @@ def notification_achievement(uid, aid):
     notification = {
         nid : {
             "achievement": title,
+            "aid": aid,
             "has_read": False,
             "notification_msg": f"You have earned the {title} achievement.",
             "time_sent": str(datetime.now()),
@@ -324,6 +365,7 @@ def notification_achievement_share(uid, receiver_uid, aid):
     notification = {
         nid : {
             "achievement": title,
+            "aid": aid,
             "has_read": False,
             "notification_msg": f"{achiever_name} has earned the {title} achievement.",
             "time_sent": str(datetime.now()),
@@ -394,6 +436,7 @@ def notification_accepted_request(uid, uid_sender):
         }
     }
 
+    from .achievement import check_achievement
     check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)

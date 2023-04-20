@@ -16,7 +16,7 @@ const ProjectCard = ({ name, description, status, picture, pid, isPinned, uid })
 
   const togglePin = async (event) => {
     event.stopPropagation();
-    const data = await makeRequest('/projects/pin', 'POST', { pid: pid, is_pinned: !pinned }, uid);
+    const data = await makeRequest('/projects/pin', 'POST', { pid: pid, action: pinned ? 1 : 0 }, uid);
     if (data.error) alert(alert.error);
     else setPinned(!pinned)
   }

@@ -7,7 +7,7 @@ from firebase_admin import auth
 
 from src.profile_page import *
 from src.notifications import *
-from src.proj_master import *
+from src.projmaster import *
 from src.global_counters import *
 from src.projects import *
 from src.taskboard import *
@@ -36,7 +36,7 @@ except AccessError:
 
 # Create project #
 try:
-    pid = create_project(user_id0, "Project Notification", "Description", None, None, None)
+    pid = create_project(user_id0, "Project Notification", "Description", None, None)
     invite_to_project(pid, user_id0, [user_id1])
 except:
     pid = get_pid('Project Notification')
@@ -142,10 +142,3 @@ def test_leave_request_notification():
     assert actual_notification.get('type') == 'leave_request'
     assert actual_notification.get('uid_sender') == user_id1
     assert actual_notification.get('nid') == nid
-
-# SPRINT 3 #
-def test_review_notification():
-    pass
-
-def test_achievement_notification():
-    pass

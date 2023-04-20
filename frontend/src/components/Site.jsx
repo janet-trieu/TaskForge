@@ -10,6 +10,9 @@ import Header from './Header.jsx';
 import Sidebar from './Sidebar.jsx';
 import ProjectBoardView from '../pages/ProjectBoardView.jsx';
 import ProjectTaskView from '../pages/ProjectTaskView.jsx';
+import Achievements from '../pages/Achievements.jsx';
+import Reputation from '../pages/Reputation.jsx';
+import SND from '../pages/SND.jsx';
 
 const Site = ({ firebaseApp }) => {
   return (
@@ -31,6 +34,12 @@ const Site = ({ firebaseApp }) => {
           <Route path='/profile/:uid' element={<Profile firebaseApp={firebaseApp} />} />
           <Route path='/connections' element={<Connections firebaseApp={firebaseApp} />} />
           <Route path='/settings' element={<Settings firebaseApp={firebaseApp} />} />
+          <Route path='/achievements' element={<Achievements firebaseApp={firebaseApp} />} />
+          <Route path='/achievements/:uid' element={<Achievements firebaseApp={firebaseApp} />} />
+          <Route path='/reputation' element={<Reputation firebaseApp={firebaseApp} />} />
+          <Route path='/reputation/:uid' element={<Reputation firebaseApp={firebaseApp} />} />
+          <Route path='/snd' element={<SND firebaseApp={firebaseApp} />} />
+          <Route path='/snd/:uid' element={<SND firebaseApp={firebaseApp} />} />
         </Routes>
       </div>
     </div>

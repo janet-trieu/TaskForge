@@ -10,7 +10,7 @@ from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
 from src.taskboard import *
-from src.proj_master import *
+from src.projmaster import *
 from src.test_helpers import add_tm_to_project
 
 # ============ SET UP ============ #
@@ -30,7 +30,7 @@ uid1 = auth.get_user_by_email("taskboardtest1@gmail.com").uid
 uid2 = auth.get_user_by_email("taskboardtest2@gmail.com").uid
 uid3 = auth.get_user_by_email("taskboardtest3@gmail.com").uid
 
-pid1 = create_project(str(uid1), "boobs", "butts", "", None, "")
+pid1 = create_project(str(uid1), "boobs", "butts", None, None)
 
 def test_create_epic():
     eid1 = create_epic(str(uid1), pid1, "Epic1", "Epic1 Description", "#ffa28e")
@@ -90,7 +90,6 @@ def test_show_taskboard_one_flag():
     assert task2 == {"tid": tid2, "pid": pid1, "eid": eid1, "assignees": [uid1], "subtasks": [], "title": "Task2", "description": "Task2 Description",
                      "deadline": "1679749200", "workload": None, "priority": None, "status": "Not Started", "comments": [], "flagged": True, "completed": ""}
     taskboard = get_taskboard(uid1, pid1, True)
-    print(taskboard)
     assert taskboard == {'Not Started': [{'tid': tid2, 'title': 'Task2', 'deadline': '1679749200', 'priority': None, 
                                           'status': 'Not Started', 'assignees': [uid1], 'epic': 'Epic1', 'flagged': True},
                                           {'tid': tid1, 'title': 'Task1', 'deadline': '1679749200', 'priority': None, 

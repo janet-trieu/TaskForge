@@ -17,6 +17,10 @@ from .classes import *
 
 db = firestore.client()
 
+############################################################
+#                Project Management Functions              #
+############################################################
+
 def view_project(pid, uid):
     '''
     Takes in project id, and a user id, to view the specified project
@@ -52,86 +56,24 @@ def view_project(pid, uid):
     else:
         is_pinned = False
 
+    project_member_names = []
+    for member in project["project_members"]:
+        project_member_names.append(get_display_name(member))
+
     return {
             "pid": pid,
+            "pm_uid": project["uid"],
             "name": project["name"],
             "description": project["description"],
             "status": project["status"],
             "due_date": project["due_date"],
-            "team_strength": project["team_strength"],
             "picture": project["picture"],
             "project_members": project["project_members"],
+            "project_member_names": project_member_names,
             "epics": extract_epics(pid),
             "tasks": extract_tasks(pid),
-            "is_pinned": is_pinned,
-            "uid": project["uid"]
+            "is_pinned": is_pinned
     }
-
-def extract_epics(pid):
-    '''
-    Helper function to extract the necessary epic details when viewing a project
-
-    Arguments:
-    - pid (project id)
-
-    Returns:
-    - epic ids, 
-    - epic titles, 
-    - epic colour
-    '''
-
-    project = get_project(pid)
-    epics = project["epics"]
-
-    return_list = []
-
-    for ep in epics:
-        return_dict = {}
-        epic_doc = db.collection("epics").document(str(ep)).get().to_dict()
-        return_dict = {
-            "eid": epic_doc.get("eid"),
-            "title": epic_doc.get("title"),
-            "colour": epic_doc.get("colour")
-        }
-        return_list.append(return_dict)
-
-    return return_list
-
-def extract_tasks(pid):
-    '''
-    Helper function to extract the necessary task details when viewing a project
-
-    Arguments:
-    - pid (project id)
-
-    Returns:
-    - epic id,
-    - task id,
-    - task title, 
-    - task status,
-    - task assignee
-    '''
-
-    project = get_project(pid)
-    tasks = project["tasks"]
-
-    return_list = []
-    for task_list in tasks:
-        for task in tasks[task_list]:
-            return_dict = {}
-            task_doc = db.collection("tasks").document(str(task)).get().to_dict()
-            return_dict = {
-                "eid": task_doc.get("eid"),
-                "tid": task_doc.get("tid"),
-                "title": task_doc.get("title"),
-                "status": task_doc.get("status"),
-                "assignee": task_doc.get("assignees"),
-                "flagged": task_doc.get("flagged"),
-                "deadline": task_doc.get("deadline")
-            }
-            return_list.append(return_dict)
-
-    return sort_tasks(return_list)
 
 def search_project(uid, query):
     '''
@@ -154,28 +96,26 @@ def search_project(uid, query):
 
     pinned_projects = get_pinned_projects(uid)
 
-    return_list = []
-
+    pinned_list = []
+    unpinned_list = []
     for pid in projects:
-        project = get_project(pid)
-        pm_uid = project["uid"]
+        pm_uid = db.collection("projects").document(str(pid)).get().get("uid")
+        name = db.collection("projects").document(str(pid)).get().get("name")
+        description = db.collection("projects").document(str(pid)).get().get("description")
         pm_name = get_display_name(str(pm_uid))
 
-        if pid in pinned_projects and (query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == ""):
-            return_list.append(get_project(pid))
-            print(f"Successfully added {project['name']} to list of search result")
+        if (query.lower() in name.lower() or query.lower() in description.lower() or query.lower() in pm_name.lower() or query == ""):
+            project = get_project(pid)
+            if pid in pinned_projects:
+                project["pinned"] = True
+                pinned_list.append(project)
+            else:
+                project["pinned"] = False
+                unpinned_list.append(project)
+            print(f"Successfully added {name} to list of search result")
 
-    for pid in projects:
-        project = get_project(pid)
-        pm_uid = project["uid"]
-        pm_name = get_display_name(str(pm_uid))
-
-        if query.lower() in project["name"].lower() or query.lower() in project["description"].lower() or query.lower() in pm_name.lower() or query == "":
-            if pid not in return_list:
-                return_list.append(get_project(pid))
-                print(f"Successfully added {project['name']} to list of search result")
-
-    return_list = list(filter(None, return_list))
+    #return_list = list(filter(None, return_list))
+    return_list = pinned_list + unpinned_list
 
     return return_list
 
@@ -222,7 +162,6 @@ def request_leave_project(pid, uid, msg):
     notification_leave_request(pm_uid, uid, pid)
 
     return 0
-
 
 def respond_project_invitation(pid, uid, accept):
     '''
@@ -355,6 +294,76 @@ def pin_project(pid, uid, action):
             user_ref.update({"pinned_projects": pinned_projects})
 
     return 0
+
+############################################################
+#                 Project Management Helpers               #
+############################################################
+
+def extract_epics(pid):
+    '''
+    Helper function to extract the necessary epic details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic ids, 
+    - epic titles, 
+    - epic colour
+    '''
+
+    project = get_project(pid)
+    epics = project["epics"]
+
+    return_list = []
+
+    for ep in epics:
+        return_dict = {}
+        epic_doc = db.collection("epics").document(str(ep)).get().to_dict()
+        return_dict = {
+            "eid": epic_doc.get("eid"),
+            "title": epic_doc.get("title"),
+            "colour": epic_doc.get("colour")
+        }
+        return_list.append(return_dict)
+
+    return return_list
+
+def extract_tasks(pid):
+    '''
+    Helper function to extract the necessary task details when viewing a project
+
+    Arguments:
+    - pid (project id)
+
+    Returns:
+    - epic id,
+    - task id,
+    - task title, 
+    - task status,
+    - task assignee
+    '''
+
+    project = get_project(pid)
+    tasks = project["tasks"]
+
+    return_list = []
+    for task_list in tasks:
+        for task in tasks[task_list]:
+            return_dict = {}
+            task_doc = db.collection("tasks").document(str(task)).get().to_dict()
+            return_dict = {
+                "eid": task_doc.get("eid"),
+                "tid": task_doc.get("tid"),
+                "title": task_doc.get("title"),
+                "status": task_doc.get("status"),
+                "assignee": task_doc.get("assignees"),
+                "flagged": task_doc.get("flagged"),
+                "deadline": task_doc.get("deadline")
+            }
+            return_list.append(return_dict)
+
+    return sort_tasks(return_list)
 
 def get_pinned_projects(uid):
     '''

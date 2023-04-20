@@ -22,6 +22,7 @@ const Auth = () => {
         if (authResult.additionalUserInfo.isNewUser) {
           makeRequest('/profile/create', 'PUT', null, firebase.auth().currentUser.uid)
         }
+        navigate("/profile")
         return false;
       },
     },

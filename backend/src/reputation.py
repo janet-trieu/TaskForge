@@ -70,8 +70,9 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
 
     now = datetime.now()
     now = now.strftime("%d/%m/%Y")
+    reviewer_name = get_display_name(reviewer_uid)
     
-    review = Review(reviewer_uid, reviewee_uid, pid, now, communication, time_management, task_quality, comment)
+    review = Review(reviewer_uid, reviewer_name, reviewee_uid, pid, now, communication, time_management, task_quality, comment)
     # Add review to reviewee
     reputation_docs = db.collection("users").document(str(reviewee_uid)).get().get("reputation")
     reputation_docs["reviews"].append(review.to_dict())
@@ -85,6 +86,80 @@ def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management
 
     # update average
     update_average(reviewee_uid)
+    notification_review(reviewee_uid, reviewer_uid)
+
+### ========= Update Review ========= ###
+def update_review(reviewer_uid, reviewee_uid, pid, communication, time_management, task_quality, comment):
+    """
+    Update a review for a connected task master
+    conditions:
+        - Both task masters must be in same project
+        - project must be complete
+        - Both task masters are different
+        - One review for each project
+        - Must be integers (1<=score<=5)-
+    
+    Args:
+        - Reviewer_uid (str): uid of the task master that is leaving a review
+        - Reviewee_uid (str): uid of the task master that is being reviewed
+        - pid (int): id of the project that is shared between the two task masters
+        - communication (int): an integer out of 5 corresponding how well reviewee_uid communicated
+        - time_management (int): an integer out of 5 corresponding how well reviewee_uid managed tasks
+        - task_quality (int): an integer out of 5 corresponding how well reviewee_uid did tasks
+        - comment (str): str for any additional comments the reviewer_uid would like to say,
+    
+    Returns:
+        None    
+    """
+    # Check if uids are valid
+    check_valid_uid(reviewer_uid)
+    check_valid_uid(reviewee_uid)
+    # Cannot write review for yourself
+    if reviewer_uid == reviewee_uid:
+        raise InputError("You cannot write a review for yourself")
+    # Check if project is valid
+    check_valid_pid(pid)
+    # Check if users are in project
+    check_user_in_project(reviewer_uid, pid)
+    check_user_in_project(reviewee_uid, pid)
+    # Check if project is completed
+    project_status = db.collection("projects").document(str(pid)).get().get("status")
+    if project_status != "Completed":
+        raise InputError(f"Project {pid} is not complete.")
+    # Check if reviewer has already made a review for reviewee for this project
+    if check_review(reviewer_uid, reviewee_uid, pid) == False:
+        raise InputError(f"No review for {reviewee_uid} in project {pid} has been written yet")
+    # Check if review are integers
+    if not communication.isnumeric() or not time_management.isnumeric() or not task_quality.isnumeric():
+        raise InputError("Only integers for review")
+    # check if review are between 1 and 5 inclusive
+    if not (1<= int(communication) <= 5):
+        raise InputError("Communication must be 1, 2, 3, 4 or 5")
+    if not (1<= int(time_management) <= 5):
+        raise InputError("Time Management must be 1, 2, 3, 4 or 5")
+    if not (1<= int(task_quality) <= 5):
+        raise InputError("Task Quality must be 1, 2, 3, 4 or 5")
+    # Check if comment is string
+    if not isinstance(comment, str):
+        raise InputError("Comment must be a string")
+    
+    reputation = db.collection("users").document(str(reviewee_uid)).get().get("reputation")
+    reviews = reputation.get("reviews")
+
+    i = 0
+    while i < len(reviews):
+        review = reviews[i]
+        if review.get("pid") == pid and review.get("reviewee_uid") == reviewee_uid and review.get("reviewer_uid") == reviewer_uid:
+            review["communication"] = communication
+            review["time_management"] = time_management
+            review["task_quality"] = task_quality
+            review["comment"] = comment
+            reviews[i] = review
+            reputation["reviews"] = reviews
+            db.collection("users").document(str(reviewee_uid)).update({"reputation": reputation})
+            update_average(reviewee_uid)
+            return
+        i += 1
 
 ### ========= Write Review ========= ###
 def delete_review(reviewer_uid, reviewee_uid, pid):
@@ -217,6 +292,44 @@ def view_reviews(viewer_uid, viewee_uid):
         return db.collection("users").document(str(viewee_uid)).get().get("reputation")
     else:
         return None
+    
+def get_avg_reviews(viewer_uid, viewee_uid):
+    check_valid_uid(viewer_uid)
+    check_valid_uid(viewee_uid)
+    visibility = db.collection("users").document(str(viewee_uid)).get().get("reputation").get("visibility")
+    avg = []
+    if viewee_uid == viewer_uid or visibility == True:
+        reputation = db.collection("users").document(str(viewee_uid)).get().to_dict()['reputation']
+        if (reputation['avg_communication'] == []):
+            return [0,0,0]
+        else:
+            avg.append(reputation['avg_communication'][-1])
+            avg.append(reputation['avg_time_management'][-1])
+            avg.append(reputation['avg_task_quality'][-1])
+        return avg
+    else:
+        return ["HIDDEN", "HIDDEN", "HIDDEN"]
+    
+def get_avg_overall_profile(uid):
+    check_valid_uid(uid)
+    reputation = db.collection("users").document(str(uid)).get().to_dict()['reputation']
+    if (reputation['avg'] == []):
+        return [0]
+    else:
+        return reputation['avg'][-1]
+    
+def get_avg_overall_conn(viewer_uid, viewee_uid):
+    check_valid_uid(viewer_uid)
+    check_valid_uid(viewee_uid)
+    visibility = db.collection("users").document(str(viewee_uid)).get().get("reputation").get("visibility")
+    if viewee_uid == viewer_uid or visibility == True:
+        reputation = db.collection("users").document(str(viewee_uid)).get().to_dict()['reputation']
+        if (reputation['avg'] == []):
+            return [0]
+        return reputation['avg'][-1]
+    else:
+        return "HIDDEN"
+
     
 ### ========= Change Visibility ========= ###
 def change_review_visibility(uid, visibility):

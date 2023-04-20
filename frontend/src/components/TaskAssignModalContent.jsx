@@ -7,9 +7,9 @@ const TaskAssignModalContent = forwardRef((props, ref) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    event.stopPropagation();
 
     const new_assignees = event.target.taskAssignees.value.split(", ");
-    console.log(new_assignees);
     const data = await makeRequest('/task/assign', 'POST', {tid: props.tid, new_assignees}, props.uid);
     if (data.error) alert(data.error);
     else props.handleClose();
