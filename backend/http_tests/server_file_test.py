@@ -5,7 +5,7 @@ from src.helper import *
 from src.profile_page import *
 from src.notifications import *
 from src.connections import *
-from src.proj_master import *
+from src.projmaster import *
 from src.taskboard import *
 
 
@@ -18,7 +18,7 @@ except auth.EmailAlreadyExistsError:
     pass
 
 uid = auth.get_user_by_email("file1@gmail.com").uid
-pid = create_project(uid, "file1proj 123", "file1", None, None, None)
+pid = create_project(uid, "file1proj 123", "file1", None, None)
 tid = create_task(uid, pid, None, [uid], 'file1', 'file1', 0, 0, "", "Not Started")
 
 def test_file_upload():

@@ -1,6 +1,7 @@
 from json import dumps
 from flask import Flask, current_app, redirect, request, send_from_directory, Response
 from flask_cors import CORS
+from flask_mail import Mail, Message
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
@@ -9,7 +10,7 @@ from flask import Flask, request, Response
 from.achievement import *
 from .authentication import *
 from .admin import *
-from .proj_master import *
+from .projmaster import *
 from .profile_page import *
 from .projects import *
 from .connections import *
@@ -30,6 +31,7 @@ def defaultHandler(err):
 
 app = Flask(__name__, static_url_path= '/' + os.path.dirname(__file__))
 CORS(app)
+mail = Mail(app)
 app.register_error_handler(Exception, defaultHandler)
 
 app.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -157,7 +159,7 @@ def admin_remove_user():
 def flask_create_project():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    pid = create_project(uid, data["name"], data["description"], data["due_date"], data["team_strength"], data["picture"])
+    pid = create_project(uid, data["name"], data["description"], data["due_date"], data["picture"])
     return dumps(pid)
 
 @app.route("/projects/revive", methods=["POST"])
