@@ -63,7 +63,7 @@
     height: 5em;
 }
 
-#radio-group {
+.radio-group {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
