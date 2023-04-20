@@ -214,7 +214,7 @@ def delete_task(uid, tid):
     task_ref = get_task_ref(tid)
     subtasks = task_ref.get('subtasks')
     for subtask in subtasks:
-        delete_subtask(subtask)
+        delete_subtask(uid, subtask)
     
     # Remove task from epic
     eid= task_ref.get("eid")
