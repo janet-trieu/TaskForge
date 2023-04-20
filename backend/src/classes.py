@@ -300,7 +300,7 @@ class Project():
         epics (list): list of epics in the project
         tasks (list of dictionaries): all the tasks in the project
         subtasks (list): list of subtasks in the project
-        snd (): TODO
+        snd (list): supply and demand, visual representation of how busy a user is compared to their availability
     """
     def __init__(self, pid, uid, name, description, status, due_date, picture, project_members, epics, tasks, subtasks, snd):
         self.pid = pid
