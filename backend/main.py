@@ -1,3 +1,7 @@
+'''
+File to run the backend server
+'''
+
 from src.server import app
 # from waitress import serve
 

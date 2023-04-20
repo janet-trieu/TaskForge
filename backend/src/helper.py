@@ -233,3 +233,29 @@ def sort_tasks(tasks):
 
     return return_list
 
+############################################################
+#                     Checking Functions                   #
+############################################################
+def is_user_project_master(pid, uid):
+    '''
+    Helper function for project master:
+    Checks whether the uid given is the project master id of the specified project
+
+    Arguments:
+    - pid (project id)
+    - uid (user id)
+
+    Returns:
+    - 0 if the supplied uid is a project master of the specified project
+
+    Raises:
+    - AccessError if the supplied user id is not the project master
+    '''
+
+    proj_ref = db.collection("projects").document(str(pid))
+    proj_master_id = proj_ref.get().get("uid")
+
+    if uid == proj_master_id:
+        return 0
+    else:
+        raise AccessError(f"ERROR: Supplied user id:{uid} is not the project master of project:{pid}")
