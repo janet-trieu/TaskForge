@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { makeRequest } from "../helpers";
 import starIcon from "../assets/star.png";
 import defaultProfilePic from '../assets/default project icon.png'
-import taskIcon from '../assets/tasks.png';
+import taskIcon from '../assets/to-do-list.png';
 import achievementIcon from '../assets/profile achievement.png'
 import workloadIcon from '../assets/profile workload.png'
 import { Modal } from "@mui/material";
@@ -144,7 +144,6 @@ const Profile = ({ firebaseApp }) => {
             <div>{details.num_connections} connection(s)</div>
           </div>
           <button className={isUser ? "" : "hide"} style={{ marginLeft: '45vw' }} onClick={handleOpen}>Edit</button>
-          <button className={isUser ? "" : "hide"} onClick={handleAvaOpen}>Change Avaliability</button>
         </div>
         <Modal open={open} onClose={handleClose}>
           <ProfileModalContent details={details} setDetails={setDetails} handleClose={handleClose} firebaseApp={firebaseApp} />
@@ -154,12 +153,12 @@ const Profile = ({ firebaseApp }) => {
         </Modal>
         <div className="profile-row">
           <div className='profile-box'>
-            <div className="profile-box-content">
+            <div className="profile-box-content-task">
               <div className='profile-box-header'>
                 <div className='profile-box-header-icon'><img src={taskIcon} /></div>
-                <div className='profile-box-header-title'></div>
-                <button onClick={() => navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}>Assigned Task List</button>
-              </div>
+                <div className='profile-box-header-title'>Assigned Tasks</div>
+                </div>
+                <button onClick={() => navigate(location.pathname === "/profile" ? "/tasks" : `/tasks/${location.pathname.split('/')[2]}`)}>View Assigned Task List</button>
               <div>
               </div>
             </div>
@@ -172,11 +171,15 @@ const Profile = ({ firebaseApp }) => {
               </div>
               <div className="workload-content">
                 {isLoadingWL || (
-                  <div className="workload-percent">
+                  <div className="workload-percent" style={{color: workload < 50 ? 'green' : workload < 100 ? 'orange' : 'red'}}>
                     {workload > 100 ? `100%+` : `${workload}%`}
                   </div>
                 )}
                 <div className="workload-subtext">workload</div>
+                <button className={isUser ? "" : "hide"} onClick={(e) => {
+                  e.stopPropagation();
+                  handleAvaOpen();
+                }}>Change Availability</button>
                 <div>
                 </div>
               </div>

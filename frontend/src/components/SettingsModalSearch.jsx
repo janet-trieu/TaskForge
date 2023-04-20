@@ -7,9 +7,17 @@ const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, w
   const handleConfirm = async (action, warning, event) => {
     event.preventDefault();
     if (!event.target.searchbar.value) {
-      alert("Please enter a UID.");
+      alert("Please enter an email.");
       return;
     }
+    
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const inputValue = event.target.searchbar.value.trim();
+    if (!emailRegex.test(inputValue)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
     const msg = `Are you sure you want to continue? ${warning}`
 
     if (window.confirm(msg)) {
@@ -31,7 +39,7 @@ const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, w
           route = "readd_user";
           break;
       }
-      const data = makeRequest(`/admin/${route}`, 'POST', {uid_admin: event.target.searchbar.value}, firebaseApp.auth().currentUser.uid);
+      const data = makeRequest(`/admin/${route}`, 'POST', {uid_user: event.target.searchbar.value}, firebaseApp.auth().currentUser.uid);
       if (data.error) alert(data.error);
     }
     onClose();
@@ -45,7 +53,7 @@ const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, w
             <h3 className="settings-modal-title">{title}</h3>
           </div>
           <div className="settings-modal-body">
-            <input id="searchbar" placeholder="Enter UID" />
+            <input id="searchbar" placeholder="Enter user's email" />
           </div>
           <div className="settings-modal-footer">
             <button className="button-cancel" onClick={onClose}>Cancel</button>
