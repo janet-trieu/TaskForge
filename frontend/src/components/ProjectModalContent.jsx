@@ -4,6 +4,7 @@ import defaultProjectIcon from "../assets/default project icon.png"
 
 const ProjectModalContent = forwardRef((props, ref) => {
   const [icon, setIcon] = useState(props.details.picture);
+  const [buttonText, setButtonText] = useState("Save Changes");
   
   const uploadHandler = async (event) => {
     if (!event.target.files[0]) {
@@ -19,6 +20,9 @@ const ProjectModalContent = forwardRef((props, ref) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (buttonText === "...") return;
+    setButtonText("...");
+
     const body = {
       pid: props.details.pid,
       updates: {
@@ -30,11 +34,12 @@ const ProjectModalContent = forwardRef((props, ref) => {
       }
     }
 
-    if (!body.updates.name) {alert('Please enter a project name.'); return;}
-    if (!body.updates.description) {alert('Please enter a project type.'); return;}
-    if (body.updates.picture === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
+    if (!body.updates.name) {alert('Please enter a project name.'); setButtonText("Save Changes"); return;}
+    if (!body.updates.description) {alert('Please enter a project type.'); setButtonText("Save Changes"); return;}
+    if (body.updates.picture === defaultProjectIcon) {alert('Please upload a project icon.'); setButtonText("Save Changes"); return;}
 
     const data = await makeRequest("/projects/update", "POST", body, props.uid);
+    setButtonText("Save Changes");
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       let details = props.details;
@@ -92,7 +97,7 @@ const ProjectModalContent = forwardRef((props, ref) => {
 
       <br />
       <br />
-      <button type="submit">Save Changes</button>
+      <button type="submit">{buttonText}</button>
     </form>
   );
 });

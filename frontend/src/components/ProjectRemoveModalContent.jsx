@@ -1,14 +1,18 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
 
 const ProjectRemoveModalContent = forwardRef((props, ref) => {
+  const [buttonText, setButtonText] = useState("Remove");
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (buttonText === "...") return;
     if (!event.target.remove.value) {
         alert("Please enter a UID.");
         return;
     }
+    setButtonText("...");
     const data = await makeRequest("/projects/remove", "POST", {pid: Number(props.pid), uid_to_be_removed: event.target.remove.value}, props.uid)
+    setButtonText("Remove");
     if (data.error) alert(data.error);
     else props.handleClose();
   }
@@ -23,7 +27,7 @@ const ProjectRemoveModalContent = forwardRef((props, ref) => {
       <input type='text' name='remove' id='project-remove' placeholder="Enter UID" style={{width: '35em'}}/>
       <br />
       <br />
-      <button type="submit">Remove</button>&nbsp;&nbsp;
+      <button type="submit">{buttonText}</button>&nbsp;&nbsp;
       <button onClick={() => props.handleClose()} style={{backgroundColor: 'gray'}}>Cancel</button>
     </form>
   );

@@ -171,7 +171,7 @@ const Profile = ({ firebaseApp }) => {
               </div>
               <div className="workload-content">
                 {isLoadingWL || (
-                  <div className="workload-percent" style={{color: workload < 50 ? 'green' : workload < 100 ? 'orange' : 'red'}}>
+                  <div className="workload-percent" style={{color: workload < 50 ? 'green' : workload < 100 ? 'orange' : 'red', fontSize: '2em'}}>
                     {workload > 100 ? `100%+` : `${workload}%`}
                   </div>
                 )}

@@ -5,6 +5,7 @@ import defaultProfilePic from '../assets/default project icon.png'
 const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, firebaseApp }, ref) => {
   const [icon, setIcon] = useState(details.photo_url || defaultProfilePic);
   const [achievementVisible, setAchievementVisible] = useState(false);
+  const [buttonText, setButtonText] = useState("Save Changes");
 
   useEffect(async () => {
     const data = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, details.uid);
@@ -13,6 +14,10 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
 
   const handleSave = async (event) => {
     event.preventDefault();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
+
     let newDetails = details;
     newDetails.display_name = event.target.name.value;
     newDetails.role = event.target.role.value;
@@ -28,6 +33,7 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
     }
     await makeRequest('/profile/update', 'PUT', body, uid)
     setDetails(newDetails);
+    setButtonText("Save Changes");
     handleClose();
   }
 
@@ -72,7 +78,7 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
           <span className="slider round"></span>
         </label><br />
         <br />
-        <button type="submit">Save Changes</button>
+        <button type="submit">{buttonText}</button>
       </form>
     </div>
   );

@@ -2,10 +2,14 @@ import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
 
 const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
-
+  const [buttonText, setButtonText] = useState("Create");
   const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
+
     const assigneesValue = event.target.assignees.value;
     const assignees = assigneesValue ? assigneesValue.split(", ") : [];
     const body = {
@@ -20,10 +24,11 @@ const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
       status: event.target.status.value
     }
 
-    if (!body.title) {alert('Please enter a subtask title.'); return;}
-    if (!body.description) {alert('Please enter a subtask description.'); return;}
+    if (!body.title) {alert('Please enter a subtask title.'); setButtonText("Create"); return;}
+    if (!body.description) {alert('Please enter a subtask description.'); setButtonText("Create"); return;}
 
     const data = await makeRequest("/subtask/create", "POST", body, props.uid);
+    setButtonText("Create");
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       const newSubtasks = props.subtasks;
@@ -64,7 +69,7 @@ const TaskSubtasksCreateModalContent = forwardRef((props, ref) => {
       
       <br />
       <br />
-      <button type="submit">Save Changes</button>
+      <button type="submit">{buttonText}</button>
     </form>
   );
 });

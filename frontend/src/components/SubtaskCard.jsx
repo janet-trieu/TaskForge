@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeRequest } from "../helpers";
 
 const SubtaskCard = (props) => {
-
+  const [buttonText, setButtonText] = useState("Update");
   const assignees = props.subtask.assignees && props.subtask.assignees !== "" ? props.subtask.assignees.join("\n") : "";
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
 
     let newAssignees = event.target.assignees.value.split("\n");
     if (newAssignees[0] === "") newAssignees = [];
@@ -24,9 +27,10 @@ const SubtaskCard = (props) => {
       assignees: newAssignees
     }
 
-    const data = makeRequest("/subtask/update", "POST", body, props.uid);
-    if (data.code && data.code !== 200) alert(data.message);
-    else alert(`Subtask ${props.subtask.stid} updated!`);
+    const data = await makeRequest("/subtask/update", "POST", body, props.uid);
+    setButtonText("Update");
+    if (data && data.code && data.code !== 200) alert(data.message);
+    // else alert(`Subtask ${props.subtask.stid} updated!`);
   }
 
   return (
@@ -42,15 +46,15 @@ const SubtaskCard = (props) => {
         <option value="Completed">Completed</option>
       </select>
       <textarea id="assignees" name="assignees" defaultValue={assignees} placeholder="One email per line..."/>
-      <input type="text" id="deadline" name="deadline" defaultValue={props.subtask.deadline} />
-      <input type="text" id="workload" name="workload" defaultValue={props.subtask.workload} style={{width: "2em"}}/>
+      <input type="text" id="deadline" name="deadline" defaultValue={props.subtask.deadline} placeholder="DD/MM/YYY"/>
+      <input type="text" id="workload" name="workload" defaultValue={props.subtask.workload} placeholder="Workload..." style={{width: "2em"}}/>
       <select id="priority" name="priority" defaultValue={props.subtask.priority}>
         <option value="">No priority</option>
         <option value="Low">Low</option>
         <option value="Moderate">Moderate</option>
         <option value="High">High</option>
       </select>
-      <button type="submit">Update</button>
+      <button type="submit">{buttonText}</button>
     </form>
   )
 }

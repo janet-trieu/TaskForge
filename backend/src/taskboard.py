@@ -954,7 +954,7 @@ def update_subtask(uid, stid, assignees, title, description, deadline, workload,
         raise InputError(f'workload is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'workload': workload})
-    if priority != "High" and priority != "Moderate" and     priority != "Low":
+    if priority != "High" and priority != "Moderate" and priority != "Low" and priority != "":
         raise InputError('priority is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'priority': priority})
