@@ -10,7 +10,7 @@ from src.profile_page import *
 from src.notifications import *
 from src.global_counters import *
 from src.reputation import *
-from src.proj_master import *
+from src.projmaster import *
 from src.test_helpers import add_tm_to_project
 from datetime import datetime, time
 
@@ -31,8 +31,8 @@ uid1 = auth.get_user_by_email("reputationtest1@gmail.com").uid
 uid2 = auth.get_user_by_email("reputationtest2@gmail.com").uid
 uid3 = auth.get_user_by_email("reputationtest3@gmail.com").uid
 
-pid1 = create_project(str(uid1), "project_1", "project_1", "", None, "")
-pid2 = create_project(str(uid1), "project_2", "project_2", "", None, "")
+pid1 = create_project(str(uid1), "project_1", "project_1", None, None)
+pid2 = create_project(str(uid1), "project_2", "project_2", None, None)
 add_tm_to_project(pid1, uid2)
 update_project(pid1, uid1, {"status": "Completed"})
 add_tm_to_project(pid2, uid2)

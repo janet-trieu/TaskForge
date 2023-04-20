@@ -1,14 +1,14 @@
 import pytest
+import requests
 from firebase_admin import auth
+
 from src.test_helpers import *
 from src.profile_page import *
-from src.proj_master import *
+from src.projmaster import *
 from src.projects import *
 from src.helper import *
 from src.taskboard import *
 from src.achievement import *
-import requests
-
 
 try:
     pm_uid = create_user_email("achievements.pm@gmail.com", "admin123", "Project Master")
@@ -29,9 +29,13 @@ tm4_uid = auth.get_user_by_email("achievements.tm4@gmail.com").uid
 port = 8000
 url = f"http://localhost:{port}/"
 
+############################################################
+#                  Test for view_achievement               #
+############################################################
+
 def test_view_achievements():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     add_tm_to_project(pid, tm0_uid)
 
@@ -56,7 +60,7 @@ def test_view_achievements():
 
 def test_view_achievements_notmy():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -81,7 +85,7 @@ def test_view_achievements_notmy():
 
 def test_view_hidden():
 
-    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None, None)
+    pid = create_project(pm_uid, "Project0", "Creating Project0 for testing", None, None)
 
     update_project(pid, pm_uid, {"status": "Completed"})
 
@@ -108,6 +112,9 @@ def test_view_hidden():
 
     assert view_json == []
 
+############################################################
+#                 Test for share_achievement               #
+############################################################
 
 def test_share_achievement():
 

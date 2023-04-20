@@ -3,7 +3,7 @@ Test file for Flask http testing of workload + supply and demand
 '''
 import requests
 from src.taskboard import create_task
-from src.proj_master import create_project
+from src.projmaster import create_project
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
@@ -18,7 +18,7 @@ except auth.EmailAlreadyExistsError:
     pass
 
 uid = auth.get_user_by_email("workload@gmail.com").uid
-pid = create_project(uid, "Project 123", "description", None, None, None)
+pid = create_project(uid, "Project 123", "description", None, None)
 tid = create_task(uid, pid, None, [get_email(uid)], "", "", datetime.now() + timedelta(minutes=100), 2, "Low", "In Progress")
 
 def test_get_user_workload():

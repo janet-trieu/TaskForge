@@ -6,7 +6,7 @@ from src.global_counters import *
 from src.test_helpers import *
 from src.workload import *
 from src.taskboard import *
-from src.proj_master import *
+from src.projmaster import *
 import datetime
 
 try:
@@ -15,7 +15,7 @@ except auth.EmailAlreadyExistsError:
     pass
 
 uid = auth.get_user_by_email("work1@gmail.com").uid
-pid = create_project(uid, "Project 123", "description", None, None, None)
+pid = create_project(uid, "Project 123", "description", None, None)
  
 def test_get_user_workload():
     assert(get_user_workload(uid) == 0)
