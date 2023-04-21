@@ -13,18 +13,23 @@ const DisplayName = styled.h4`
 `
 
 const TaskCommentsModalContent = forwardRef((props, ref) => {
-
+  const [buttonText, setButtonText] = useState("Send Comment");
   const [comments, setComments] = useState(props.comments);
   const [rerender, setRerender] = useState(" ");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (buttonText === "...") return;
+    
     const comment = event.target.comment.value;
     event.target.comment.value = "";
     if (!comment) {alert("Comment cannot be empty."); return;}
-
+    
+    setButtonText("...");
     const data = await makeRequest('/task/comment', 'POST', {tid: props.tid, comment}, props.uid);
+    setButtonText("Send Comment")
     if (data.error) alert(data.error);
     else {
       let temp = comments;
@@ -40,7 +45,7 @@ const TaskCommentsModalContent = forwardRef((props, ref) => {
       <form id="comment-send" onSubmit={handleSubmit}>
         <input type="text" id="comment" name="comment" placeholder="Write something..." />
         &nbsp;&nbsp;
-        <button type="submit">Send Comment</button>
+        <button type="submit">{buttonText}</button>
       </form>
       <div>
         {comments.map((comment, idx) => {

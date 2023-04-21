@@ -31,7 +31,7 @@ const Reputation = ({ firebaseApp }) => {
       {isLoading || (
         <div id="review-card-container">
           {reviews.reviews.map((review, idx) => {
-            return <ReviewCard key={idx} review={review} />
+            return <ReviewCard key={idx} review={review} uid={currentUser.uid}/>
           })}
         </div>
       )}

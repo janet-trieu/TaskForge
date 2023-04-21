@@ -20,6 +20,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
   const [openAttachments, setOpenAttachments] = useState(false);
   const handleOpenAttachments = () => { setOpenAttachments(true) };
   const handleCloseAttachments = () => { setOpenAttachments(false) };
+  const [buttonText, setButtonText] = useState("Save Changes");
 
   const epicList = []
   for (const epic of epics) {
@@ -28,6 +29,9 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
 
     let eid = "None";
     for (const epic of epics) {
@@ -48,6 +52,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
     }
 
     const data = await makeRequest('/task/update', 'POST', body, uid);
+    setButtonText("Save Changes");
     if (data.error) alert(data.error);
     else {
       setOpen(false)
@@ -140,7 +145,7 @@ const TaskModalContent = forwardRef(({ details, uid, epics, tasks, setTasks, set
           </select>
           <br />
           <br />
-          <button type="submit">Save Changes</button>
+          <button type="submit">{buttonText}</button>
           <Modal open={openAssign} onClose={handleCloseAssign}>
             <TaskAssignModalContent uid={uid} tid={details.tid} emails={details.assignee_emails} handleClose={handleCloseAssign} />
           </Modal>

@@ -1,10 +1,15 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
 
 const EpicCreateModalContent = forwardRef((props, ref) => {
 
+  const [buttonText, setButtonText] = useState("Save Changes");
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
 
     const body = {
       pid: Number(props.pid),
@@ -13,11 +18,12 @@ const EpicCreateModalContent = forwardRef((props, ref) => {
       colour: event.target.colour.value,
     }
 
-    if (!body.title) { alert('Please enter an epic title.'); return; }
-    if (!body.description) { alert('Please enter an epic description.'); return; }
-    if (!body.colour) { alert('Please enter an epic colour.'); return; }
+    if (!body.title) { alert('Please enter an epic title.'); setButtonText("Save Changes"); return; }
+    if (!body.description) { alert('Please enter an epic description.'); setButtonText("Save Changes"); return; }
+    if (!body.colour) { alert('Please enter an epic colour.'); setButtonText("Save Changes"); return; }
 
     const data = await makeRequest("/epic/create", "POST", body, props.uid);
+    setButtonText("Save Changes");
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       // insert epic to board??
@@ -58,7 +64,7 @@ const EpicCreateModalContent = forwardRef((props, ref) => {
       </div>
       <br />
       <br />
-      <button type="submit">Save Changes</button>
+      <button type="submit">{buttonText}</button>
     </form>
   );
 });

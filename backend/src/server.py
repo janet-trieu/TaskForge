@@ -181,7 +181,8 @@ def flask_revive_project():
 def flask_remove_project_member():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    res = remove_project_member(data["pid"], uid, data["uid_to_be_removed"])
+    uid_to_be_removed = auth.get_user_by_email(data["email_removed"]).uid
+    res = remove_project_member(data["pid"], uid, uid_to_be_removed)
     return dumps(res)
 
 @app.route("/projects/invite", methods=["POST"])
@@ -625,6 +626,11 @@ def flask_toggle_reputation_visibility():
     uid = request.headers.get("Authorization")
     data = request.get_json()
     return dumps(change_review_visibility(uid, data["visibility"]))
+
+@app.route("/reputation/get_visibility", methods=["GET"])
+def flask_get_reputation_visibility():
+    uid = request.args.get("uid")
+    return dumps(get_review_visibility(uid))
 
 @app.route("/reputation/update_review", methods=["POST"])
 def flask_update_review():

@@ -11,13 +11,13 @@ const NotificationModalContent = forwardRef((props, ref) => {
 
   const handleClearNotifications = async () => {
     const response = await makeRequest('/notifications/clearall', 'DELETE', null, props.firebaseApp.auth().currentUser.uid)
-    if (response.error) alert(response.error);
+    if (response && response.error) alert(response.error);
     else setData([]);
   };
 
   useEffect(async () => {
     const data = await makeRequest('/notifications/get', 'GET', null, props.firebaseApp.auth().currentUser.uid);
-    if (data.error) alert(data.error);
+    if (data && data.error) alert(data.error);
     else {
       setData(data);
       setIsLoading(false);
