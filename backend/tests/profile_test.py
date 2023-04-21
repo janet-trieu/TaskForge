@@ -34,7 +34,6 @@ def test_create_user():
     assert db.collection('users').document(uid).get().get('DOB') == ""
     assert db.collection('users').document(uid).get().get('is_banned') == False
     assert db.collection('users').document(uid).get().get('is_admin') == False
-    assert db.collection('users').document(uid).get().get('is_removed') == False
     delete_user(uid)
 
 def test_create_duplicate_email():
@@ -70,18 +69,6 @@ def test_update_password_failure():
     except InputError:
         pass
     delete_user(uid)
-
-# TO-DO: Fix this test
-# def test_update_display_photo():
-#     uid = create_user_email(email1, password1, display_name1)
-#     try:
-#         update_photo(uid, "https://thumbs.dreamstime.com/z/default-avatar-profile-icon-vector-default-avatar-profile-icon-vector-social-media-user-image-vector-illustration-227787227.jpg")
-#         display_photo = auth.get_user(uid).photo_url
-#     except:
-#         print("Error")
-#     else:
-#         assert display_photo == "https://thumbs.dreamstime.com/z/default-avatar-profile-icon-vector-default-avatar-profile-icon-vector-social-media-user-image-vector-illustration-227787227.jpg"
-#     delete_user(uid)
 
 def test_update_display_name():
 

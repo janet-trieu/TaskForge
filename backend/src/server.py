@@ -18,6 +18,10 @@ from .taskboard import *
 from .tasklist import *
 from .helper import *
 from .reputation import *
+from .workload import *
+from .tasks import upload_file, get_file_link, create_task, get_task_details, assign_task, update_task, comment_task
+from .epics import create_epic, get_epic_details, update_epic
+from .subtasks import create_subtask, get_subtask_details, assign_subtask, update_subtask, get_all_subtasks
 
 def defaultHandler(err):
     response = err.get_response()

@@ -11,7 +11,7 @@ from src.projmaster import *
 from src.global_counters import *
 from src.projects import *
 from src.taskboard import *
-
+from src.tasks import create_task, comment_task, assign_task
 from src.test_helpers import *
 
 # ============ SET UP ============ #
@@ -86,8 +86,9 @@ def test_comment_notification():
     except:
         pass
 
-    task_data = create_task(user_id0, pid, None, [], "Comment Notify Test", "Description", "1679749200", None, None, "Not Started")
-    comment_task(user_id1, task_data["tid"], "Comment Notification")
+    task1 = create_task(user_id0, pid, None, ["notificationtest0@gmail.com"], "Comment Notify Test", "Description", "1679749200", None, None, "Not Started")
+    tid = task1.get("tid")
+    comment_task(user_id1, tid, "Comment Notification")
     nid = 'comment0'
 
     # Assert user 0 has comment notification data
@@ -97,7 +98,7 @@ def test_comment_notification():
     assert actual_notification.get('has_read') == False
     assert actual_notification.get('notification_msg') == "Jane Doe has commented in Comment Notify Test in Project Notification."
     assert actual_notification.get('pid') == pid
-    assert actual_notification.get('tid') == task_data["tid"]
+    assert actual_notification.get('tid') == task1["tid"]
     assert actual_notification.get('type') == 'comment'
     assert actual_notification.get('uid_sender') == user_id1
     assert actual_notification.get('nid') == nid
@@ -108,8 +109,9 @@ def test_assigned_task_notification():
     except:
         pass
 
-    task_data = create_task(user_id0, pid, None, [], "Assign Notify Test", "Description", "1679749200", None, None, "Not Started")
-    assign_task(user_id0, task_data["tid"], ["notificationtest1@gmail.com"])
+    task1 = create_task(user_id0, pid, None, ["notificationtest0@gmail.com"], "Assign Notify Test", "Description", "1679749200", None, None, "Not Started")
+    tid = task1.get("tid")
+    assign_task(user_id0, tid, ["notificationtest1@gmail.com"])
     nid = 'assigned_task0'
     
     # Assert user 1 has comment notification data
@@ -119,7 +121,7 @@ def test_assigned_task_notification():
     assert actual_notification.get('has_read') == False
     assert actual_notification.get('notification_msg') == "You have been assigned Assign Notify Test in Project Notification."
     assert actual_notification.get('pid') == pid
-    assert actual_notification.get('tid') == task_data["tid"]
+    assert actual_notification.get('tid') == task1["tid"]
     assert actual_notification.get('type') == 'assigned_task'
     assert actual_notification.get('nid') == nid
 
