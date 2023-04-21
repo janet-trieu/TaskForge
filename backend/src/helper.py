@@ -280,4 +280,4 @@ def within_7_days(due):
     due_date = datetime(y, m, d)
     if (due_date < curr_time and due_date < in_one_week):
         return True
-    return False
+    return True
