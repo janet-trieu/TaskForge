@@ -14,22 +14,40 @@ Vincent Do     z5207667
  - Username: compgpt3900@gmail.com
  - Password: 2023t1w16ccompgpt
 
-**Prerequisites:**
- - Python version >= 3.10.x, refer https://www.python.org/downloads/
- - Latest version of Nodejs, refer https://nodejs.org/en/download
+**Setup Instructions**:
+Our system is intended to run using the **VM** option, not the CSE computers.
 
-**Backend Setup:**
- - cd ~/capstone-project-3900w16ccompgpt/backend
- - pip install -r requirements.txt
+**To setup the system in the Lubuntu VM, do the following steps in the terminal:**
 
-**Frontend Setup:**
- - cd ~/capstone-project-3900w16ccompgpt/frontend
- - npm install
+Install nvm and nodejs.
+- Run “wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash”.
+- Close and reopen the terminal.
+- Run “nvm install node”.
 
-**Running Backend Server:**
- - cd ~/capstone-project-3900w16ccompgpt/backend
- - python3 main.py
+Install pip.
+- Run “sudo apt update”.
+- Run “sudo apt install python3-pip”.
 
-**Running Frontend Server:**
- - cd ~/capstone-project-3900w16ccompgpt/frontend
- - npm run dev
+Clone the git repository.
+
+Install backend requirements.
+- Navigate to the “backend” folder in the repo.
+- Run “pip install -r requirements.txt”.
+
+Install frontend requirements.
+- Navigate to the “frontend” folder in the repo.
+- Run “npm install”.
+
+**To run the system, do the following steps:**
+
+Open 2 terminal instances.
+
+In one terminal, run the backend server.
+- Navigate to the “backend” folder in the repo.
+- Run “python3 main.py”.
+
+In the second terminal, run the frontend server.
+- Navigate to the “frontend” folder in the repo.
+- Run “npm run dev”.
+
+Open “http://localhost:5173” in a browser.
