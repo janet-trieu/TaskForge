@@ -388,17 +388,7 @@ def create_subtask(uid, tid, pid, assignees, title, description, deadline, workl
     task_ref.update({'subtasks': project_subtasks})
     update_stid()
 
-    return {
-        "stid": value,
-        "title": title,
-        "deadline": deadline,
-        "priority": priority,
-        "status": status,
-        "assignee_emails": assignees,
-        "flagged": False,
-        "description": description,
-        "workload": workload
-    }
+    return subtask.to_dict()
 
 ### ========= Get Subtask Ref ========= ###
 def get_subtask_ref(stid):
@@ -964,7 +954,7 @@ def update_subtask(uid, stid, assignees, title, description, deadline, workload,
         raise InputError(f'workload is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'workload': workload})
-    if priority != "High" and priority != "Moderate" and     priority != "Low":
+    if priority != "High" and priority != "Moderate" and priority != "Low" and priority != "":
         raise InputError('priority is not valid')
     else:
         db.collection("subtasks").document(str(stid)).update({'priority': priority})
