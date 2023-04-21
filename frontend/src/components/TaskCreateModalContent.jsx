@@ -60,7 +60,7 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
       <input type="text" id="deadline" name="deadline" style={{width: '20em', marginTop: '0'}} placeholder="DD/MM/YYYY" />
 
       <h3>Status</h3>
-      <div id="radio-group">
+      <div className="radio-group">
         <div className="radio">
           <input type="radio" id="notStarted" name="status" value="Not Started"/>
           <label htmlFor="notStarted">Not Started</label>
@@ -87,10 +87,23 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
       <input type="text" id="assignees" name="assignees" style={{width: '20em', marginTop: '0'}} placeholder="e.g. user1@email.com, user2@email.com, ..." />
       
       <label htmlFor="workload"><h3>Workload</h3></label>
-      <input type="text" id="workload" name="workload" style={{width: '20em', marginTop: '0'}} placeholder="Add a workload..." />
+      <input type="text" id="workload" name="workload" style={{width: '20em', marginTop: '0'}} placeholder="Days task would take; e.g. 0, 1, 2..." />
 
-      <label htmlFor="priority"><h3>Priority</h3></label>
-      <input type="text" id="priority" name="priority" style={{width: '20em', marginTop: '0'}} placeholder="Add a priority..." />
+    <h3>Priority</h3>
+    <div className="radio-group">
+      <div className="radio">
+        <input type="radio" id="low" name="priority" value="Low"/>
+        <label htmlFor="low">Low</label>
+      </div>
+      <div className="radio">
+        <input type="radio" id="moderate" name="priority" value="Moderate"/>
+        <label htmlFor="moderate">Moderate</label>
+      </div>
+      <div className="radio">
+        <input type="radio" id="high" name="priority" value="High"/>
+        <label htmlFor="high">High</label>
+      </div>
+    </div>
       
       <br />
       <br />

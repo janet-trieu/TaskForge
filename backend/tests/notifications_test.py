@@ -98,7 +98,7 @@ def test_comment_notification():
     assert actual_notification.get('has_read') == False
     assert actual_notification.get('notification_msg') == "Jane Doe has commented in Comment Notify Test in Project Notification."
     assert actual_notification.get('pid') == pid
-    assert actual_notification.get('tid') == tid
+    assert actual_notification.get('tid') == task_data["tid"]
     assert actual_notification.get('type') == 'comment'
     assert actual_notification.get('uid_sender') == user_id1
     assert actual_notification.get('nid') == nid
@@ -121,7 +121,7 @@ def test_assigned_task_notification():
     assert actual_notification.get('has_read') == False
     assert actual_notification.get('notification_msg') == "You have been assigned Assign Notify Test in Project Notification."
     assert actual_notification.get('pid') == pid
-    assert actual_notification.get('tid') == tid
+    assert actual_notification.get('tid') == task_data["tid"]
     assert actual_notification.get('type') == 'assigned_task'
     assert actual_notification.get('nid') == nid
 
