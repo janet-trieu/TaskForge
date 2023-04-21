@@ -11,7 +11,6 @@ import requests
 
 from src.profile_page import *
 from src.helper import *
-from src.test_helpers import reset_database
 
 # test set up
 port = 8000
@@ -108,6 +107,3 @@ def test_remove_user_failure():
     resp = requests.post(url + '/admin/remove_user', headers=headers_dict, json=json_dict)
 
     assert resp.status_code == 400
-    
-def test_reset():
-    reset_database()

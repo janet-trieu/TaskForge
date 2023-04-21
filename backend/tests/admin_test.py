@@ -6,7 +6,6 @@ from firebase_admin import  auth
 from src.projmaster import create_project
 from src.tasks import create_task
 from src.subtasks import create_subtask
-from src.test_helpers import reset_database
 
 from src.admin import *
 from src.error import *
@@ -127,6 +126,3 @@ def test_remove_user():
         check_user_in_subtask(user_uid, tid, stid)
     except InputError:
         pass
-
-def test_reset():
-    reset_database()

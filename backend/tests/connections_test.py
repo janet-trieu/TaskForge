@@ -106,6 +106,3 @@ def test_search_taskmaster():
     result = search_taskmasters(uid1, "conn")
     assert(len(result) == 4)
     assert(result[0]["uid"] == uid3)
-
-def test_reset():
-    reset_database()

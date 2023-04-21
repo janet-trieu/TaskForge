@@ -106,6 +106,3 @@ def test_remove_connected_taskmaster():
     json_dict = {'uid_remove': uid2}
     resp = requests.post(url + '/connections/remove_taskmaster', headers=headers_dict, json=json_dict)
     assert resp.status_code == 200
-
-def test_clean_up():
-    reset_database()
