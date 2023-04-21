@@ -1,5 +1,8 @@
-import pytest
+'''
+Unit test file for Notification feature
+'''
 
+import pytest
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -11,10 +14,9 @@ from src.projmaster import *
 from src.global_counters import *
 from src.projects import *
 from src.taskboard import *
-
 from src.test_helpers import *
 
-# ============ SET UP ============ #
+# test set up
 db = firestore.client()
 
 # Create users #

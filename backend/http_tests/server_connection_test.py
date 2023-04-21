@@ -1,12 +1,15 @@
 '''
 Test file for Flask http testing of connection management
 '''
+
 import pytest
 import requests
+
 from src.test_helpers import *
 from src.helper import *
 from src.profile_page import *
 
+# test set up
 port = 8000
 url = f"http://localhost:{port}/"
 
@@ -20,6 +23,9 @@ except auth.EmailAlreadyExistsError:
 uid1 = auth.get_user_by_email("conn1@gmail.com").uid
 uid2 = auth.get_user_by_email("conn2@gmail.com").uid
 uid3 = auth.get_user_by_email("conn3@gmail.com").uid  
+
+
+# main tests
 
 def test_connection_request_respond_decline_success():
     """
@@ -35,15 +41,6 @@ def test_connection_request_respond_decline_success():
     json_dict = {'nid': nid, 'response' : False}
     resp = requests.post(url + '/connections/request_respond', headers=headers_dict, json=json_dict)
 
-    assert resp.status_code == 200
-
-def test_get_outgoing_requests():
-    headers_dict = {'Authorization': uid2}
-    json_dict = {'user_email': get_email(uid1)}
-    resp = requests.post(url + '/notification/connection/request', headers=headers_dict, json=json_dict)
-    assert resp.status_code == 200
-    
-    resp = requests.get(url + '/notifications/get_outgoing_requests', headers=headers_dict)
     assert resp.status_code == 200
     
 def test_connection_request_respond_accept_success():

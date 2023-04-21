@@ -9,6 +9,7 @@ from src.helper import *
 from src.profile_page import *
 from datetime import datetime, timedelta
 
+# test set up
 port = 8000
 url = f"http://localhost:{port}/"
 
@@ -20,6 +21,8 @@ except auth.EmailAlreadyExistsError:
 uid = auth.get_user_by_email("workload@gmail.com").uid
 pid = create_project(uid, "Project 123", "description", None, None)
 tid = create_task(uid, pid, None, [get_email(uid)], "", "", datetime.now() + timedelta(minutes=100), 2, "Low", "In Progress")
+
+# main tests
 
 def test_get_user_workload():
     headers_dict = {'Authorization': uid}

@@ -1,10 +1,13 @@
 '''
 Test file for Flask http testing of authentication reset password (user invoked) functionality
 '''
+
 import requests
+
 from src.authentication import *
 from src.profile_page import *
 
+# test set up
 port = 8000
 url = f"http://localhost:{port}/"
 
@@ -14,6 +17,9 @@ except auth.EmailAlreadyExistsError:
     pass
 
 user_id = auth.get_user_by_email("authtest0@gmail.com").uid
+
+
+# main tests
 
 def test_reset_password():
 

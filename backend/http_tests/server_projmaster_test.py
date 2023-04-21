@@ -10,6 +10,7 @@ from src.profile_page import *
 from src.connections import *
 from src.projmaster import *
 
+# test set up
 port = 8000
 url = f"http://localhost:{port}/"
 

@@ -1,13 +1,17 @@
+'''
+Unit test file for Admin feature
+'''
+
 from firebase_admin import  auth
 from src.projmaster import create_project
 from src.taskboard import create_task, create_subtask
 from src.test_helpers import reset_database
 
-# from src.profile_page import *
 from src.admin import *
 from src.error import *
 from src.helper import *
 
+# test set up
 try:
     admin_uid = create_user_email("admin1@gmail.com", "admin121233", "Admin Ad123min")
     user_uid = create_user_email("admintest.tm1@gmail.com", "taskmaster1", "Task Master1")
@@ -17,6 +21,8 @@ except:
 else:
     admin_uid = auth.get_user_by_email("admin1@gmail.com").uid
     user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
+
+# main tests
 
 def test_give_admin_type():
     try:
@@ -55,7 +61,6 @@ def test_ban_user():
     ban_user(admin_uid, user_uid)
     assert(is_banned(user_uid))
 
-#@pytest.mark.order4
 def test_ban_banned_user():
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))
@@ -73,7 +78,6 @@ def test_unban_user_type():
         pass
 
 #user is still banned from last test
-#@pytest.mark.order5
 def test_unban_user():
     assert(is_admin(admin_uid))
     assert(is_banned(user_uid))

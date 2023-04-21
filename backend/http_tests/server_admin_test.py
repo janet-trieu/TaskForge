@@ -1,3 +1,7 @@
+'''
+Test file for Flask http testing of admin
+'''
+
 import pytest
 import re
 from subprocess import Popen, PIPE
@@ -9,6 +13,7 @@ from src.profile_page import *
 from src.helper import *
 from src.test_helpers import reset_database
 
+# test set up
 port = 8000
 url = f'http://127.0.0.1:{port}'
 
@@ -21,6 +26,8 @@ except:
 else:
     admin_uid = auth.get_user_by_email("admin@gmail.com").uid
     user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
+
+# main tests
 
 def test_give_admin_success():
     """

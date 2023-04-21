@@ -1,4 +1,3 @@
-# Imports
 from firebase_admin import firestore
 from firebase_admin import auth
 from .classes import User

@@ -1,3 +1,7 @@
+'''
+Test file for Flask http testing of achievement
+'''
+
 import pytest
 import requests
 from firebase_admin import auth
@@ -10,6 +14,7 @@ from src.helper import *
 from src.taskboard import *
 from src.achievement import *
 
+# test set up
 try:
     pm_uid = create_user_email("achievements.pm@gmail.com", "admin123", "Project Master")
     tm0_uid = create_user_email("achievements.tm0@gmail.com", "taskmaster0", "Task Master0")

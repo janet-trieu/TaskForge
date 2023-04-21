@@ -30,17 +30,16 @@ class User(object):
         subtasks (list): list of subtask ids that the user has been assigned
         connections (list): list of uids of users that the User has connected to
         reputation (dict): a dict of reviews and averaged scores
-        workload (int)
-        num_projs_completed (int)
-        num_tasks_completed (int)
-        hide_achievements (boolean)
-        outgoing_requests (list)
+        workload (int): sum of task worklaods that are due within 7 days, and their status is either In Progress or In Testing/Review
+        num_projs_completed (int): number of projects the user has completed
+        num_tasks_completed (int): number of tasks the user has completed
+        hide_achievements (boolean): boolean for achievement visibility
         availability (float): float of days available over the next 5 days
         snd (list)
     """
     def __init__(self, uid, tuid, role, picture, DOB, is_admin, is_banned, achievements, projects, pinned_projects, 
                 tasks, subtasks, connections, reputation, workload, num_projs_completed, num_tasks_completed, 
-                hide_achievements, outgoing_requests, availability, snd):
+                hide_achievements, availability, snd):
         self.uid = uid
         self.tuid = tuid
         self.role = role
@@ -59,7 +58,6 @@ class User(object):
         self.num_projs_completed = num_projs_completed
         self.num_tasks_completed = num_tasks_completed
         self.hide_achievements = hide_achievements
-        self.outgoing_requests = outgoing_requests
         self.availability = availability
         self.snd = snd
         
@@ -83,7 +81,6 @@ class User(object):
             "num_projs_completed": self.num_projs_completed,
             "num_tasks_completed": self.num_tasks_completed,
             "hide_achievements": self.hide_achievements,
-            "outgoing_requests":self.outgoing_requests,
             "availability": self.availability,
             "snd": self.snd
         }
@@ -99,7 +96,6 @@ class Epic():
         tasks (list): a list of tuids (int) corresponding to the subtasks belonging to this task
         description (str): a string that corresponds to the task's description
         colour (str): a string that corresponds to the hexadecimal code for the colour for the epic
-
     """
     def __init__(self, eid, pid, tasks, title, description, colour):
         self.eid = eid
@@ -191,7 +187,6 @@ class Subtask():
         workload (int): an int that corresponds to the estimated number of days required to finish this task
         priority (str): a string that corresponds to the prioty of the task. It is either "High", "Moderate", or "Low"
         status (str): a string that corresponds to the task's status. It is either "Not Started", "In Progress", "Testing/Reviewing", or "Done"
-
     """
     def __init__(self, stid, tid, pid, eid, assignees, title, description, deadline, workload, priority, status):
         self.stid = stid

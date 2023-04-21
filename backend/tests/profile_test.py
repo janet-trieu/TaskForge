@@ -6,11 +6,16 @@
 # assigned tasks lists (task id, title, deadline, in order)
 # view other profiles
 
+'''
+Unit test file for Profile Management feature
+'''
+
 import pytest 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
+
 from src.error import *
 from src.profile_page import *
 from src.test_helpers import delete_user

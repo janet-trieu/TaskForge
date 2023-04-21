@@ -1,3 +1,7 @@
+'''
+Unit test file for Connections feature
+'''
+
 from src.connections import *
 from src.error import *
 from src.helper import *
@@ -6,6 +10,7 @@ from src.notifications import *
 from src.global_counters import *
 from src.test_helpers import *
 
+# test set up
 try:
     uid1 = create_user_email("conn1@gmail.com", "conn112312321", "conn1123123")
     uid2 = create_user_email("conn2@gmail.com", "conn241241241", "conn2123123132")
@@ -21,7 +26,7 @@ uid3 = auth.get_user_by_email("conn3@gmail.com").uid
 uid4 = auth.get_user_by_email("conn4@gmail.com").uid
 uid5 = auth.get_user_by_email("conn5@gmail.com").uid
 
-
+# main tests
 
 def test_uid_type_connection_request_respond():
     try:
@@ -29,7 +34,6 @@ def test_uid_type_connection_request_respond():
     except InputError:
         pass
         
-
 #uid1 sending a request to uid2
 def test_success_connection_request_respond_deny():
     assert(not is_connected(uid1, uid2))
@@ -51,7 +55,6 @@ def test_success_connection_request_respond_accept():
     connection_request_respond(uid2, nid, True)
     assert(is_connected(uid1, uid2))
     assert(is_connected(uid2, uid1))
-    
 
 def test_uid_type_get_connection_requests():
     try:
@@ -70,7 +73,6 @@ def test_get_connection_requests():
     assert(result[0].get('uid_sender') == uid1)
     assert(result[1].get('type') == 'connection_request')
     assert(result[1].get('uid_sender') == uid2)
-
 
 def test_uid_type_get_connected_taskmasters():
     try:
@@ -104,12 +106,6 @@ def test_search_taskmaster():
     result = search_taskmasters(uid1, "conn")
     assert(len(result) == 4)
     assert(result[0]["uid"] == uid3)
-
-def test_get_outgoing_requests():
-    notification_connection_request(get_email(uid3), uid5)
-    notification_connection_request(get_email(uid4), uid5)
-    assert(len(get_outgoing_requests(uid5)) == 2)
-
 
 def test_reset():
     reset_database()

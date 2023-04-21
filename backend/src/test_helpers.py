@@ -1,3 +1,6 @@
+'''
+Helper file for helper functions used for testing
+'''
 from firebase_admin import firestore, auth
 from .global_counters import *
 from .profile_page import *

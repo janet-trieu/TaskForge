@@ -8,10 +8,10 @@ Functionalities:
  - calculate_supply_demand(uid)
  - get_supply_and_demand(uid)
 '''
-
-from .helper import *
 from datetime import datetime, timedelta
 import pytz
+
+from .helper import *
 
 def get_user_workload(uid):
     """
@@ -87,6 +87,13 @@ def get_availability_ratio(uid):
     return int(percentage)
     
 def calculate_supply_demand(uid):
+    """
+    Calculate and return the supply and demand value
+    Args:
+        - uid (string): UID of the user we want to calculate snd
+    Returns:
+        - snd (list of dictionary): supply and demand of user
+    """
     check_valid_uid(uid)
     user_ref = db.collection("users").document(str(uid))
     snd = user_ref.get().get("snd")
@@ -108,6 +115,13 @@ def calculate_supply_demand(uid):
     return snd
     
 def get_supply_and_demand(uid):
+    """
+    Get the supply and demand value
+    Args:
+        - uid (string): UID of the user we want to get snd
+    Returns:
+        - snd (list of dictionary): supply and demand of user
+    """
     check_valid_uid(uid)
     calculate_supply_demand(uid)
     user_ref = db.collection("users").document(str(uid))

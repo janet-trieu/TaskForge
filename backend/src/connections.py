@@ -7,10 +7,10 @@ Functionalities:
  - remove_connected_taskmaster(uid, uid_remove)
  - remove_connected_taskmaster(uid, uid_remove)
  - search_taskmasters(uid, search_string)
- - get_outgoing_requests(uid)
 '''
 
 from google.cloud.firestore_v1.transforms import DELETE_FIELD, ArrayUnion
+
 from .error import *
 from .helper import *
 from .profile_page import *
@@ -44,14 +44,6 @@ def connection_request_respond(uid, nid, response):
     u_ref.update({'connections' : ArrayUnion([uid])})
     db.collection('notifications').document(uid).update({nid:DELETE_FIELD})
 
-    #add to outgoing requests list
-    user_ref = db.collection('users').document(str(uid_sender))
-    outgoing = user_ref.get().get("outgoing_requests")
-    for req in outgoing:
-        if (req["uid_requesting"] == uid):
-            outgoing.remove(req)
-            break
-    
     return {}
     
 def get_connection_requests(uid):
@@ -149,9 +141,3 @@ def search_taskmasters(uid, search_string):
         else:
             sorted2.append(user)
     return sorted1 + sorted2 #connected tms first
-    
-def get_outgoing_requests(uid):
-    check_valid_uid(uid)
-    user_ref = db.collection('users').document(str(uid))
-    outgoing = user_ref.get().get("outgoing_requests")
-    return outgoing
