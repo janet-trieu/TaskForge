@@ -8,7 +8,7 @@ Functionalities:
  - calculate_supply_demand(uid)
  - get_supply_and_demand(uid)
 '''
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 
 from .helper import *
@@ -33,8 +33,9 @@ def get_user_workload(uid):
         task_ref = db.collection('tasks').document(str(tid))
         status = task_ref.get().get("status")
         if (status != "In Progress" and status != "Testing/Reviewing"): continue
-        due_date = task_ref.get().get("deadline")
-        if (str(curr_time + timedelta(days = 7)) < str(due_date)): continue #if due within 7 days
+        due_date = str(task_ref.get().get("deadline"))
+
+        if (not within_7_days(due_date)): continue #if due within 7 days
         task_wl = int(task_ref.get().get("workload"))
         if (task_wl is None):
             task_wl = 0

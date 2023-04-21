@@ -3,6 +3,7 @@ Helper file for different helper functions
 '''
 
 from firebase_admin import firestore, auth
+from datetime import datetime, timedelta
 
 from .error import *
 from .global_counters import *
@@ -267,3 +268,16 @@ def is_user_project_master(pid, uid):
         return 0
     else:
         raise AccessError(f"ERROR: Supplied user id:{uid} is not the project master of project:{pid}")
+        
+def within_7_days(due):
+    stripped = due[:-22]
+    y = int(stripped[:4])
+    d = int(stripped[:2])
+    m = int(stripped[5:7])
+    
+    curr_time = datetime.now()
+    in_one_week = (curr_time + timedelta(days=7))
+    due_date = datetime(y, m, d)
+    if (due_date < curr_time and due_date < in_one_week):
+        return True
+    return False
