@@ -1,14 +1,17 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import { makeRequest } from "../helpers";
 
 const ProjectReviewModalContent = forwardRef((props, ref) => {
-
+  const [buttonText, setButtonText] = useState("Send Review");
   const idx = props.memberUids.findIndex((member) => {return member === props.uid});
   const memberNames = props.memberNames.toSpliced(idx, 1);
   const memberUids = props.memberUids.toSpliced(idx, 1);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
 
     const body= {
       reviewee_uid: event.target.reviewee.value,
@@ -19,7 +22,8 @@ const ProjectReviewModalContent = forwardRef((props, ref) => {
       comment: event.target.comment.value
     }
 
-    const data = await makeRequest("/reputation/add_review", "POST", body, props.uid)
+    const data = await makeRequest("/reputation/add_review", "POST", body, props.uid);
+    setButtonText("Send Review");
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else props.handleClose();
   }
@@ -65,7 +69,7 @@ const ProjectReviewModalContent = forwardRef((props, ref) => {
       <textarea name='remove' id='comment' placeholder="Enter a commment..." />
       <br />
       <br />
-      <button type="submit">Send Review</button>&nbsp;&nbsp;
+      <button type="submit">{buttonText}</button>&nbsp;&nbsp;
       <button onClick={() => props.handleClose()} style={{backgroundColor: 'gray'}}>Cancel</button>
     </form>
   );

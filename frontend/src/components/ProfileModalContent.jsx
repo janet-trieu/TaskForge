@@ -5,14 +5,22 @@ import defaultProfilePic from '../assets/default project icon.png'
 const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, firebaseApp }, ref) => {
   const [icon, setIcon] = useState(details.photo_url || defaultProfilePic);
   const [achievementVisible, setAchievementVisible] = useState(false);
+  const [buttonText, setButtonText] = useState("Save Changes");
+  const [reputuationVisible, setReputationVisible] = useState(false);
 
   useEffect(async () => {
-    const data = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, details.uid);
-    setAchievementVisible(data);
+    const achData = await makeRequest(`/achievements/get_hide_visibility?uid=${details.uid}`, 'GET', null, details.uid);
+    const repData = await makeRequest(`/reputation/get_visibility?uid=${details.uid}`, 'GET', null, details.uid);
+    setAchievementVisible(achData);
+    setReputationVisible(repData);
   }, []);
 
   const handleSave = async (event) => {
     event.preventDefault();
+
+    if (buttonText === "...") return;
+    setButtonText("...");
+
     let newDetails = details;
     newDetails.display_name = event.target.name.value;
     newDetails.role = event.target.role.value;
@@ -28,6 +36,7 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
     }
     await makeRequest('/profile/update', 'PUT', body, uid)
     setDetails(newDetails);
+    setButtonText("Save Changes");
     handleClose();
   }
 
@@ -42,9 +51,14 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
     }
   }
 
-  const handleToggle = async (event) => {
+  const handleAchievementToggle = async (event) => {
     const data = await makeRequest('/achievements/toggle_visibility', 'POST', { action: event.target.checked }, details.uid);
     setAchievementVisible(data);
+  }
+
+  const handleReputationToggle = async (event) => {
+    const data = await makeRequest('/reputation/toggle_visibility', 'POST', { visibility: event.target.checked }, details.uid);
+    setReputationVisible(data);
   }
 
   return (
@@ -68,11 +82,17 @@ const ProfileModalContent = forwardRef(({ details, setDetails, handleClose, fire
         <br />
         <label htmlFor="achievement-visbility" style={{fontWeight: 'bold'}}>Hide Achievements</label><br />
         <label className="switch">
-          <input onChange={handleToggle} type="checkbox" id="toggle-achievement-visibility" defaultChecked={achievementVisible} />
+          <input onChange={handleAchievementToggle} type="checkbox" id="toggle-achievement-visibility" checked={achievementVisible} />
           <span className="slider round"></span>
         </label><br />
         <br />
-        <button type="submit">Save Changes</button>
+        <label htmlFor="reputation-visbility" style={{fontWeight: 'bold'}}>Show Reputation</label><br />
+        <label className="switch">
+          <input onChange={handleReputationToggle} type="checkbox" id="toggle-reputation-visibility" checked={reputuationVisible} />
+          <span className="slider round"></span>
+        </label><br />
+        <br />
+        <button type="submit">{buttonText}</button>
       </form>
     </div>
   );

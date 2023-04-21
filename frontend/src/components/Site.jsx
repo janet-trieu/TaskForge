@@ -8,7 +8,6 @@ import Tasks from '../pages/Tasks.jsx';
 import Header from './Header.jsx';
 import Sidebar from './Sidebar.jsx';
 import ProjectBoardView from '../pages/ProjectBoardView.jsx';
-import ProjectTaskView from '../pages/ProjectTaskView.jsx';
 import Achievements from '../pages/Achievements.jsx';
 import Reputation from '../pages/Reputation.jsx';
 import SND from '../pages/SND.jsx';
@@ -24,8 +23,6 @@ const Site = ({ firebaseApp }) => {
           <Route path='/projects' element={<Projects firebaseApp={firebaseApp} />} />
           <Route path='/projects/create' element={<CreateProject firebaseApp={firebaseApp}/>} />
           <Route path='/projects/:pid' element={<ProjectBoardView firebaseApp={firebaseApp}/>} />
-          <Route path='/projects/:pid/board' element={<ProjectBoardView firebaseApp={firebaseApp}/>} />
-          <Route path='/projects/:pid/task' element={<ProjectTaskView firebaseApp={firebaseApp}/>} />
           <Route path='/tasks' element={<Tasks firebaseApp={firebaseApp} />} />
           <Route path='/tasks/:uid' element={<Tasks firebaseApp={firebaseApp} />} />
           <Route path='/profile' element={<Profile firebaseApp={firebaseApp} />} />

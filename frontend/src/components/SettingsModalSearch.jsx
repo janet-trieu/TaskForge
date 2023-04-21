@@ -4,6 +4,7 @@ import './Searchbar.css';
 import { makeRequest } from "../helpers";
 
 const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, warning }, ref) => {
+  const [buttonText, setButtonText] = useState(action);
   const handleConfirm = async (action, warning, event) => {
     event.preventDefault();
     if (!event.target.searchbar.value) {
@@ -39,7 +40,9 @@ const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, w
           route = "readd_user";
           break;
       }
+      setButtonText("...");
       const data = makeRequest(`/admin/${route}`, 'POST', {uid_user: event.target.searchbar.value}, firebaseApp.auth().currentUser.uid);
+      setButtonText(action);
       if (data.error) alert(data.error);
     }
     onClose();
@@ -57,7 +60,7 @@ const SettingsModalSearch = forwardRef(({ firebaseApp, title, onClose, action, w
           </div>
           <div className="settings-modal-footer">
             <button className="button-cancel" onClick={onClose}>Cancel</button>
-            <button className="button-confirm" type="submit" >{action}</button>
+            <button className="button-confirm" type="submit" >{buttonText}</button>
           </div>
         </form>
       </div>

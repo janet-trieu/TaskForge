@@ -5,6 +5,8 @@ import defaultProjectIcon from "../assets/default project icon.png"
 
 const CreateProject = ({ firebaseApp }) => {
   const [icon, setIcon] = useState(defaultProjectIcon);
+  const [buttonText, setButtonText] = useState("Create");
+
   const navigate = useNavigate();
 
   const uploadHandler = async (event) => {
@@ -21,6 +23,9 @@ const CreateProject = ({ firebaseApp }) => {
   const createButtonHandler = async (event) => {
     event.preventDefault();
 
+    if (buttonText === "...") return;
+    setButtonText("...");
+
     const body = {
       name: event.target.name.value,
       description: event.target.description.value,
@@ -29,21 +34,22 @@ const CreateProject = ({ firebaseApp }) => {
       picture: icon
     }
 
-    if (!body.name) {alert('Please enter a project name.'); return;}
-    if (!body.description) {alert('Please enter a project type.'); return;}
-    if (body.picture === defaultProjectIcon) {alert('Please upload a project icon.'); return;}
+    if (!body.name) {alert('Please enter a project name.'); setButtonText("Create"); return;}
+    if (!body.description) {alert('Please enter a project type.'); setButtonText("Create"); return;}
+    if (body.picture === defaultProjectIcon) {alert('Please upload a project icon.'); setButtonText("Create"); return;}
 
     const uid = await firebaseApp.auth().currentUser.uid;
     const data1 = await makeRequest("/projects/create", "POST", body, uid);
+    setButtonText("Create");
     if (data1.error) alert(data1.error);
     else {
       if (event.target.invites.value) {
+        setButtonText("...");
         const invites = event.target.invites.value.split(", ");
-        const data2 = await makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: data1}, uid)
+        const data2 = await makeRequest('/projects/invite', "POST", {receiver_emails: invites, pid: data1}, uid);
+        setButtonText("Create");
         if (data2.error) {alert(data2.error); return;}
-      }
-      
-      alert('Project has been successfully created!');
+      }      
       navigate('/projects');
     }
   };
@@ -70,7 +76,7 @@ const CreateProject = ({ firebaseApp }) => {
         <br />
         <button style={{backgroundColor: 'gray'}} onClick={cancelButtonHandler}>Cancel</button>
         &nbsp;&nbsp;
-        <button type='submit'>Create</button>
+        <button type='submit'>{buttonText}</button>
       </form>
     </div>
   )

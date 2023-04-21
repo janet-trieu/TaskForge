@@ -1,17 +1,26 @@
-# Imports
-from firebase_admin import firestore
-from firebase_admin import auth
+"""
+Feature: [Novelty: Reputation]
+Functionalities:
+    - write_review()
+    - update_review()
+    - delete_review()
+    - update_average()
+    - check_review()
+    - view_reviews()
+    - get_avg_reviews()
+    - get_avg_overall_profile()
+    - get_avg_overall_conn()
+    - change_review_visibility()
+"""
 
-from .global_counters import *
+# Imports
 from .error import *
-from .notifications import *
-from .helper import *
-from .profile_page import *
-from .achievement import *
+from .achievement import check_achievement
 from .classes import Review
-import re
-import time
-from datetime import datetime, time
+from datetime import datetime
+from .helper import *
+from .profile_page import get_display_name
+from .notifications import notification_review
 
 ### ========= Write Review ========= ###
 def write_review(reviewer_uid, reviewee_uid, pid, communication, time_management, task_quality, comment):
@@ -346,6 +355,17 @@ def change_review_visibility(uid, visibility):
     reputation_doc = db.collection("users").document(str(uid)).get().get("reputation")
     reputation_doc["visibility"] = visibility
     db.collection("users").document(str(uid)).update({"reputation": reputation_doc})
+
+def get_review_visibility(uid):
+    '''
+    Check if the user has turned on or off reputation visibility
+    Args:
+        - uid (user id)
+    Returns:
+        - visibility (boolean)
+    '''
+    reputation_doc = db.collection("users").document(str(uid)).get().get("reputation")
+    return reputation_doc["visibility"]
 
 # ### ========= get total number of reviews written ========= ###
 # def get_number_of_reviews_written(uid):

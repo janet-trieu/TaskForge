@@ -1,9 +1,40 @@
+"""
+Feature: Profile Management
+Functionalities:
+    - create_user_email()
+    - update_email()
+    - update_display_name()
+    - update_password()
+    - update_photo()
+    - update_role()
+    - update_DOB()
+    - update_user_num_tasks_completed()
+    - update_user_num_projs_completed()
+    - get_tuid()
+    - get_display_name()
+    - get_photo()
+    - get_email()
+    - get_role()
+    - get_DOB()
+    - get_user_projects()
+    - get_tasks()
+    - get_connection_list()
+    - get_user_achievements()
+    - get_user_num_tasks_completed()
+    - get_user_num_projs_completed()
+    - is_admin()
+    - is_banned()
+    - is_removed()
+    - get_uid_from_email()
+    - create_user_firestore()
+    - get_user_ref()
+    - is_valid_user()
+"""
+
+# Imports
 from firebase_admin import firestore
 from firebase_admin import auth
 from .classes import User
-
-from .global_counters import *
-from .classes import *
 from .error import *
 from .notifications import *
 from .helper import make_admin

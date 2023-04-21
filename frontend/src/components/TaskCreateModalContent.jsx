@@ -1,8 +1,8 @@
-import React, { forwardRef } from "react";
+import React, { useState, forwardRef } from "react";
 import { makeRequest } from "../helpers";
 
 const TaskCreateModalContent = forwardRef((props, ref) => {
-
+  const [buttonText, setButtonText] = useState("Create");
   const epicList = []
   for (const epic of props.epics) {
     epicList.push(<option value={epic.title}>{epic.title}</option>);
@@ -10,6 +10,8 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (buttonText === "...") return;
+    setButtonText("...");
     const assigneesValue = event.target.assignees.value;
     const assignees = assigneesValue ? assigneesValue.split(", ") : [];
     let eid = null;
@@ -28,10 +30,11 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
       status: event.target.status.value
     }
 
-    if (!body.title) {alert('Please enter a task title.'); return;}
-    if (!body.description) {alert('Please enter a task description.'); return;}
+    if (!body.title) {alert('Please enter a task title.'); setButtonText("Create"); return;}
+    if (!body.description) {alert('Please enter a task description.'); setButtonText("Create"); return;}
 
     const data = await makeRequest("/task/create", "POST", body, props.uid);
+    setButtonText("Create");
     if (data.code && data.code !== 200) alert(`${data.name}\n${data.message}`);
     else {
       // insert task to board??
@@ -104,10 +107,8 @@ const TaskCreateModalContent = forwardRef((props, ref) => {
         <label htmlFor="high">High</label>
       </div>
     </div>
-      
       <br />
-      <br />
-      <button type="submit">Save Changes</button>
+      <button type="submit">{buttonText}</button>
     </form>
   );
 });

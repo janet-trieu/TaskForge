@@ -12,6 +12,7 @@ from src.test_helpers import *
 from src.workload import *
 from src.taskboard import *
 from src.projmaster import *
+from src.tasks import create_task
 
 # test set up
 try:

@@ -48,7 +48,7 @@ const ProjectBoardView = ({ firebaseApp }) => {
       setDetails(data);
       setDetailsIsLoading(false);
       setIsCompleted(data.status === 'Completed');
-      setIsPM(data.uid === uid);
+      setIsPM(data.pm_uid === uid);
     }
     
     const data1 = await makeRequest(`/taskboard/show?pid=${pid}&hidden=true`, 'GET', null, uid);
