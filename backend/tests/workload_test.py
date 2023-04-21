@@ -16,11 +16,11 @@ from src.tasks import create_task
 
 # test set up
 try:
-    uid = create_user_email("work1@gmail.com", "wl112312321", "wl1123123")
+    uid = create_user_email("work2221@gmail.com", "wl112312321", "wl1123123")
 except auth.EmailAlreadyExistsError:
     pass
 
-uid = auth.get_user_by_email("work1@gmail.com").uid
+uid = auth.get_user_by_email("work2221@gmail.com").uid
 pid = create_project(uid, "Project 123", "description", None, None)
 
 # main tests
@@ -31,6 +31,8 @@ def test_get_user_workload():
     create_task(uid, pid, None, [], "", "", curr_time + datetime.timedelta(minutes=100), 2, "Low", "In Progress")
     assert(get_user_workload(uid) == 2)
     create_task(uid, pid, None, [], "", "", curr_time + datetime.timedelta(minutes=100), 3, "Low", "In Progress")
+    assert(get_user_workload(uid) == 5)
+    create_task(uid, pid, None, [], "", "", curr_time + datetime.timedelta(days=100), 3, "Low", "In Progress")
     assert(get_user_workload(uid) == 5)
     
 def test_update_availability():
