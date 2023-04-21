@@ -50,4 +50,4 @@ In the second terminal, run the frontend server.
 - Navigate to the “frontend” folder in the repo.
 - Run “npm run dev”.
 
-Open “http://localhost:5173” in a browser.
+Open http://localhost:5173 in a browser.
