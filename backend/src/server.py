@@ -177,7 +177,8 @@ def flask_revive_project():
 def flask_remove_project_member():
     data = request.get_json()
     uid = request.headers.get('Authorization')
-    res = remove_project_member(data["pid"], uid, data["uid_to_be_removed"])
+    uid_to_be_removed = auth.get_user_by_email(data["email_removed"]).uid
+    res = remove_project_member(data["pid"], uid, uid_to_be_removed)
     return dumps(res)
 
 @app.route("/projects/invite", methods=["POST"])
