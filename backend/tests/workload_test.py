@@ -1,3 +1,8 @@
+'''
+Unit test file for Workload feature
+'''
+import datetime
+
 from src.error import *
 from src.helper import *
 from src.profile_page import *
@@ -8,8 +13,8 @@ from src.workload import *
 from src.taskboard import *
 from src.projmaster import *
 from src.tasks import create_task
-import datetime
 
+# test set up
 try:
     uid = create_user_email("work1@gmail.com", "wl112312321", "wl1123123")
 except auth.EmailAlreadyExistsError:
@@ -17,7 +22,9 @@ except auth.EmailAlreadyExistsError:
 
 uid = auth.get_user_by_email("work1@gmail.com").uid
 pid = create_project(uid, "Project 123", "description", None, None)
- 
+
+# main tests
+
 def test_get_user_workload():
     assert(get_user_workload(uid) == 0)
     curr_time = datetime.datetime.now()

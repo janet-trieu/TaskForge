@@ -10,6 +10,7 @@ from src.helper import *
 from src.projects import *
 from src.profile_page import *
 
+# test set up
 try:
     pm_uid = create_user_email("projtest.pm@gmail.com", "admin123", "Project Master")
 except auth.EmailAlreadyExistsError:

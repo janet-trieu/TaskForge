@@ -1,3 +1,7 @@
+'''
+Helper file for different helper functions
+'''
+
 from firebase_admin import firestore, auth
 
 from .error import *

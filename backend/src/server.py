@@ -5,7 +5,6 @@ from flask_mail import Mail, Message
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, Response
-# from waitress import serve
 
 from.achievement import *
 from .authentication import *
@@ -64,7 +63,7 @@ def flask_reset_password():
         mail.send(msg)
         return dumps(res)
     
-#Profile Routes#
+#--- Profile Routes ---#
 @app.route('/profile/details', methods=['GET'])
 def user_details():
     # name, email, role, photo_url, num_connections, rating
@@ -115,8 +114,7 @@ def create_user():
     create_user_firestore(uid)
     return Response(status=200)
 
-
-#ADMIN ROUTES#
+#--- Admin Routes ---#
 @app.route("/admin/is_admin", methods=["GET"])
 def admin_is_admin():
     uid = request.headers.get('Authorization')
@@ -162,7 +160,7 @@ def admin_remove_user():
     uid_user = auth.get_user_by_email(data["uid_user"]).uid
     return dumps(remove_user(uid_admin, uid_user))
 
-#PROJECT MASTER ROUTES
+#--- Project Master Routes ---#
 @app.route("/projects/create", methods=["POST"])
 def flask_create_project():
     data = request.get_json()
@@ -205,16 +203,6 @@ def flask_invite_to_project():
 
     res = invite_to_project(data["pid"], sender_uid, uid_list)
 
-    # # Send email to all users in uid_list
-    # for uid, data in res.items():
-    #     receipient_email = data[0]
-    #     msg_title = data[1]
-    #     msg_body = data[2]
-
-    #     msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
-    #     msg.body = msg_body
-    #     mail.send(msg)
-
     return dumps(res)
 
 @app.route("/projects/update", methods=["POST"])
@@ -231,7 +219,7 @@ def flask_delete_project():
     res = delete_project(int(data["pid"]), uid)
     return dumps(res)
 
-# NOTIFICATIONS ROUTES #
+#--- Notification Routes ---#
 
 @app.route('/notifications/get', methods=['GET'])
 def flask_get_notifications():
@@ -249,19 +237,13 @@ def flask_clear_all_notifications():
     uid = request.headers.get('Authorization')
     return dumps(clear_all_notifications(uid))
 
-
 @app.route('/notification/connection/request', methods=['POST'])
 def flask_notification_connection_request():
     data = request.get_json()
     uid = request.headers.get('Authorization')
     return dumps(notification_connection_request(data["user_email"], uid))
 
-@app.route('/notifications/get_outgoing_requests', methods=['GET'])
-def flask_get_outgoing_requests():
-    uid = request.headers.get('Authorization')
-    return dumps(get_outgoing_requests(uid))
-
-# PROJECT MANAGEMENT ROUTES #
+#--- Project Management Routes ---#
 @app.route("/projects/view", methods=["GET"])
 def flask_view_project():
     pid = int(request.args.get('pid'))
@@ -295,8 +277,7 @@ def flask_pin_project():
     res = pin_project(data["pid"], uid, data["action"])
     return dumps(res)
 
-# CONNECTION ROUTES #
-
+#--- Connection Routes ---#
 @app.route("/connections/request_respond", methods=["POST"])
 def flask_connection_request_respond():
     """
@@ -356,7 +337,7 @@ def flask_search_taskmasters():
     data = request.get_json()
     return dumps(search_taskmasters(uid, data["search_string"]))
     
-# TASK MANAGEMENT #	
+#--- Task Management Routes ---#
 @app.route('/upload_file1', methods = ['POST'])
 def flask_upload_file():
     """
@@ -463,7 +444,7 @@ def flask_subtask_assign():
     uid = request.headers.get("Authorization")
     return dumps(assign_subtask(uid, data["stid"], data["new_assignees"]))
 
-# Update task management
+# UPDATE #
 @app.route("/epic/update", methods=["POST"])
 def flask_epic_update():
     """
@@ -505,7 +486,7 @@ def flask_task_comment():
     uid = request.headers.get("Authorization")
     return dumps(comment_task(uid, data["tid"], data["comment"]))
 
-# Taskboard
+# TASKBOARD #
 @app.route("/taskboard/show", methods=["GET"])
 def flask_taskboard_show():
     """
@@ -516,7 +497,7 @@ def flask_taskboard_show():
     hidden = request.args.get("hidden")
     return dumps(get_taskboard(uid, int(pid), bool(hidden)), indent=4, sort_keys=True, default=str)
 
-# Search task in project
+# SEARCH #
 @app.route("/taskboard/search", methods=["GET"])
 def flask_taskboard_search():
     """
@@ -527,7 +508,7 @@ def flask_taskboard_search():
     query = request.args.get("query")
     return dumps(search_taskboard(uid, pid, query))
 
-# Assigned Task List
+# ASSIGNED TASK LIST #
 @app.route("/tasklist/show", methods=["GET"])
 def flask_tasklist_show():
     """
@@ -550,7 +531,7 @@ def flask_tasklist_search():
     query_deadline = request.args.get("query_deadline")
     return dumps(search_tasklist(uid, query_tid, query_title, query_description, query_deadline))
 
-# Achievements
+#--- Achievement Routes ---#
 @app.route("/achievements/view/my", methods=["GET"])
 def flask_view_achievements():
     uid = request.headers.get("Authorization")
@@ -605,7 +586,7 @@ def flask_get_name_achievement():
     display_name = str(get_display_name(uid))
     return dumps({"display_name": display_name})
 
-# Reputation
+#--- Reputation Routes ---#
 @app.route("/reputation/add_review", methods=["POST"])
 def flask_add_review():
     reviewer_uid = request.headers.get("Authorization")
@@ -646,7 +627,7 @@ def flask_get_avg_reviews():
     viewee_uid = request.args.get("viewee_uid")
     return dumps(get_avg_reviews(viewer_uid, viewee_uid))
 
-#Workload
+#--- Workload Routes ---#
 @app.route("/workload/get_user_workload", methods=["GET"])
 def flask_get_user_workload():
     """
@@ -701,7 +682,3 @@ def flask_subtask_get_all():
     uid = request.headers.get("Authorization")
     tid = int(request.args.get('tid'))
     return dumps(get_all_subtasks(uid, tid))
-
-# if __name__ == "__main__":
-#     # app.run(port=8000, debug=True)
-#     serve(app, host="0.0.0.1", port=8000, debug=True)

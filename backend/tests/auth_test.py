@@ -1,16 +1,20 @@
 '''
-Test file for authentication user-invoked reset password
+Unit test file for Authentication feature (only reset password)
 '''
 import pytest
+
 from src.authentication import *
 from src.profile_page import *
 
+# test set up
 try:
     create_user_email("authtest0@gmail.com", "password123", "Auth Doe")
 except auth.EmailAlreadyExistsError:
     pass
 
 user_id = auth.get_user_by_email("authtest0@gmail.com").uid
+
+# main tests
 
 def test_reset_password():
 

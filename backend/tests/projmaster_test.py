@@ -9,6 +9,7 @@ from src.profile_page import *
 from src.test_helpers import *
 from src.helper import *
 
+# test set up
 try:
     pm_uid = create_user_email("projectmaster@gmail.com", "admin123", "Project Master")
     tm0_uid = create_user_email("pmtest.tm0@gmail.com", "taskmaster0", "Task Master0")

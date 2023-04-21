@@ -173,16 +173,6 @@ def notification_connection_request(user_email, uid_sender):
 
     db.collection("notifications").document(str(uid)).update(notification)
 
-    user_ref = db.collection('users').document(str(uid_sender))
-    outgoing = user_ref.get().get("outgoing_requests")
-    data = {
-        "time_sent": str(datetime.now()),
-        "nid": nid,
-        "uid_requesting": get_uid_from_email2(user_email),
-        "display_name": get_display_name(get_uid_from_email2(user_email))
-    }
-    outgoing.append(data)
-    user_ref.update({"outgoing_requests":outgoing})
     return nid
 
 def notification_project_invite(uid, uid_sender, pid):

@@ -123,5 +123,3 @@ def update_tuid():
     value = get_curr_tuid() + 1
 
     tu_doc.update({"tuid": value})
-
-    

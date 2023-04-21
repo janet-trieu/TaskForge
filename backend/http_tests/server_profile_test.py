@@ -1,13 +1,19 @@
+'''
+Test file for Flask http testing of profile management
+'''
+
 import pytest
 import re
 from subprocess import Popen, PIPE
 import signal
 from time import sleep
 import requests
+
 from src.authentication import *
 from src.test_helpers import *
 from src.profile_page import *
  
+# test set up
 port = 8000
 url = f"http://localhost:{port}/"
 
