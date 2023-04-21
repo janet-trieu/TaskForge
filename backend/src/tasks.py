@@ -15,6 +15,9 @@ Functionalities:
 """
 from firebase_admin import firestore
 from firebase_admin import auth
+from google.cloud.firestore_v1.transforms import ArrayUnion
+import os
+
 from .classes import Task
 from .error import *
 from .helper import *
@@ -23,8 +26,6 @@ import datetime
 from .notifications import *
 from .achievement import *
 from .epics import get_epic_ref
-from google.cloud.firestore_v1.transforms import ArrayUnion
-import os
 
 ### ========= TASKS ========= ###
 ### ========= Create Task ========= ###
@@ -214,6 +215,7 @@ def delete_task(uid, tid):
     task_ref = get_task_ref(tid)
     subtasks = task_ref.get('subtasks')
     for subtask in subtasks:
+        from .subtasks import delete_subtask
         delete_subtask(uid, subtask)
     
     # Remove task from epic

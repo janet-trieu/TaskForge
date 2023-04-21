@@ -17,7 +17,7 @@ from datetime import datetime, time
 # ============ SET UP ============ #
 db = firestore.client()
 
-# Create new users
+# test set up
 try:
     uid1 = create_user_email("reputationtest1@gmail.com", "password123", "user1")
     uid2 = create_user_email("reputationtest2@gmail.com", "password123", "user2")
@@ -37,10 +37,7 @@ add_tm_to_project(pid1, uid2)
 update_project(pid1, uid1, {"status": "Completed"})
 add_tm_to_project(pid2, uid2)
 
-def test_datetime():
-    now = datetime.now()
-    return
-
+# main tests
 
 # Test: Valid Review with comment
 def test_valid_review_comment():
@@ -59,7 +56,6 @@ def test_invalid_review_no_project():
     with pytest.raises(InputError):
         write_review(uid1, uid2, 1000000, "5", "5", "5", "Very good")
     
-
 # Test: Invalid Review, not in same project
 def test_invalid_review_not_in_same_project():
     with pytest.raises(InputError):

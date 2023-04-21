@@ -58,6 +58,9 @@ def check_achievement(a_type, uid):
             return 1
     elif a_type == "connection":
         n_conns = len(db.collection("users").document(uid).get().get("connections"))
+        print(f"this is uid in ach: {uid}")
+        print(f"this is ncons: {n_conns}")
+        print(f"this is list of connections: {db.collection('users').document(uid).get().get('connections')}")
         if n_conns >= 3 and check_user_has_achievement(uid, 4) == False:
             give_achievement(uid, 4)
         else:
@@ -179,7 +182,14 @@ def share_achievement(uid, receiver_uids, aid):
 
     user_ref = db.collection("users").document(uid)
 
-    if aid in list_unachieved(uid):
+    cur_achievements = user_ref.get().get("achievements")
+
+    aid_list = []
+
+    for i in cur_achievements:
+        aid_list.append(i["aid"])
+
+    if aid not in aid_list:
         raise InputError("ERROR: Cannot share an achievement you have not gotten")
          
     for id in receiver_uids:

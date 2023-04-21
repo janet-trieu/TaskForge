@@ -42,7 +42,6 @@ def test_user_details_failure():
 
     assert resp.status_code == 400
 
-
 def test_update_profile_success():
     """
     Succeeding to update a user's details

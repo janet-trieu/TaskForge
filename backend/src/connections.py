@@ -33,9 +33,9 @@ def connection_request_respond(uid, nid, response):
     uid_sender = nid_ref.get().get(nid).get('uid_sender')
     db.collection('notifications').document(uid).update({nid:DELETE_FIELD})
     if response == True:
-        notification_accepted_request(uid_sender, uid)
+        notification_accepted_request(uid, uid_sender)
     else:
-        notification_denied_request(uid_sender, uid)
+        notification_denied_request(uid, uid_sender)
         return {}
     #add each other to each connection list
     u_ref = db.collection('users').document(uid)

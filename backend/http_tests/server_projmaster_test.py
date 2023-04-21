@@ -189,10 +189,12 @@ def test_remove_project_member():
     add_tm_to_project(pid, tm2_uid)
     add_tm_to_project(pid, tm3_uid)
 
+    tm1_email = get_email(tm1_uid)
+
     header = {'Authorization': pm_uid}
     remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": pid,
-        "uid_to_be_removed": tm1_uid
+        "email_removed": tm1_email
     })
 
     assert remove_resp.status_code == 200
@@ -207,10 +209,12 @@ def test_remove_project_member_not_proj_master():
 
     add_tm_to_project(pid, tm1_uid)
 
+    tm1_email = get_email(tm1_uid)
+
     header = {'Authorization': tm2_uid}
     remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": pid,
-        "uid_to_be_removed": tm1_uid
+        "email_removed": tm1_email
     })
 
     assert remove_resp.status_code == 403
@@ -227,10 +231,12 @@ def test_remove_project_member_invalid_pid():
     add_tm_to_project(pid, tm2_uid)
     add_tm_to_project(pid, tm3_uid)
 
+    tm1_email = get_email(tm1_uid)
+
     header = {'Authorization': pm_uid}
     remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": -1,
-        "uid_to_be_removed": tm1_uid
+        "email_removed": tm1_email
     })
 
     assert remove_resp.status_code == 400
@@ -242,10 +248,12 @@ def test_remove_invalid_project_member():
 
     pid = create_project(pm_uid, "Project 123", "description", None, None)
 
+    tm1_email = get_email(tm1_uid)
+
     header = {'Authorization': pm_uid}
     remove_resp = requests.post(url + "projects/remove", headers=header, json={
         "pid": pid,
-        "uid_to_be_removed": tm1_uid
+        "email_removed": tm1_email
     })
 
     assert remove_resp.status_code == 400
@@ -259,8 +267,11 @@ def test_invite_to_project():
     tm0_email = auth.get_user(tm0_uid).email
     pid = create_project(pm_uid, "Project 123", "description", None, None)
 
-    nid = notification_connection_request(tm0_email, pm_uid)
-    connection_request_respond(tm0_uid, nid, True)
+    try:
+        nid = notification_connection_request(tm0_email, pm_uid)
+        connection_request_respond(tm0_uid, nid, True)
+    except AccessError:
+        pass
 
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
@@ -278,12 +289,15 @@ def test_multiple_invite_to_project():
 
     pid = create_project(pm_uid, "Project 123", "description", None, None)
 
-    nid1 = notification_connection_request(tm1_email, pm_uid)
-    nid2 = notification_connection_request(tm2_email, pm_uid)
-    nid3 = notification_connection_request(tm3_email, pm_uid)
-    connection_request_respond(tm1_uid, nid1, True)
-    connection_request_respond(tm2_uid, nid2, True)
-    connection_request_respond(tm3_uid, nid3, True)
+    try:
+        nid1 = notification_connection_request(tm1_email, pm_uid)
+        nid2 = notification_connection_request(tm2_email, pm_uid)
+        nid3 = notification_connection_request(tm3_email, pm_uid)
+        connection_request_respond(tm1_uid, nid1, True)
+        connection_request_respond(tm2_uid, nid2, True)
+        connection_request_respond(tm3_uid, nid3, True)
+    except AccessError:
+        pass
 
     header = {'Authorization': pm_uid}
     invite_resp = requests.post(url + "projects/invite", headers=header, json={
