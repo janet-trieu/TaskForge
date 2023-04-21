@@ -262,7 +262,7 @@ def comment_task(uid, tid, comment):
         raise InputError("Comment must not be empty")
     if len(comment) > 1000:
         raise InputError("Comment must not be longer than 1000 characters")
-    now = datetime.datetime.now()
+    now = datetime.now()
     data = {
         "time": now.strftime("%d/%m/%Y"),
         "uid": uid,
@@ -299,7 +299,7 @@ def upload_file(uid, fileName, destination_name, tid):
     link = storage_upload_file(fileName, path)
     
     data = {
-        "time": datetime.datetime.now(),
+        "time": datetime.now(),
         "uid": uid,
         "display_name": get_display_name(uid),
         "comment": "",
@@ -371,7 +371,7 @@ def change_task_status(uid, tid, status):
         raise InputError("Not a valid status")
     
     if status == "Completed":
-        now = datetime.datetime.now()
+        now = datetime.now()
         db.collection("tasks").document(str(tid)).update({"completed": now.strftime("%d/%m/%Y")})
         # incremenet number of tasks completed
         update_user_num_tasks_completed(uid)
@@ -443,7 +443,7 @@ def update_task(uid, tid, eid, title, description, deadline, workload, priority,
         raise InputError(f'description is not a string')
     else:
         db.collection("tasks").document(str(tid)).update({'description': description})
-    if deadline and not datetime.datetime.strptime(deadline, "%d/%m/%Y"):
+    if deadline and not datetime.strptime(deadline, "%d/%m/%Y"):
         raise InputError(f'deadline is not valid')
     else:
         db.collection("tasks").document(str(tid)).update({'deadline': deadline})
