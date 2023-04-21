@@ -14,14 +14,15 @@ from src.helper import *
 
 # test set up
 try:
-    admin_uid = create_user_email("admin1@gmail.com", "admin121233", "Admin Ad123min")
-    user_uid = create_user_email("admintest.tm1@gmail.com", "taskmaster1", "Task Master1")
-    create_admin(admin_uid)
-except:
-    print("admin and user already created")
-else:
-    admin_uid = auth.get_user_by_email("admin1@gmail.com").uid
-    user_uid = auth.get_user_by_email("admintest.tm1@gmail.com").uid
+    admin_uid = create_user_email("admin21@gmail.com", "admin121233", "Admin Ad123min")
+
+    user_uid = create_user_email("admintest.tm12@gmail.com", "taskmaster1", "Task Master1")
+except auth.EmailAlreadyExistsError:
+    pass
+
+admin_uid = auth.get_user_by_email("admin21@gmail.com").uid
+user_uid = auth.get_user_by_email("admintest.tm12@gmail.com").uid
+make_admin(admin_uid)
 
 # main tests
 
@@ -127,6 +128,3 @@ def test_remove_user():
         check_user_in_subtask(user_uid, tid, stid)
     except InputError:
         pass
-
-def test_reset():
-    reset_database()

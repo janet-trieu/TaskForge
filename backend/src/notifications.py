@@ -21,6 +21,7 @@ Functionalities:
 '''
 from firebase_admin import firestore, auth
 from datetime import datetime
+
 from .error import *
 from .helper import *
 
@@ -90,6 +91,9 @@ def get_notifications(uid):
 
     # Sort notification dictionaries by time_sent in descending order
     sorted_notifications = sorted(notf_data.values(), key=lambda x: x['time_sent'], reverse=True)
+
+    from .achievement import check_achievement
+    check_achievement("connection", uid)
 
     return sorted_notifications
 
@@ -425,9 +429,6 @@ def notification_accepted_request(uid, uid_sender):
             "nid": nid
         }
     }
-
-    from .achievement import check_achievement
-    check_achievement("connection", uid)
 
     db.collection("notifications").document(uid).update(notification)
     return nid

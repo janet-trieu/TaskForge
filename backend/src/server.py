@@ -46,22 +46,6 @@ app.config['MAIL_USERNAME'] = 'compgpt3900@gmail.com'
 app.config['MAIL_PASSWORD'] = "gqjtjsnnaxwqeeeg"
 
 sending_email = "compgpt3900@gmail.com"
-
-#--- Authentication Routes ---#
-@app.route("/authentication/reset_password", methods=["POST"])
-def flask_reset_password():
-    uid = request.headers.get('Authorization')
-    res = get_reset_password_link(uid)
-    if res == -1:
-        return Response(status=400)
-    else:
-        # Send email
-        msg_title = "TaskForge: Reset Password"
-        receipient_email = auth.get_user(uid).email
-        msg = Message(msg_title, sender=sending_email, recipients=[receipient_email])
-        msg.body = "Click link to reset your password: {res}"
-        mail.send(msg)
-        return dumps(res)
     
 #--- Profile Routes ---#
 @app.route('/profile/details', methods=['GET'])
@@ -563,15 +547,7 @@ def flask_share_achievement():
     data = request.get_json()
     uid_list = []
     for email in data["receiver_emails"]:
-        try:
-            uid = auth.get_user_by_email(email).uid
-        except auth.UserNotFoundError:
-            return Response(
-                f"Specified email {email} does not exist",
-                status=400
-            )
-        else:
-            uid_list.append(uid)
+        uid_list.append(auth.get_user_by_email(email).uid)
     return dumps(share_achievement(sender_uid, uid_list, data["aid"]))
 
 @app.route("/achievements/locked", methods=["GET"])

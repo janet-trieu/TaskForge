@@ -11,7 +11,7 @@ from src.profile_page import *
 from src.notifications import *
 from src.connections import *
 from src.projmaster import *
-from src.taskboard import *
+from src.tasks import *
 
 # test set up
 port = 8000
@@ -30,11 +30,11 @@ tid = create_task(uid, pid, None, [uid], 'file1', 'file1', 0, 0, "", "Not Starte
 
 def test_file_upload():
     header = {'Authorization': uid}
-    file = {'file': open('http_tests/test.jpg', 'rb')}
+    file = {'file': open('test.jpg', 'rb')}
     resp = requests.post(url + "/upload_file1", headers=header, files=file)
     assert(resp.status_code == 200)
     
-    json_dict = {'file':'http_tests/test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
+    json_dict = {'file':'test.jpg', 'destination_name': 'test.jpg', 'tid':tid}
     resp = requests.post(url + "/upload_file2", headers=header, json=json_dict)
     assert(resp.status_code == 200)
     

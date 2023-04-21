@@ -24,7 +24,6 @@ uid1 = auth.get_user_by_email("conn1@gmail.com").uid
 uid2 = auth.get_user_by_email("conn2@gmail.com").uid
 uid3 = auth.get_user_by_email("conn3@gmail.com").uid  
 
-
 # main tests
 
 def test_connection_request_respond_decline_success():
@@ -106,6 +105,3 @@ def test_remove_connected_taskmaster():
     json_dict = {'uid_remove': uid2}
     resp = requests.post(url + '/connections/remove_taskmaster', headers=headers_dict, json=json_dict)
     assert resp.status_code == 200
-
-def test_clean_up():
-    reset_database()

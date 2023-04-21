@@ -48,6 +48,3 @@ def test_supply_and_demand():
     data = get_supply_and_demand(uid)
     assert(data[0]["demand"] == 5)
     assert(data[0]["supply"] == 4.5)
-
-def test_reset():
-    reset_database()

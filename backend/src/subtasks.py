@@ -16,7 +16,6 @@ from .error import *
 from .helper import *
 from .profile_page import get_user_ref
 import datetime
-from .tasks import get_task_ref
 
 ### ========= SUBTASKS ========= ###
 ### ========= Create Subtask ========= ###
@@ -190,6 +189,7 @@ def get_all_subtasks(uid, tid):
     check_valid_uid(uid)
     check_valid_tid(tid)
 
+    from .tasks import get_task_ref
     task_ref = get_task_ref(tid)
     subtasks = task_ref.get("subtasks")
     subtask_list = []

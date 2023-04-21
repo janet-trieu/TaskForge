@@ -176,15 +176,6 @@ def update_photo(uid, new_photo_url):
     """
     user_ref = db.collection("users").document(uid)
     user_ref.update({"picture": new_photo_url})
-    # try:
-    #     user = auth.get_user(uid)
-    #     user = auth.update_user({"picture": new_photo_url})
-    # except:
-    #     print("Error occurred in trying to update user photo")
-    #     print(f"UID: {uid} | new_photo_url: {new_photo_url}")
-    #     print(f"this is user: {user.display_name}")
-    # else:
-    #     print('Sucessfully updated user: {0}'.format(uid))
 
 ### ========= Update Role ========= ###
 def update_role(uid, new_role):
